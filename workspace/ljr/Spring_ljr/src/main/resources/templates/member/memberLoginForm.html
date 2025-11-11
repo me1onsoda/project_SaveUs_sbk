@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <th:block layout:fragment="script">
+    <script>
+        function register() {
+            location.href="/minsert.mb";
+        }
+    </script>
+</head>
+<body>
+<form th:action="@{/login.mb}" method="post">
+    <table border="1" width="400" height="200">
+        <tr>
+            <th>아이디</th>
+            <td>
+                <input type="text" name="id">
+            </td>
+        </tr>
+        <tr>
+            <th>비밀번호</th>
+            <td>
+                <input type="password" name="password">
+            </td>
+        </tr>
+        <tr align="center">
+            <td colspan="2">
+                <input type="submit" value="로그인">
+                <input type="button" value="취소">
+                <input type="button" value="회원가입" onClick="register()">
+                <a th:href="@{mlist.mb}">
+                    <input type="button" value="회원목록보기">
+                </a>
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

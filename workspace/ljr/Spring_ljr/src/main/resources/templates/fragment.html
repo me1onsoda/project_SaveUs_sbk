@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="header">
+    <!--loginInfo가 null이 아니면 id, null이면 '로그인이 필요합니다.'-->
+    로그인 : <span th:text="${session.loginInfo != null? session.loginInfo.id : '로그인이 필요합니다.' }"></span>
+    <br>
+    <a th:href = "@{/main}">메인페이지</a>
+    <a th:href = "@{/logout.mb}">로그아웃</a>
+</div>
+</body>
+</html>

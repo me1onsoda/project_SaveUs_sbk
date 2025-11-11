@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>update</title>
+</head>
+
+<style>
+    h2 {
+         text-align: center;
+         margin: 20px 0;
+     }
+     table{
+         margin : auto;
+         border : 1px solid #232323;
+         border-collapse : collapse;
+         width : 700px;
+     }
+
+    th{
+        text-align: center;
+    }
+</style>
+
+
+<body>
+<h2>회원정보 수정</h2>
+<div th:insert ="~{fragment :: header}"></div>
+<form th:action="@{/mupdateProc.mb}" th:object="${mDto}" method="post">
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" th:field="*{name}">
+
+    <input type="hidden"  name="whatColumn" th:value="${whatColumn}">
+    <input type="hidden" name="keyword" th:value="${keyword}">
+    <input type="hidden" name="page" th:value="${page}">
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <td>아이디</td>
+            <td th:text="*{id}">
+            </td>
+        </tr>
+        <tr>
+            <td>이름</td>
+            <td th:text="*{name}">
+            </td>
+
+        </tr>
+        <tr>
+            <td>비밀번호</td>
+            <td>
+                <input type="text" th:field="*{password}">
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color:red">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>성별</td>
+            <td>
+                <input type="radio" th:field="*{gender}" value="남자"> 남자
+                <input type="radio" th:field="*{gender}" value="여자"> 여자
+                <div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" style="color:red">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>취미</td>
+            <td>
+                <input type="checkbox" th:field="*{hobby}" value="마라톤">마라톤
+                <input type="checkbox" th:field="*{hobby}" value="영화감상">영화감상
+                <input type="checkbox" th:field="*{hobby}" value="게임">게임
+                <input type="checkbox" th:field="*{hobby}" value="공부">공부
+                <div th:if="${#fields.hasErrors('hobby')}" th:errors="*{hobby}" style="color:red">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>주소</td>
+            <td><input type="text" th:field="*{address}">
+                <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" style="color:red">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>적립포인트</td>
+            <td><input type="number" th:field="*{mpoint}">
+                <div th:if="${#fields.hasErrors('mpoint')}" th:errors="*{mpoint}" style="color:red">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center;">
+                <input type="submit" value="추가하기">
+                <input type="button" value="목록으로" onclick="location.href='/mlist.mb'">
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>
