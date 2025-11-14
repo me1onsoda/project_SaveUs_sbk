@@ -14,5 +14,15 @@ public interface CommunityMapper {
     List<TrendingPostDto> selectTrendingList();
     List<String> selectImagesByPostId(long postId);
     List<CommentDto> selectCommentsByPostId(long postId);
-    //댓글 등록, 좋아요 토글 등의 메소드 추가필요
+
+    void insertPost(CommunityPostDto post);
+    // void insertPostImage(@Param("postId") long postId, @Param("imageUrl") String imageUrl);
+
+    boolean isLikedByUser(@Param("postId") long postId, @Param("userId") long userId);
+    void insertLike(@Param("postId") long postId, @Param("userId") long userId);
+    void deleteLike(@Param("postId") long postId, @Param("userId") long userId);
+    int selectLikeCountByPostId(@Param("postId") long postId);
+
+    void insertComment(CommentDto comment);
+    CommentDto selectCommentById(@Param("commentId") long commentId);
 }

@@ -20,11 +20,10 @@
         COUNT(DISTINCT L.LIKE_ID) AS likeCount,
         COUNT(DISTINCT C.COMMENT_ID) AS commentCount,
 
-        <!-- [수정] CASE WHEN 구문이 SELECT 절 안으로 이동 -->
         CASE WHEN EXISTS (
-            SELECT 1
-            FROM LIKES LikedByMe
-            WHERE LikedByMe.POST_ID = P.POST_ID AND LikedByMe.USER_ID = #{currentUserId}
+        SELECT 1
+        FROM LIKES LikedByMe
+        WHERE LikedByMe.POST_ID = P.POST_ID AND LikedByMe.USER_ID = #{currentUserId}
         ) THEN 1 ELSE 0 END AS likedByMe
 
         FROM
@@ -93,6 +92,62 @@
         U.NICKNAME,
         P.CONTENT ORDER BY
         engagementScore DESC
-        FETCH FIRST 5 ROWS ONLY </select>
+        FETCH FIRST 5 ROWS ONLY
+    </select>
+
+    <!-- 게시물 작성 -->
+    <insert id="insertPost" parameterType="com.example.Ex02.dto.CommunityPostDto"
+            useGeneratedKeys="true" keyProperty="postId" keyColumn="POST_ID">
+        INSERT INTO POSTS (USER_ID, CONTENT, HEALTH_SCORE)
+        VALUES (#{userId}, #{content}, #{healthScore})
+    </insert>
+
+    <!-- 좋아요 토글 -->
+    <select id="isLikedByUser" resultType="boolean">
+        SELECT CASE WHEN COUNT(1) > 0 THEN 1 ELSE 0 END
+        FROM LIKES
+        WHERE POST_ID = #{postId} AND USER_ID = #{userId}
+    </select>
+
+    <insert id="insertLike">
+        INSERT INTO LIKES (POST_ID, USER_ID)
+        VALUES (#{postId}, #{userId})
+    </insert>
+
+    <delete id="deleteLike">
+        DELETE FROM LIKES
+        WHERE POST_ID = #{postId} AND USER_ID = #{userId}
+    </delete>
+
+    <select id="selectLikeCountByPostId" resultType="int">
+        SELECT COUNT(LIKE_ID)
+        FROM LIKES
+        WHERE POST_ID = #{postId}
+    </select>
+
+    <!-- 댓글 작성 -->
+    <insert id="insertComment" parameterType="com.example.Ex02.dto.CommentDto"
+            useGeneratedKeys="true" keyProperty="commentId" keyColumn="COMMENT_ID">
+        INSERT INTO COMMENTS (POST_ID, USER_ID, CONTENT)
+        VALUES (#{postId}, #{userId}, #{content})
+    </insert>
+
+    <!-- 댓글 작성 직후, 닉네임, 시간을 가져오기 위한 쿼리 -->
+    <select id="selectCommentById" resultType="com.example.Ex02.dto.CommentDto">
+        SELECT
+        C.COMMENT_ID AS commentId,
+        C.POST_ID AS postId,
+        C.USER_ID AS userId,
+        C.CONTENT AS content,
+        C.CREATED_AT AS createdAt,
+        U.NICKNAME AS authorNickname,
+        U.PROFILE_IMAGE_URL AS authorProfileImageUrl
+        FROM
+        COMMENTS C
+        JOIN
+        USERS U ON C.USER_ID = U.USER_ID
+        WHERE
+        C.COMMENT_ID = #{commentId}
+    </select>
 
 </mapper>

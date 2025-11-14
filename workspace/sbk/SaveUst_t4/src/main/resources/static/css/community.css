@@ -1,4 +1,3 @@
-/* /static/css/community.css */
 
 /* 카드 공통 스타일 (게시물, 폼, 위젯) */
 .card {
@@ -8,7 +7,7 @@
     padding: 24px;
 }
 
-/* 커뮤니티 페이지 레이아웃 (메인 7: 사이드바 3) */
+/* 커뮤니티 페이지 레이아웃 */
 .community-layout {
     display: grid;
     grid-template-columns: 2fr 1fr; /* 2:1 비율 */
@@ -162,7 +161,7 @@
 }
 
 .post-actions .action-button {
-    background: var(--color-bg-app); /* 연한 회색 배경 */
+    background: var(--color-bg-app);
     border: none;
     border-radius: 20px;
     padding: 8px 12px;
@@ -176,7 +175,7 @@
 }
 
 .post-actions .action-button:hover {
-    background-color: #e9ecef; /* 좀 더 진한 회색 */
+    background-color: #e9ecef;
 }
 
 /* 2. 오른쪽 사이드바 */
@@ -184,7 +183,7 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
-    /* (참고) .card 스타일을 재사용합니다. */
+    /* .card 스타일을 재사용 */
 }
 
 .sidebar-widget h3 {
@@ -238,4 +237,100 @@
 
 .persona-filters .persona-tag:hover {
     background-color: #d1f3e9;
+}
+
+/* --- Modal  --- */
+.modal {
+    display: none; /* 평소엔 숨김 */
+    position: fixed; /* 화면에 고정 */
+    z-index: 1000; /* 최상단에 표시 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 스크롤 */
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명 검은색 배경 */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 화면 중앙에 위치 */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 900px; /* 최대 너비 */
+    position: relative;
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute; /* content 기준 우측 상단 */
+    top: 10px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+   }
+
+/* --- Carousel Base --- */
+.post-media-carousel {
+    position: relative;
+    overflow: hidden;
+    background: #eee;
+}
+
+.carousel-inner {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+}
+
+.carousel-image {
+    width: 100%;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.carousel-control {
+    position: absolute; /*오버레이*/
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+    z-index: 10;
+}
+
+.carousel-control.prev {
+    left: 10px;
+}
+
+.carousel-control.next {
+    right: 10px;
+}
+
+.carousel-indicator {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+}
+
+.carousel-indicator .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.carousel-indicator .dot.active {
+    background-color: rgba(255, 255, 255, 1);
 }

@@ -1,0 +1,44 @@
+// ----------------------------------------------------
+    // 새 게시물 작성 (AJAX 방식)
+    // ----------------------------------------------------
+    //  현재는 기본적인 새로고침방식
+    //  AJAX로 수정할거면 community.html 에서 <form> 태그를 제거후 아래 내용을 community.js 맨밑에 복사
+
+    /*
+    const newPostBtn = document.getElementById('new-post-submit-btn');
+    const newPostContent = document.getElementById('new-post-content');
+
+    newPostBtn.addEventListener('click', async (e) => {
+        e.preventDefault(); // <form>의 기본 동작(새로고침) 막기
+
+        const content = newPostContent.value;
+        if (!content.trim()) {
+            alert("게시물 내용을 입력하세요.");
+            return;
+        }
+
+        newPostBtn.disabled = true;
+        newPostBtn.textContent = "Posting...";
+
+        try {
+            // *** 이 AJAX 방식을 사용하려면 HomeController에 @PostMapping("/api/post/new")
+            //       JSON 반환 API를 별도로 만들어야 함
+            const response = await fetch('/api/post/new', { //
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: content })
+            });
+
+            if (response.ok) {
+                location.reload(); // 성공 시 새로고침
+            } else {
+                alert("게시물 작성에 실패했습니다.");
+            }
+        } catch (error) {
+            alert("게시물 작성 중 오류가 발생했습니다.");
+        } finally {
+            newPostBtn.disabled = false;
+            newPostBtn.textContent = "Post";
+        }
+    });
+    */
