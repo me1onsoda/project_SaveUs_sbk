@@ -112,4 +112,18 @@ public class UserController {
 
         return "redirect:/challenge/recommend";
     }
+
+    // 마이페이지
+    @GetMapping("/my-page")
+    public String showMyPage(){
+        return "user/myPage";
+    }
+
+    // 마이페이지 -> 프로필 수정 이동
+    @GetMapping("/my-page/edit")
+    public String editProfilePage() {
+        return "user/myPageEdit";
+    }
+
+
 }

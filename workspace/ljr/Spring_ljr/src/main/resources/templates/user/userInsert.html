@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
     <title>회원가입 - SaveUs</title>
     <link rel="stylesheet" th:href="@{/css/userInsert.css}">
     <script th:src="@{/js/user.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
 </head>
 
 <body>
-
+<main class="page-content" layout:fragment="content">
 <div class="signup-container">
 
     <div class="signup-left">
@@ -138,7 +141,10 @@
 
     <div class="signup-right"></div>
 
+
 </div>
 
+<div th:replace="~{fragments/footer :: footer}"></div>
+</main>
 </body>
 </html>

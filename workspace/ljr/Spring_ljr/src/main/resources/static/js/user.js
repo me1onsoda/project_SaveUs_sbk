@@ -55,7 +55,7 @@ function validateInput(field) {
 
     if (!error) return;
 
-    if (value === "" || value == null) {
+    if (value === "" || value == null || value === "0") {
         error.textContent = "입력해주세요.";
     } else {
         error.textContent = "";
@@ -79,7 +79,7 @@ function validateForm() {
         const v = document.getElementById(item.id).value;
         const e = document.getElementById(item.error);
 
-        if (v === "" || v == null) {
+        if (v === "" || v == null || v === "0") {
             e.textContent = "입력해주세요.";
             valid = false;
         } else {

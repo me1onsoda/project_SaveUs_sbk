@@ -23,8 +23,8 @@ public class UserDto {
     private String nickname;
 
     private String birthdate;
-    private Float height;
-    private Float currentWeight;
+    private Integer   height;
+    private Integer   currentWeight;
 
     @NotNull(message = "건강 목표를 선택해주세요.")
     private Integer mainGoal; // 0=감량 1=증량 2=건강식
@@ -44,11 +44,11 @@ public class UserDto {
     public String getBirthdate() { return birthdate; }
     public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
 
-    public Float getHeight() { return height; }
-    public void setHeight(Float height) { this.height = height; }
+    public Integer   getHeight() { return height; }
+    public void setHeight(Integer   height) { this.height = height; }
 
-    public Float getCurrentWeight() { return currentWeight; }
-    public void setCurrentWeight(Float currentWeight) { this.currentWeight = currentWeight; }
+    public Integer   getCurrentWeight() { return currentWeight; }
+    public void setCurrentWeight(Integer   currentWeight) { this.currentWeight = currentWeight; }
 
     public Integer getMainGoal() { return mainGoal; }
     public void setMainGoal(Integer mainGoal) { this.mainGoal = mainGoal; }
