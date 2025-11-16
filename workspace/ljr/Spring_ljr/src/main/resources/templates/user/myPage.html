@@ -5,13 +5,18 @@
 
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <title>SaveUs - My Page</title>
     <link rel="stylesheet" th:href="@{/css/layout.css}">
+=======
+    <title>My Page</title>
+>>>>>>> home2
     <link rel="stylesheet" th:href="@{/css/myPage.css}">
 </head>
 
 <main layout:fragment="content">
 
+<<<<<<< HEAD
     <h2 class="section-title">My Page & Settings</h2>
 
     <!-- 프로필 영역 -->
@@ -88,6 +93,32 @@
         <div class="account-btns">
             <button class="logout-btn" onclick="location.href='/logout'">로그아웃</button>
             <button class="delete-btn">회원탈퇴</button>
+=======
+    <!-- ⚠ user 자체가 null이면 자동으로 로그인페이지로 이동 -->
+    <th:block th:if="${user == null}">
+        <script>
+            alert("로그인이 필요합니다.");
+            location.href = "/login";
+        </script>
+    </th:block>
+
+    <h2 class="section-title">My Page & Settings</h2>
+
+    <section class="profile-section">
+        <div class="profile-card">
+
+            <!-- 이미지 null-safe -->
+            <img class="profile-img"
+                 th:src="${(user != null and user.profileImageUrl != null)
+                         ? user.profileImageUrl
+                         : '/images/user-default.png'}">
+
+            <!-- 닉네임 -->
+            <h3 th:text="${user != null ? user.nickname : ''}">닉네임</h3>
+
+            <!-- 이메일 -->
+            <p th:text="${user != null ? user.email : ''}">email</p>
+>>>>>>> home2
         </div>
     </section>
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
@@ -73,3 +74,80 @@
 </main>
 
 </html>
+=======
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>식사 직접 입력</title>
+
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/direct-input.css}">
+    </th:block>
+</head>
+
+<main layout:fragment="content">
+
+    <h2>식사 직접 입력</h2>
+    <p class="sub">음식 이름, 영양 성분, 시간, 칼로리 등을 직접 입력하여 식사를 기록할 수 있습니다.</p>
+
+    <div class="input-container">
+
+        <form method="post" th:action="@{/meal/save}">
+
+            <!-- 음식 이름 -->
+            <div class="form-row">
+                <label>음식 이름</label>
+                <input type="text" name="mealName" placeholder="예) 닭가슴살 샐러드" required>
+            </div>
+
+            <!-- 시간 + 칼로리 -->
+            <div class="form-row form-half">
+                <div>
+                    <label>섭취 시간</label>
+                    <input type="time" name="mealTime" required>
+                </div>
+
+                <div>
+                    <label>칼로리 (kcal)</label>
+                    <input type="number" name="mealCalorie" placeholder="예) 350" required>
+                </div>
+            </div>
+
+            <!-- 3대 영양소 -->
+            <h3 class="section-title">영양 성분 입력</h3>
+
+            <div class="form-row form-three">
+                <div>
+                    <label>탄수화물 (g)</label>
+                    <input type="number" name="carbs" placeholder="예) 40" required>
+                </div>
+
+                <div>
+                    <label>단백질 (g)</label>
+                    <input type="number" name="protein" placeholder="예) 25" required>
+                </div>
+
+                <div>
+                    <label>지방 (g)</label>
+                    <input type="number" name="fat" placeholder="예) 10" required>
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="form-actions">
+                <a href="/main" class="cancel-btn">취소</a>
+                <button type="submit" class="save-btn">입력</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+</html>
+>>>>>>> home2

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <aside class="sidebar" th:fragment="sidebar">
@@ -47,4 +48,55 @@
             </li>
         </ul>
     </nav>
+=======
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<aside class="sidebar" th:fragment="sidebar">
+    <div class="sidebar-header">
+        <a href="/" class="logo-link">
+            <img th:src="@{/images/icon/logo.png}" alt="SaveUs Logo" class="web-logo">
+            <span class="logo">SaveUs</span>
+        </a>
+    </div>
+
+    <nav class="main-navigation">
+        <ul>
+            <li class="nav-item">
+                <a href="/dashboard">
+                    <span class="nav-icon">
+                        <img th:src="@{/images/icon/dashboard.png}">
+                    </span>
+                    <span class="nav-text">Dashboard</span> </a>
+            </li>
+            <li class="nav-item">
+                <a href="/calendar">
+                    <span class="nav-icon">
+                        <img th:src="@{/images/icon/calendar.png}">
+                    </span>
+                    <span class="nav-text">Calendar</span> </a>
+            </li>
+            <li class="nav-item">
+                <a href="/challenges">
+                    <span class="nav-icon">
+                        <img th:src="@{/images/icon/challenges.png}">
+                    </span>
+                    <span class="nav-text">Challenges</span> </a>
+            </li>
+            <li class="nav-item">
+                <a href="/community">
+                    <span class="nav-icon">
+                        <img th:src="@{/images/icon/community.png}">
+                    </span>
+                    <span class="nav-text">Community</span> </a>
+            </li>
+            <li class="nav-item">
+                <a href="/my-page">
+                    <span class="nav-icon">
+                        <img th:src="@{/images/icon/mypage.png}">
+                    </span>
+                    <span class="nav-text">My Page</span> </a>
+            </li>
+        </ul>
+    </nav>
+>>>>>>> home2
 </aside>

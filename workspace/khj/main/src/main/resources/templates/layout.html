@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"> <head>
@@ -22,4 +23,30 @@
 </div>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"> <head>
+    <meta charset="UTF-8">
+    <title>SaveUs</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+<body>
+
+<div class="web-layout">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <div class="content-wrapper">
+        <div th:replace="~{fragments/header :: header}"></div> <!--헤더-->
+
+        <main class="page-content" layout:fragment="content">
+            <!--페이지 작성공간-->
+        </main>
+
+        <div th:replace="~{fragments/footer :: footer}"></div> <!--푸터-->
+    </div>
+</div>
+
+</body>
+>>>>>>> home2
 </html>

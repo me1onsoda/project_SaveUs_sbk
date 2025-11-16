@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
@@ -143,5 +144,81 @@
 
 </div>
 
+=======
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입 - SaveUs</title>
+    <link rel="stylesheet" th:href="@{/css/userInsert.css}">
+
+</head>
+
+<body>
+
+<div class="signup-container">
+
+    <h1>Create an account</h1>
+
+    <form th:action="@{/user/insert}" th:object="${userDto}" method="post">
+
+
+        <!-- 이메일 -->
+        <label>이메일</label>
+        <div class="email-row">
+            <input type="text" id="emailId" placeholder="이메일 아이디"
+                   oninput="updateEmail(); resetEmailCheck();">
+
+            <span>@</span>
+
+            <select id="emailDomain" onchange="updateEmail(); resetEmailCheck();">
+                <option value="">선택</option>
+                <option value="naver.com">naver.com</option>
+                <option value="gmail.com">gmail.com</option>
+                <option value="daum.net">daum.net</option>
+            </select>
+
+            <button type="button" class="btn-email" onclick="checkEmail()">중복확인</button>
+        </div>
+
+        <div class="row-error" id="emailCheckResult"></div>
+        <input type="hidden" id="emailInput" th:field="*{email}">
+
+
+        <!-- 비밀번호 -->
+        <label>비밀번호</label>
+        <input type="password" th:field="*{password}">
+        <p th:if="${#fields.hasErrors('password')}"
+           th:errors="*{password}" class="error"></p>
+
+        <!-- 닉네임 -->
+        <label>닉네임</label>
+        <input type="text" th:field="*{nickname}">
+        <p th:if="${#fields.hasErrors('nickname')}"
+           th:errors="*{nickname}" class="error"></p>
+
+        <!-- 키 -->
+        <label>키 (cm)</label>
+        <input type="number" th:field="*{height}">
+
+        <!-- 몸무게 -->
+        <label>몸무게 (kg)</label>
+        <input type="number" th:field="*{currentWeight}">
+
+        <!-- 목표 -->
+        <label>목표</label>
+        <div class="radio-group">
+            <input type="radio" value="0" th:field="*{mainGoal}"> 감량<br>
+            <input type="radio" value="1" th:field="*{mainGoal}"> 증량<br>
+            <input type="radio" value="2" th:field="*{mainGoal}"> 건강식
+        </div>
+
+        <p th:if="${#fields.hasErrors('mainGoal')}"
+           th:errors="*{mainGoal}" class="error"></p>
+
+        <button type="submit">회원가입</button>
+    </form>
+</div>
+<script th:src="@{/js/user.js}"></script>
+>>>>>>> home2
 </body>
 </html>
