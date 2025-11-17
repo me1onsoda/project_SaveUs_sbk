@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.UserGoalMapper">
+
+    <!-- 최신 목표 1개 조회 -->
+    <select id="findUserGoal" parameterType="long"
+            resultType="com.example.Ex02.dto.UserGoalDto">
+
+        SELECT
+        GOAL_ID AS goalId,
+        USER_ID AS userId,
+        CALORIES_KCAL AS caloriesKcal,
+        PROTEIN_G AS proteinG,
+        CARBS_G AS carbsG,
+        FATS_G AS fatsG
+        FROM USER_GOAL
+        WHERE USER_ID = #{userId}
+        ORDER BY GOAL_ID DESC
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 목표 추가 -->
+    <insert id="insertUserGoal" parameterType="com.example.Ex02.dto.UserGoalDto">
+        INSERT INTO USER_GOAL (
+        USER_ID,
+        CALORIES_KCAL,
+        PROTEIN_G,
+        CARBS_G,
+        FATS_G
+        ) VALUES (
+        #{userId},
+        #{caloriesKcal},
+        #{proteinG},
+        #{carbsG},
+        #{fatsG}
+        )
+    </insert>
+
+</mapper>

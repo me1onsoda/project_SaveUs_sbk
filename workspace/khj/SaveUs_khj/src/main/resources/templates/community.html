@@ -1,0 +1,347 @@
+<!--
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"> <head>
+    <title>SaveUs - Community</title>
+    <link rel="stylesheet" th:href="@{/css/community.css}">
+</head>
+
+<main layout:fragment="content">
+
+    <div class="community-layout">
+
+        <div class="feed-main">
+            <header class="page-header">
+                <h1>Community</h1>
+            </header>
+
+            <section class="new-post-form card">
+                <textarea placeholder="Share your latest meal or health insight"></textarea>
+                <div class="form-actions">
+                    <button class="post-button">Post</button>
+                </div>
+            </section>
+
+            <nav class="feed-filters">
+                <button class="filter-tab active">Latest</button>
+                <button class="filter-tab">Popular</button>
+            </nav>
+
+            <div class="post-list">
+
+                <article class="post-card card">
+                    <div class="post-header">
+                        <img src="/images/avatars/sophia.png" alt="Sophia Martin" class="post-avatar">
+                        <div class="post-author-info">
+                            <span class="author-name">Sophia Martin</span>
+                            <span class="author-details">
+                                <span class="author-persona">Veggie Enthusiast</span> · 2 hours ago
+                            </span>
+                        </div>
+                        <div class="post-health-score">
+                            Health Score: <strong>92</strong>
+                        </div>
+                    </div>
+
+                    <div class="post-content">
+                        <p>Fueling up with this delicious plant-based power bowl today! So many colors, so much goodness. Eating healthy has never been this enjoyable. What are your favorite veggie-packed meals?</p>
+                    </div>
+
+                    <img src="/images/meals/plant-bowl.png" alt="Plant-based power bowl" class="post-image">
+
+                    <div class="post-actions">
+                        <button class="action-button like">
+                            <span>❤️</span> 128
+                        </button>
+                        <button class="action-button comment">
+                            <span>💬</span> 24
+                        </button>
+                        <button class="action-button share">
+                            <span>🔗</span> Share
+                        </button>
+                    </div>
+                </article>
+
+                <article class="post-card card">
+                    <div class="post-header">
+                        <img src="/images/avatars/liam.png" alt="Liam Chen" class="post-avatar">
+                        <div class="post-author-info">
+                            <span class="author-name">Liam Chen</span>
+                            <span class="author-details">
+                                <span class="author-persona">Protein Powerhouse</span> · 4 hours ago
+                            </span>
+                        </div>
+                        <div class="post-health-score">
+                            Health Score: <strong>88</strong>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p>Post-workout meal perfection: grilled salmon, asparagus, and brown rice. Keeping those protein levels high and muscles happy! #EatClean #FitnessJourney</p>
+                    </div>
+                    <img src="/images/meals/salmon.png" alt="Grilled salmon meal" class="post-image">
+                    <div class="post-actions">
+                        <button class="action-button like">
+                            <span>❤️</span> 95
+                        </button>
+                        <button class="action-button comment">
+                            <span>💬</span> 15
+                        </button>
+                        <button class="action-button share">
+                            <span>🔗</span> Share
+                        </button>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+
+        <aside class="feed-sidebar">
+            <div class="sidebar-widget card">
+                <h3>Trending Posts</h3>
+                <ul class="trending-list">
+                    <li>
+                        <a href="#">
+                            <strong>Sophia Martin</strong>
+                            <span>Fueling up with this delicious plant-based...</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <strong>Liam Chen</strong>
+                            <span>Post-workout meal perfection: grilled salmon...</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-widget card">
+                <h3>Filter by Persona</h3>
+                <div class="persona-filters">
+                    <button class="persona-tag">All Personas</button>
+                    <button class="persona-tag">Carb-Lover</button>
+                    <button class="persona-tag">Protein Powerhouse</button>
+                    <button class="persona-tag">Balanced Eater</button>
+                    <button class="persona-tag">Veggie Enthusiast</button>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</main>
+</html>-->
+
+<!--
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>SaveUs - Community</title>
+    <link rel="stylesheet" th:href="@{/css/community.css}">
+</head>
+
+<main layout:fragment="content">
+
+    <div class="community-layout">
+
+        <div class="feed-main">
+            <header class="page-header">
+                <h1>Community</h1>
+            </header>
+
+            <section class="new-post-form card">
+                <textarea placeholder="Share your latest meal or health insight"></textarea>
+                <div class="form-actions">
+                    <button class="post-button">Post</button>
+                </div>
+            </section>
+
+            <nav class="feed-filters">
+                <button class="filter-tab active">Latest</button>
+                <button class="filter-tab">Popular</button>
+            </nav>
+
+            <div class="post-list">
+
+                <article class="post-card card" th:each="post : ${postList}">
+                    <div class="post-header">
+
+                        <img src="/images/avatars/sophia.png" alt="Sophia Martin" class="post-avatar"
+                             th:src="${post.authorProfileImageUrl}">
+
+                        <div class="post-author-info">
+                            <span class="author-name" th:text="${post.authorNickname}">Sophia Martin</span>
+
+                            <span class="author-details">
+                                <span class="author-persona" th:text="${post.authorPersona}">Veggie Enthusiast</span>
+
+                                <span th:text="' · ' + ${post.timeAgo}">· 2 hours ago</span>
+                            </span>
+                        </div>
+                        <div class="post-health-score">
+                            Health Score: <strong th:text="${post.healthScore}">92</strong>
+                        </div>
+                    </div>
+
+                    <div class="post-content">
+                        <p th:text="${post.content}">Fueling up with this delicious plant-based power bowl today! ...</p>
+                    </div>
+
+                    <img src="/images/meals/plant-bowl.png" alt="Post image" class="post-image"
+                         th:if="${post.imageUrl != null}" th:src="${post.imageUrl}">
+
+                    <div class="post-actions">
+                        <button class="action-button like">
+                            <span>❤️</span> <span th:text="${post.likeCount}">128</span>
+                        </button>
+
+                        <button class="action-button comment">
+                            <span>💬</span> <span th:text="${post.commentCount}">24</span>
+                        </button>
+                        <button class="action-button share">
+                            <span>🔗</span> Share
+                        </button>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+
+        <aside class="feed-sidebar">
+            <div class="sidebar-widget card">
+                <h3>Trending Posts</h3>
+
+                <ul class="trending-list">
+                    <li th:each="trendingPost : ${trendingList}">
+                        <a href="#" th:href="@{/post/{id}(id=${trendingPost.id})}">
+                            <strong th:text="${trendingPost.authorNickname}">Sophia Martin</strong>
+                            <span th:text="${trendingPost.summary}">Fueling up with this delicious plant-based...</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-widget card">
+                <h3>Filter by Persona</h3>
+                <div class="persona-filters">
+                    <button class="persona-tag">All Personas</button>
+                    <button class="persona-tag">Carb-Lover</button>
+                    <button class="persona-tag">Protein Powerhouse</button>
+                    <button class="persona-tag">Balanced Eater</button>
+                    <button class="persona-tag">Veggie Enthusiast</button>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</main>
+</html>-->
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>SaveUs - Community</title>
+    <link rel="stylesheet" th:href="@{/css/community.css}">
+    <script defer th:src="@{/js/community.js}"></script>
+</head>
+
+<main layout:fragment="content">
+
+    <div class="community-layout">
+
+        <div class="feed-main">
+            <header class="page-header">
+                <h1>Community Feed</h1>
+            </header>
+
+            <section class="new-post-form card">
+                <textarea placeholder="Share your latest meal or health insight"></textarea>
+                <div class="form-actions">
+                    <button class="post-button">Post</button>
+                </div>
+            </section>
+
+            <nav class="feed-filters">
+                <button class="filter-tab active">Latest</button>
+                <button class="filter-tab">Popular</button>
+            </nav>
+
+            <div class="post-list">
+
+                <article class="post-card card" th:each="post : ${postList}">
+
+                    <div class="post-header">
+                        <a th:href="@{/user/profile/{userId}(userId=${post.userId})}" class="author-link">
+                            <img th:src="${post.authorProfileImageUrl}" alt="Profile Avatar" class="post-avatar">
+                        </a>
+                        <div class="post-author-info">
+                            <a th:href="@{/user/profile/{userId}(userId=${post.userId})}" class="author-link">
+                                <span class="author-name" th:text="${post.authorNickname}">Sophia Martin</span>
+                            </a>
+                            <span class="author-details">
+                                <span class="author-persona" th:text="${post.authorPersona}">Veggie Enthusiast</span>
+                                <span th:text="' · ' + ${post.timeAgo}">· 2 hours ago</span>
+                            </span>
+                        </div>
+                        <div class="post-health-score">
+                            Health Score: <strong th:text="${post.healthScore}">92</strong>
+                        </div>
+                    </div>
+
+                    <div class="post-media-carousel" th:if="${post.imageUrls != null and post.imageUrls.size() > 0}">
+                        <div class="carousel-inner">
+                            <img th:each="url : ${post.imageUrls}" th:src="${url}" alt="Meal Photo" class="carousel-image">
+                        </div>
+                        <button class="carousel-control prev" th:if="${post.imageUrls.size() > 1}">&lt;</button>
+                        <button class="carousel-control next" th:if="${post.imageUrls.size() > 1}">&gt;</button>
+                        <div class="carousel-indicator" th:if="${post.imageUrls.size() > 1}"></div>
+                    </div>
+
+                    <div class="post-actions-bar">
+                        <button class="like-button" th:classappend="${post.likedByMe ? 'active' : ''}"
+                                th:data-post-id="${post.postId}">
+                            <span th:text="${post.likedByMe ? '❤️' : '🤍'}">🤍</span>
+                        </button>
+                        <button class="comment-button" data-modal-target="post-modal" th:data-post-id="${post.postId}">
+                            <span title="댓글 달기">💬</span>
+                        </button>
+                        <span class="like-count" th:text="${post.likeCount} + ' likes'">128 likes</span>
+                    </div>
+
+                    <div class="post-content-container">
+                        <p class="post-content-text" th:text="${post.content}">...</p>
+                        <button class="more-button hidden">...더보기</button>
+                    </div>
+
+                    <div class="post-comments-summary">
+                        <button class="view-comments-btn" data-modal-target="post-modal" th:data-post-id="${post.postId}">
+                            <span th:text="'댓글 ' + ${post.commentCount} + '개 모두 보기'">댓글 24개 모두 보기</span>
+                        </button>
+                        <div class="comment-input-area">
+                            <input type="text" placeholder="댓글 달기..." th:data-post-id="${post.postId}">
+                            <button>게시</button>
+                        </div>
+                    </div>
+
+                </article>
+            </div>
+        </div>
+
+        <aside class="feed-sidebar">
+        </aside>
+
+    </div>
+
+    <div id="post-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div class="modal-body-container">
+                <h2>게시물 상세 로딩 중...</h2>
+            </div>
+        </div>
+    </div>
+</main>
