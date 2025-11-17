@@ -1,0 +1,626 @@
+/*-------------------------------------------------------------------------------*/
+/* :root {
+    --color-primary: #1abc9c;
+    --color-primary-light: #e8f8f5;
+    --color-text-primary: #343a40;
+    --color-text-secondary: #6c757d;
+    --color-border: #dee2e6;
+    --color-bg-app: #f8f9fa;
+    --color-white: #ffffff;
+} */
+
+/* 카드 공통 스타일 (게시물, 폼, 위젯) */
+.card {
+    background-color: var(--color-white, #ffffff);
+    border: 1px solid var(--color-border, #dee2e6);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+/* 커뮤니티 페이지 레이아웃 */
+.community-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* 2:1 비율 */
+    gap: 24px;
+    align-items: flex-start; /* 위젯이 피드보다 짧아도 위쪽 정렬 유지 */
+}
+
+/* 1. 메인 피드 영역 */
+.feed-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px; /* 섹션 간 간격 */
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text-primary, #343a40);
+    margin-bottom: 8px; /* 폼과의 간격 */
+}
+
+/* 새 글 작성 폼 */
+.new-post-form textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid var(--color-border, #dee2e6);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    resize: vertical;
+}
+
+.new-post-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+/* 새 글 폼 - 파일 업로드 */
+.new-post-form .form-file-upload {
+    margin-top: 10px;
+}
+
+.post-button {
+    background-color: var(--color-primary, #1abc9c);
+    color: var(--color-white, #ffffff);
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.post-button:hover {
+    background-color: #178a71; /* Primary color darker */
+}
+
+/* 피드 필터 */
+.feed-filters {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--color-border, #dee2e6);
+    padding-bottom: 4px;
+}
+
+.feed-filters .filter-tab {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-secondary, #6c757d);
+    padding: 8px 16px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+}
+
+.feed-filters .filter-tab.active {
+    color: var(--color-primary, #1abc9c);
+    border-bottom-color: var(--color-primary, #1abc9c);
+}
+
+/* 게시물 카드 */
+.post-card {
+    padding: 24px;
+}
+
+/* .post-header (수정/삭제 버튼을 위해) */
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    position: relative; /* 버튼 메뉴 기준 */
+}
+
+.post-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* .post-author-info (수정/삭제 버튼을 위해) */
+.post-author-info {
+    flex-grow: 1; /* 중간 영역을 채움 */
+}
+
+.post-author-info .author-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary, #343a40);
+    display: block;
+}
+
+.post-author-info .author-details {
+    font-size: 14px;
+    color: var(--color-text-secondary, #6c757d);
+}
+
+.author-details .author-persona {
+    font-weight: 500;
+    color: var(--color-primary, #1abc9c); /* 페르소나 색상 강조 */
+}
+
+.post-health-score {
+    font-size: 14px;
+    color: var(--color-text-secondary, #6c757d);
+}
+
+.post-health-score strong {
+    font-weight: 700;
+    color: var(--color-primary, #1abc9c);
+    font-size: 16px;
+}
+
+/* .post-content-text (더보기 기능) */
+.post-content-container {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.post-content-text {
+    font-size: 16px;
+    color: var(--color-text-primary, #343a40);
+    line-height: 1.7;
+
+    /* 더보기 기능 */
+    max-height: 72px; /* 3줄 정도 (line-height * 3) */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* white-space: pre-wrap; */
+    overflow-wrap: break-word;
+}
+
+.post-content-text.expanded {
+    max-height: none;
+    overflow: visible;
+}
+
+.more-button {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary, #6c757d);
+    cursor: pointer;
+    font-weight: 600;
+}
+.more-button.hidden {
+    display: none;
+}
+
+
+/* .post-actions-bar (기존 .post-actions 대체) */
+.post-actions-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 아이콘 버튼 사이 간격 */
+    padding: 8px 0px; /* 상하 패딩 */
+    border-top: 1px solid var(--color-border, #dee2e6);
+    border-bottom: 1px solid var(--color-border, #dee2e6);
+    margin-bottom: 16px;
+}
+
+
+/* --- 2. 오른쪽 사이드바 --- */
+.feed-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    /* .card 스타일을 재사용 */
+}
+
+.sidebar-widget h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--color-text-primary, #343a40);
+}
+
+/* 트렌딩 목록 */
+.trending-list li {
+    margin-bottom: 12px;
+}
+.trending-list {
+    padding-left: 0;
+    list-style: none;
+}
+.trending-list a {
+    display: block;
+    font-size: 14px;
+    color: var(--color-text-secondary, #6c757d);
+    line-height: 1.4;
+    text-decoration: none;
+}
+
+.trending-list a strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-primary, #343a40);
+    margin-bottom: 2px;
+}
+
+.trending-list a:hover strong {
+    color: var(--color-primary, #1abc9c);
+}
+
+/* 페르소나 필터 */
+.persona-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.persona-filters .persona-tag {
+    background-color: var(--color-primary-light, #e8f8f5);
+    color: var(--color-primary, #1abc9c);
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.persona-filters .persona-tag:hover {
+    background-color: #d1f3e9;
+}
+
+/* --- 1. Modal CSS --- */
+.modal {
+    display: none; /* 평소엔 숨김 */
+    position: fixed; /* 화면에 고정 */
+    z-index: 1000; /* 최상단에 표시 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 스크롤 */
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명 검은색 배경 */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 화면 중앙에 위치 */
+    padding: 0; /* 내부 영역에서 패딩 처리 */
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 900px; /* 최대 너비 */
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden; /* 모달 내부에서 radius 적용 */
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute; /* content 기준 우측 상단 */
+    top: 10px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1010;
+}
+
+.modal-body-container {
+    display: flex;
+    max-height: 70vh; /* 모달 최대 높이 */
+}
+
+/* --- [핵심 수정] 모달 캐러셀 컨테이너 --- */
+.modal-post-media {
+    flex: 1.5; /* 이미지 영역 */
+    background: #000;
+    position: relative; /* 버튼 위치 기준 */
+    overflow: hidden; /* 넘치는 이미지 숨김 */
+}
+/* --- [수정 끝] --- */
+
+.modal-comments-area {
+    flex: 1; /* 댓글 영역 */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* 댓글 많을 시 스크롤 */
+}
+.modal-post-header, .modal-post-content, .modal-comment-input {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border, #dee2e6);
+}
+.modal-comments-list {
+    flex-grow: 1; /* 남은 공간 모두 차지 */
+    padding: 16px;
+    overflow-y: auto;
+}
+.modal-comment-input {
+    background: #f9f9f9;
+    margin-top: auto; /* 하단 고정 */
+    display: flex;
+    gap: 8px;
+}
+.modal-comment-input input {
+    flex-grow: 1;
+    border: 1px solid var(--color-border, #dee2e6);
+    border-radius: 4px;
+    padding: 8px;
+}
+.modal-comment-input button {
+    background: none;
+    border: none;
+    color: var(--color-primary, #1abc9c);
+    font-weight: 600;
+    cursor: pointer;
+}
+.modal-carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+
+/* --- 3. Carousel Base --- */
+.post-media-carousel {
+    position: relative;
+    overflow: hidden;
+    background: #eee;
+    border-radius: 8px; /* 카드 모서리 */
+}
+
+.carousel-inner {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+}
+
+.carousel-image {
+    width: 100%;
+    flex-shrink: 0;
+    object-fit: cover;
+    aspect-ratio: 1 / 1; /* 정사각형 비율 */
+}
+
+.carousel-control {
+    position: absolute; /*오버레이*/
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+    z-index: 10;
+}
+
+.carousel-control.prev {
+    left: 10px;
+}
+
+.carousel-control.next {
+    right: 10px;
+}
+
+.carousel-indicator {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 10;
+}
+
+.carousel-indicator .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.carousel-indicator .dot.active {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+/* --- 2. 좋아요/댓글 버튼 UI --- */
+.like-button, .comment-button {
+    display: flex;
+    align-items: center;
+    gap: 4px; /* 아이콘과 숫자 사이 간격 */
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px; /* 아이콘 크기 */
+    padding: 0;
+}
+
+.like-count-text, .comment-count-text {
+    font-size: 16px; /* 숫자 폰트 크기 */
+    font-weight: 600;
+    color: #333;
+}
+
+/* --- 4. 수정/삭제 버튼 및 폼 CSS --- */
+
+/* 헤더의 수정/삭제 버튼 (우측 정렬) */
+.post-actions-menu {
+    display: flex;
+    gap: 8px;
+    margin-left: 10px;
+}
+.post-edit-btn, .post-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    font-size: 13px;
+}
+.post-edit-btn:hover, .post-delete-btn:hover {
+    color: #000;
+}
+
+/* 'in-place' 수정 폼 */
+.post-edit-mode {
+    padding: 12px 0 0 0; /* 위쪽 패딩 */
+}
+.post-edit-mode textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-family: inherit;
+    font-size: 16px;
+}
+.post-edit-mode .form-file-upload {
+    margin-bottom: 10px;
+}
+.post-edit-mode .edit-actions {
+    display: flex;
+    justify-content: flex-end; /* 버튼 우측 정렬 */
+    gap: 8px;
+}
+.post-edit-mode .edit-save-btn, .post-edit-mode .edit-cancel-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.post-edit-mode .edit-save-btn {
+    background-color: var(--color-primary, #1abc9c);
+    color: white;
+}
+.post-edit-mode .edit-cancel-btn {
+    background-color: #eee;
+}
+
+/* 모달(댓글) 내부 수정/삭제 */
+.comment-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    position: relative;
+    padding-right: 60px; /* 수정/삭제 버튼 공간 */
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.comment-text-content {
+    flex-grow: 1;
+}
+.comment-actions {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    display: flex;
+    gap: 5px;
+}
+.comment-edit-btn, .comment-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 12px;
+}
+.comment-edit-btn:hover, .comment-delete-btn:hover {
+    color: #000;
+}
+/* 댓글 수정용 input */
+.comment-edit-input {
+    width: 100%;
+    border: 1px solid #007bff;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+/* 댓글 입력창 */
+.comment-input-area {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    margin-top: 16px;
+}
+.comment-input-field {
+    flex-grow: 1;
+    border: 1px solid var(--color-border, #dee2e6);
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+.comment-submit-btn {
+    background: none;
+    border: none;
+    color: var(--color-primary, #1abc9c);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px;
+}
+/*---수정 폼 이미지 (개별 삭제) --- */
+     .edit-image-list {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 10px;
+         margin-top: 10px;
+     }
+     .edit-image-item {
+         position: relative;
+         width: 100px;
+         height: 100px;
+     }
+     .edit-image-item img {
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+         border-radius: 4px;
+     }
+     .delete-image-btn {
+         position: absolute;
+         top: -5px;
+         right: -5px;
+         width: 20px;
+         height: 20px;
+         background-color: rgba(0, 0, 0, 0.7);
+         color: white;
+         border: none;
+         border-radius: 50%;
+         cursor: pointer;
+         font-size: 12px;
+         line-height: 20px;
+         text-align: center;
+         padding: 0;
+     }
+     .edit-image-item.marked-for-deletion {
+         opacity: 0.4;
+     }
+     .custom-file-button {
+         /* 'Post' 버튼과 유사하게 스타일링 */
+         background-color: var(--color-primary-light, #e8f8f5);
+         color: var(--color-primary, #1abc9c);
+         font-weight: 600;
+         font-size: 14px;
+         border: none;
+         border-radius: 8px;
+         padding: 8px 16px;
+         cursor: pointer;
+         transition: background-color 0.2s;
+     }
+
+     .custom-file-button:hover {
+         background-color: #d1f3e9;
+     }
+
+     .file-name-text {
+         font-size: 14px;
+         color: #555;
+     }

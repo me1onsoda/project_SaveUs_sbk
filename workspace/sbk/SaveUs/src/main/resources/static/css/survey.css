@@ -1,0 +1,102 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+/* 양옆 컬러 + 중앙 흰색 레이아웃 */
+.survey-container {
+    display: flex;
+    width: 100vw;
+    min-height: 100vh;
+}
+
+.survey-side {
+    flex: 1;
+    background-color: #1ABC9C;  /* 로그인과 동일한 초록색 */
+}
+
+.survey-center {
+    flex: 2;
+    background-color: #ffffff;
+    padding: 60px 80px;
+}
+
+/* 제목 */
+h2 {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: #111111;
+}
+
+/* 설문 폼 내부 */
+form {
+    width: 100%;
+    padding: 0 10px 60px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 질문 문장 */
+.question {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 32px 0 12px 0;
+    color: #222222;
+}
+
+/* 옵션 그룹 */
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+/* 라디오 버튼 라벨 */
+.options label {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    color: #333333;
+    cursor: pointer;
+}
+
+/* 라디오 버튼 */
+.options input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    accent-color: #1ABC9C;
+}
+
+/* 에러메시지 */
+.error {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #d9534f;
+}
+
+/* 제출 버튼 */
+.submit-area {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.submit-area button {
+    width: 260px;
+    height: 50px;
+    border: none;
+    border-radius: 8px;
+    background-color: #1ABC9C;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.submit-area button:hover {
+    opacity: 0.9;
+}

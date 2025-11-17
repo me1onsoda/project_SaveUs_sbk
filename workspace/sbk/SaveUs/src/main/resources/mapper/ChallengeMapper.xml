@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.ChallengeMapper">
+
+    <resultMap id="ChallengeCardResultMap" type="com.example.Ex02.dto.ChallengeCardDto">
+        <id property="challengeId" column="CHALLENGE_ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="isUserParticipating" column="IS_PARTICIPATING" javaType="boolean"/>
+        <collection property="tags" ofType="com.example.Ex02.dto.TagDto">
+            <id property="tagId" column="TAG_ID"/>
+            <result property="tagName" column="TAG_NAME"/>
+        </collection>
+    </resultMap>
+
+    <select id="findLeaderboardTop5" resultType="com.example.Ex02.dto.LeaderboardEntryDto">
+        SELECT
+        U.NICKNAME AS userNickname,
+        U.PROFILE_IMAGE_URL AS userProfileImg,
+        SUM(C.POINTS) AS score
+        FROM
+        USERS U
+        JOIN
+        USER_CHALLENGES UC ON U.USER_ID = UC.USER_ID
+        JOIN
+        CHALLENGES C ON UC.CHALLENGE_ID = C.CHALLENGE_ID
+        WHERE
+        UC.STATUS = 'COMPLETED'
+        GROUP BY
+        U.USER_ID, U.NICKNAME, U.PROFILE_IMAGE_URL
+        ORDER BY
+        score DESC
+        FETCH FIRST 5 ROWS ONLY
+    </select>
+
+    <select id="findAllTags" resultType="com.example.Ex02.dto.TagDto">
+        SELECT TAG_ID, TAG_NAME FROM TAGS ORDER BY TAG_NAME
+    </select>
+
+    <select id="findAllChallengesPaginated" resultMap="ChallengeCardResultMap" parameterType="map">
+        SELECT
+        C.CHALLENGE_ID, C.TITLE, C.DESCRIPTION, T.TAG_ID, T.TAG_NAME,
+        CASE
+        WHEN UC.STATUS = 'ONGOING' THEN 1
+        ELSE 0
+        END AS IS_PARTICIPATING
+        FROM
+        CHALLENGES C
+        LEFT JOIN
+        CHALLENGE_TAGS CT ON C.CHALLENGE_ID = CT.CHALLENGE_ID
+        LEFT JOIN
+        TAGS T ON CT.TAG_ID = T.TAG_ID
+        LEFT JOIN
+        USER_CHALLENGES UC ON C.CHALLENGE_ID = UC.CHALLENGE_ID AND UC.USER_ID = #{userId}
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (C.TITLE LIKE '%' || #{keyword} || '%' OR C.DESCRIPTION LIKE '%' || #{keyword} || '%')
+            </if>
+            <if test="tag != null and tag != ''">
+                AND C.CHALLENGE_ID IN (
+                SELECT CT2.CHALLENGE_ID
+                FROM CHALLENGE_TAGS CT2
+                JOIN TAGS T2 ON CT2.TAG_ID = T2.TAG_ID
+                WHERE T2.TAG_NAME = #{tag}
+                )
+            </if>
+        </where>
+        ORDER BY C.CHALLENGE_ID DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countAllChallenges" resultType="int" parameterType="map">
+        SELECT COUNT(DISTINCT C.CHALLENGE_ID)
+        FROM CHALLENGES C
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (C.TITLE LIKE '%' || #{keyword} || '%' OR C.DESCRIPTION LIKE '%' || #{keyword} || '%')
+            </if>
+            <if test="tag != null and tag != ''">
+                AND C.CHALLENGE_ID IN (
+                SELECT CT2.CHALLENGE_ID
+                FROM CHALLENGE_TAGS CT2
+                JOIN TAGS T2 ON CT2.TAG_ID = T2.TAG_ID
+                WHERE T2.TAG_NAME = #{tag}
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="findChallengesByGoal" resultMap="ChallengeCardResultMap">
+        SELECT
+        C.CHALLENGE_ID, C.TITLE, C.DESCRIPTION, T.TAG_ID, T.TAG_NAME,
+        CASE WHEN UC.STATUS = 'ONGOING' THEN 1 ELSE 0 END AS IS_PARTICIPATING
+        FROM CHALLENGES C
+        LEFT JOIN CHALLENGE_TAGS CT ON C.CHALLENGE_ID = CT.CHALLENGE_ID
+        LEFT JOIN TAGS T ON CT.TAG_ID = T.TAG_ID
+        LEFT JOIN USER_CHALLENGES UC ON C.CHALLENGE_ID = UC.CHALLENGE_ID AND UC.USER_ID = #{userId}
+        WHERE C.TARGET_GOAL = #{goal}
+        FETCH FIRST 2 ROWS ONLY
+    </select>
+
+    <select id="findChallengesByPersona" resultMap="ChallengeCardResultMap">
+        SELECT
+        C.CHALLENGE_ID, C.TITLE, C.DESCRIPTION, T.TAG_ID, T.TAG_NAME,
+        CASE WHEN UC.STATUS = 'ONGOING' THEN 1 ELSE 0 END AS IS_PARTICIPATING
+        FROM CHALLENGES C
+        LEFT JOIN CHALLENGE_TAGS CT ON C.CHALLENGE_ID = CT.CHALLENGE_ID
+        LEFT JOIN TAGS T ON CT.TAG_ID = T.TAG_ID
+        LEFT JOIN USER_CHALLENGES UC ON C.CHALLENGE_ID = UC.CHALLENGE_ID AND UC.USER_ID = #{userId}
+        WHERE C.TARGET_PERSONA = #{persona}
+        FETCH FIRST 2 ROWS ONLY
+    </select>
+
+</mapper>

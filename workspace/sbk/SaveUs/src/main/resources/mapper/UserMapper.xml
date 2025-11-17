@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.UserMapper">
+
+    <!-- 유저 회원가입 정보   -->
+    <insert id="insertUser">
+        INSERT INTO USERS (
+        EMAIL,
+        PASSWORD,
+        NICKNAME,
+        BIRTHDATE,
+        HEIGHT,
+        CURRENT_WEIGHT,
+        MAIN_GOAL
+        )
+        VALUES (
+        #{email},
+        #{password},
+        #{nickname},
+        #{birthdate},
+        #{height},
+        #{currentWeight},
+        #{mainGoal}
+        )
+    </insert>
+
+    <!-- 이메일 중복 체크 -->
+    <select id="countByEmail" resultType="int">
+        SELECT COUNT(*)
+        FROM USERS
+        WHERE EMAIL = #{email}
+    </select>
+
+    <!-- 로그인: 이메일로 회원 정보 조회 -->
+    <select id="findByEmail"
+            parameterType="string"
+            resultType="com.example.Ex02.dto.UserDto">
+
+        SELECT
+        USER_ID,
+        EMAIL,
+        PASSWORD AS password,
+        NICKNAME,
+        BIRTHDATE,
+        HEIGHT,
+        CURRENT_WEIGHT,
+        MAIN_GOAL
+        FROM USERS
+        WHERE EMAIL = #{email}
+
+    </select>
+    <select id="findById" parameterType="long" resultType="com.example.Ex02.dto.UserDto">
+        SELECT *
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
+
+</mapper>
