@@ -1,146 +1,138 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <title>회원가입 - SaveUs</title>
-
     <link rel="stylesheet" th:href="@{/css/userInsert.css}">
-    <script th:src="@{/js/user.js}"></script>
 </head>
 
 <body>
 
 <div class="signup-container">
 
-    <div class="signup-left">
+    <h1>Create an account</h1>
 
-        <h1>Create an account</h1>
+    <form th:action="@{/user/insert}" th:object="${userDto}" method="post">
 
-        <form th:action="@{/user/insert}"
-              th:object="${userDto}"
-              method="post"
-              id="userJoinForm"
-              onsubmit="return validateForm()">
+        <!-- 이메일 -->
+        <div class="form-row">
+            <label>이메일</label>
+            <div class="email-row">
+                <!-- 이메일 ID -->
+                <input type="text" id="emailId" placeholder="이메일 아이디"
+                       oninput="updateEmail(); resetEmailCheck();">
 
-            <!-- 이메일 -->
-            <div class="row">
-                <label>이메일</label>
-                <div class="row-input email-domain-row">
+                <span>@</span>
 
-                    <input type="text"
-                           id="emailId"
-                           placeholder="이메일 아이디"
-                           oninput="resetEmailCheck(); validateInput('emailId')">
+                <!-- 도메인 -->
+                <select id="emailDomain" onchange="updateEmail(); resetEmailCheck();">
+                    <option value="">선택</option>
+                    <option value="naver.com">naver.com</option>
+                    <option value="gmail.com">gmail.com</option>
+                    <option value="daum.net">daum.net</option>
+                </select>
 
-                    <span>@</span>
-
-                    <select id="emailDomain"
-                            onchange="resetEmailCheck(); validateInput('emailId')">
-                        <option value="">선택</option>
-                        <option value="gmail.com">gmail.com</option>
-                        <option value="naver.com">naver.com</option>
-                        <option value="daum.net">daum.net</option>
-                    </select>
-
-                    <button type="button" class="btn-email" onclick="checkEmail()">중복확인</button>
-                </div>
+                <button type="button" class="btn-email" onclick="checkEmail()">중복확인</button>
             </div>
-
             <div class="row-error" id="emailCheckResult"></div>
-
             <input type="hidden" id="emailInput" th:field="*{email}">
 
-            <!-- 비밀번호 -->
-            <div class="row">
-                <label>비밀번호</label>
-                <div class="row-input">
-                    <input type="password"
-                           id="password"
-                           th:field="*{password}"
-                           placeholder="비밀번호 입력"
-                           oninput="validateInput('password')">
-                </div>
-            </div>
-            <div class="row-error" id="passwordError"></div>
+            <p th:if="${#fields.hasErrors('email')}"
+               th:errors="*{email}" class="error"></p>
+        </div>
 
-            <!-- 닉네임 -->
-            <div class="row">
-                <label>닉네임</label>
-                <div class="row-input">
-                    <input type="text"
-                           id="nickname"
-                           th:field="*{nickname}"
-                           placeholder="닉네임 입력"
-                           oninput="validateInput('nickname')">
-                </div>
-            </div>
-            <div class="row-error" id="nicknameError"></div>
+        <!-- 비밀번호 -->
+        <div class="form-row">
+            <label>비밀번호</label>
+            <input type="password" th:field="*{password}">
+            <p th:if="${#fields.hasErrors('password')}"
+               th:errors="*{password}" class="error"></p>
+        </div>
 
-            <!-- 생년월일 -->
-            <div class="row">
+        <!-- 닉네임 -->
+        <div class="form-row">
+            <label>닉네임</label>
+            <input type="text" th:field="*{nickname}">
+            <p th:if="${#fields.hasErrors('nickname')}"
+               th:errors="*{nickname}" class="error"></p>
+        </div>
+
+        <!-- 생년월일 + 나이 -->
+        <div class="form-row row-2col">
+            <div class="half-box">
                 <label>생년월일</label>
-                <div class="row-input">
-                    <input type="date"
-                           id="birthdate"
-                           th:field="*{birthdate}"
-                           oninput="validateInput('birthdate')">
-                </div>
+                <input type="date" id="birthdate" th:field="*{birthdate}">
+                <p th:if="${#fields.hasErrors('birthdate')}"
+                   th:errors="*{birthdate}" class="error"></p>
             </div>
-            <div class="row-error" id="birthdateError"></div>
 
-            <!-- 키 -->
-            <div class="row">
-                <label>키(cm)</label>
-                <div class="row-input">
-                    <input type="text"
-                           id="height"
-                           th:field="*{height}"
-                           placeholder="예: 170"
-                           oninput="this.value=this.value.replace(/[^0-9]/g,''); validateInput('height')">
-                </div>
+            <div class="half-box">
+                <label>나이</label>
+                <input type="number" id="age" th:field="*{age}" readonly>
+                <p th:if="${#fields.hasErrors('age')}"
+                   th:errors="*{age}" class="error"></p>
             </div>
-            <div class="row-error" id="heightError"></div>
+        </div>
 
-            <!-- 체중 -->
-            <div class="row">
-                <label>체중(kg)</label>
-                <div class="row-input">
-                    <input type="text"
-                           id="currentWeight"
-                           th:field="*{currentWeight}"
-                           placeholder="예: 65"
-                           oninput="this.value=this.value.replace(/[^0-9]/g,''); validateInput('currentWeight')">
-                </div>
+        <!-- 성별 -->
+        <div class="form-row">
+            <label>성별</label>
+            <div class="select-box-group">
+                <label class="select-box">
+                    <input type="radio" value="M" th:field="*{gender}">
+                    <span>남성</span>
+                </label>
+                <label class="select-box">
+                    <input type="radio" value="F" th:field="*{gender}">
+                    <span>여성</span>
+                </label>
             </div>
-            <div class="row-error" id="weightError"></div>
+            <p th:if="${#fields.hasErrors('gender')}"
+               th:errors="*{gender}" class="error"></p>
+        </div>
 
-            <!-- 목표 -->
-            <div class="row">
-                <label>목표</label>
-                <div class="row-input goal-box">
+        <!-- 키 -->
+        <div class="form-row">
+            <label>키 (cm)</label>
+            <input type="number" th:field="*{height}">
+            <p th:if="${#fields.hasErrors('height')}"
+               th:errors="*{height}" class="error"></p>
+        </div>
 
-                    <input type="radio" id="goal0" name="mainGoal" value="0" th:field="*{mainGoal}">
-                    <label for="goal0" class="goal-option">감량</label>
+        <!-- 몸무게 -->
+        <div class="form-row">
+            <label>몸무게 (kg)</label>
+            <input type="number" th:field="*{currentWeight}">
+            <p th:if="${#fields.hasErrors('currentWeight')}"
+               th:errors="*{currentWeight}" class="error"></p>
+        </div>
 
-                    <input type="radio" id="goal1" name="mainGoal" value="1" th:field="*{mainGoal}">
-                    <label for="goal1" class="goal-option">증량</label>
-
-                    <input type="radio" id="goal2" name="mainGoal" value="2" th:field="*{mainGoal}">
-                    <label for="goal2" class="goal-option">건강식</label>
-
-                </div>
+        <!-- 목표 -->
+        <div class="form-row">
+            <label>목표</label>
+            <div class="select-box-group">
+                <label class="select-box">
+                    <input type="radio" value="0" th:field="*{mainGoal}">
+                    <span>감량</span>
+                </label>
+                <label class="select-box">
+                    <input type="radio" value="1" th:field="*{mainGoal}">
+                    <span>증량</span>
+                </label>
+                <label class="select-box">
+                    <input type="radio" value="2" th:field="*{mainGoal}">
+                    <span>건강식</span>
+                </label>
             </div>
-            <div class="row-error" id="goalError"></div>
+            <p th:if="${#fields.hasErrors('mainGoal')}"
+               th:errors="*{mainGoal}" class="error"></p>
+        </div>
 
-            <button type="submit" class="btn-join">회원가입</button>
+        <button type="submit">회원가입</button>
 
-        </form>
-    </div>
-
-    <div class="signup-right"></div>
-
+    </form>
 </div>
 
+<script th:src="@{/js/userJoin.js}"></script>
 </body>
 </html>
