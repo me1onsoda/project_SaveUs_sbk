@@ -100,3 +100,21 @@ form {
 .submit-area button:hover {
     opacity: 0.9;
 }
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* 로고와 글자 사이 간격 */
+    margin-bottom: 30px;
+}
+
+.logo-area img {
+    width: 60px;   /* 로고 크기 조절 가능 */
+    height: 60px;
+}
+
+.logo-area h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+}

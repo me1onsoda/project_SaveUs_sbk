@@ -8,36 +8,54 @@ import org.springframework.stereotype.Service;
 @Service
 public class SurveyService {
 
-    @Autowired
-    private SurveyMapper surveyMapper;
+    public void evaluateSurvey(SurveyDto dto) {
 
-    public void processSurvey(SurveyDto dto, Long userId) {
+        int proteinScore = dto.getProtein1() + dto.getProtein2() + dto.getProtein3();
+        int fatScore = dto.getFat1() + dto.getFat2() + dto.getFat3();
+        int carbScore = dto.getCarb1() + dto.getCarb2() + dto.getCarb3();
 
-        String fatType = calcFat(dto);
-        String proteinType = calcProtein(dto);
-        String carbType = calcCarb(dto);
-
-        surveyMapper.insertSurveyResult(userId, fatType, proteinType, carbType);
+        dto.setProteinType(getTypeWithLabel(proteinScore, "단백"));
+        dto.setFatType(getTypeWithLabel(fatScore, "지방"));
+        dto.setCarbType(getTypeWithLabel(carbScore, "탄수"));
     }
 
-    public String calcFat(SurveyDto dto) {
-        int score = dto.getQ1() + dto.getQ2();
-        return type(score);
+    private String getTypeBase(int score) {
+
+        if (score <= 7) {
+            return "저";
+        }
+        if (score == 9) {
+            return "균형형";
+        }
+        if (score <= 11) {
+            return "중";
+        }
+        return "고";
     }
 
-    public String calcProtein(SurveyDto dto) {
-        int score = dto.getQ3() + dto.getQ4();
-        return type(score);
+    private String getTypeWithLabel(int score, String label) {
+        String base = getTypeBase(score);
+
+        if (base.equals("균형형")) {
+            return "균형형";
+        }
+
+        return base + label;
     }
 
-    public String calcCarb(SurveyDto dto) {
-        int score = dto.getQ5() + dto.getQ6() + dto.getQ7();
-        return type(score);
-    }
+    // 최종 식단 유형 문자열 생성
+    public String getDietType(SurveyDto dto) {
 
-    private String type(int score) {
-        if (score <= 3) return "LOW";
-        else if (score <= 5) return "MID";
-        else return "HIGH";
+        String p = dto.getProteinType(); // 고단백 / 저단백 / 균형형…
+        String f = dto.getFatType();     // 고지방 / 저지방 / 균형형…
+        String c = dto.getCarbType();    // 고탄수 / 중탄수 / 균형형…
+
+        // 세 가지 모두 균형형이면
+        if (p.equals("균형형") && f.equals("균형형") && c.equals("균형형")) {
+            return "완전 균형형 식단";
+        }
+
+        // 그 외 조합은 모두 표시
+        return p + " / " + f + " / " + c;
     }
 }

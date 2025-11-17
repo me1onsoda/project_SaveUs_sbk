@@ -149,11 +149,30 @@ input:focus {
     font-size: 15px;
     cursor: pointer;
 }
+.signup-link {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
 
-.google {
+/* inline-block으로 hover hitbox 축소 */
+.signup-link a {
+    display: inline-block;
+    padding: 2px 4px;     /* 너무 좁아 보이지 않도록 약간만 여백 */
+    color: #1ABC9C;
+    text-decoration: none;
     font-weight: 600;
 }
 
-.apple {
-    font-weight: 600;
+/* hover 시 텍스트 아래만 밑줄 */
+.signup-link a:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;   /* 밑줄 내려오기 방지 */
+}
+
+.signup-link span {
+    color: #bbb;
+    padding: 0 4px;
+    user-select: none;
 }

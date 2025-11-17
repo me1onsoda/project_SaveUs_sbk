@@ -1,77 +1,164 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout}">
 
 <head>
-    <meta charset="UTF-8">
-    <title>SaveUs - My Page</title>
-    <link rel="stylesheet" th:href="@{/css/layout.css}">
-    <link rel="stylesheet" th:href="@{/css/myPage.css}">
+<meta charset="UTF-8">
+<title>My Page</title>
+<link rel="stylesheet" th:href="@{/css/myPage.css}">
 </head>
 
 <main layout:fragment="content">
 
-    <h2 class="section-title">My Page & Settings</h2>
+<!-- user null → 로그인 이동 -->
+<th:block th:if="${user == null}">
+    <script>
+        alert("로그인이 필요합니다.");
+        location.href = "/login";
+    </script>
+</th:block>
 
-    <!-- 프로필 영역 -->
-    <section class="profile-section">
-        <div class="profile-card">
-            <div class="profile-banner"></div>
 
-            <div class="profile-inner">
-                <img class="profile-img" src="/images/user-default.png" alt="User">
+<!-- 페이지 제목 -->
+<h2 class="mypage-title">My Page & Settings</h2>
 
-                <div class="profile-info">
-                    <h3 class="profile-name">사용자 닉네임</h3>
-                    <span class="profile-type">Balanced Explorer</span>
 
-                    <p class="profile-email">email@example.com</p>
-                    <p class="profile-date">Member since: 2025</p>
-                </div>
+<!-- 프로필 카드 -->
+<section class="profile-section">
+    <div class="profile-card">
 
-                <button class="profile-edit-btn"
-                        onclick="location.href='/my-page/edit'">프로필 수정</button>
+        <div class="profile-banner"></div>
+
+        <div class="profile-inner">
+
+            <!-- 프로필 이미지 -->
+            <img class="profile-img"
+                 th:src="${(user.profileImageUrl != null && user.profileImageUrl != '')
+                     ? user.profileImageUrl
+                     : '/images/user-default.png'}"
+                 alt="user">
+
+            <div class="profile-info">
+                <h3 class="profile-name" th:text="${user.nickname}">닉네임</h3>
+
+                <!-- Goal 태그 (1번 위치) -->
+                <span class="persona-tag">
+                    <span>목표 : </span>
+                    <span th:switch="${user.mainGoal}">
+                        <span th:case="0">감량</span>
+                        <span th:case="1">증량</span>
+                        <span th:case="2">건강식</span>
+                        <span th:case="*">목표 없음</span>
+                    </span>
+                </span>
+
+                <!-- 성별 -->
+                <p>
+                    성별 :
+                    <span th:text="${user.gender == 'M' ? '남성' : '여성'}"></span>
+                </p>
+
+                <!-- 이메일 -->
+                <p>이메일 : <span th:text="${user.email}"></span></p>
+
+                <!-- 식단 유형 (survey 결과) -->
+                <p>
+                    식단 유형:
+                    <span class="persona-tag" style="background:#66c4ff;">
+                    <span th:text="${dietType != null ? dietType : '미분석'}"></span>
+                </span>
+                </p>
+
+                <!-- 가입일 -->
+                <p>
+                    가입일:
+                <span th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}"></span>
+                </p>
             </div>
-        </div>
-    </section>
 
-    <!-- 업적 -->
-    <section class="badge-section">
-        <h3 class="content-title">My Achievements</h3>
-        <div class="badge-container">
-            <div class="badge-card">Veggie Vanguard</div>
-            <div class="badge-card">Macro Master</div>
-            <div class="badge-card">Sugar Slayer</div>
-            <div class="badge-card">Diet Virtuoso</div>
-        </div>
-    </section>
 
-    <!-- 진행중인 챌린지 -->
-    <section class="challenge-section">
-        <h3 class="content-title">Active Challenges</h3>
-        <div class="challenge-container">
-            <div class="challenge-card">
-                <h4>30-Day Sugar Detox</h4>
-                <p>7일 남음</p>
-                <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+            <!-- 편집 버튼  -->
+            <button class="btn-edit" onclick="location.href='/profile/edit'">프로필 수정</button>
+        </div>
+    </div>
+</section>
+
+
+
+
+<!-- Badges Section -->
+<section class="badge-section">
+    <h3>뱃지</h3>
+    <div class="badge-list">
+        <div class="badge-card">
+            <img src="/images/icon/veg.png" alt="">
+            <h4>Veggie Vanguard</h4>
+            <p>Included greens in every meal for a week</p>
+        </div>
+
+        <div class="badge-card">
+            <img src="/images/icon/macro.png" alt="">
+            <h4>Macro Master</h4>
+            <p>Hit protein goal 5 days in a row</p>
+        </div>
+
+        <div class="badge-card">
+            <img src="/images/icon/sugar.png" alt="">
+            <h4>Sugar Slayer</h4>
+            <p>Reduced sugar intake</p>
+        </div>
+
+        <div class="badge-card">
+            <img src="/images/icon/diet.png" alt="">
+            <h4>Diet Virtuoso</h4>
+            <p>Secured weight success with balanced eating</p>
+        </div>
+
+    </div>
+</section>
+
+
+
+<!-- Active Challenges -->
+<section class="challenge-section">
+    <h3>활동중인 챌린지</h3>
+
+    <div class="challenge-list">
+
+        <div class="challenge-card">
+            <h4>30-Day Sugar Detox</h4>
+            <span>7 days left</span>
+            <p>Eliminate added sugars for a month.</p>
+
+            <div class="progress-bar">
+                <div class="fill" style="width: 75%;"></div>
             </div>
-            <div class="challenge-card">
-                <h4>Veggie Vanguard</h4>
-                <p>18일 남음</p>
-                <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
-            </div>
+            <p class="percent">75% Complete</p>
         </div>
-    </section>
 
-    <!-- 계정 설정 -->
-    <section class="account-section">
-        <h3 class="content-title">Account Actions</h3>
-        <div class="account-btns">
-            <button class="logout-btn">로그아웃</button>
-            <button class="delete-btn">회원탈퇴</button>
+        <div class="challenge-card">
+            <h4>Veggie Vanguard</h4>
+            <span>18 days left</span>
+            <p>Included greens every meal for 7 days straight.</p>
+
+            <div class="progress-bar">
+                <div class="fill" style="width: 40%;"></div>
+            </div>
+            <p class="percent">40% Complete</p>
         </div>
-    </section>
+
+    </div>
+</section>
+
+<!-- 계정 액션 -->
+<section class="account-section">
+    <h3>Account Actions</h3>
+
+    <button class="btn-logout" onclick="location.href='/logout'">로그아웃</button>
+    <button class="btn-delete">회원 탈퇴</button>
+</section>
+
 
 </main>
 </html>
