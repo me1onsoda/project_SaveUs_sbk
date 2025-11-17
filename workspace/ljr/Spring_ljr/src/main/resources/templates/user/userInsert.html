@@ -12,9 +12,8 @@
 
     <h1>Create an account</h1>
 
-    <form th:action="@{/user/insert}" th:object="${userDto}" method="post">
-
-        <!-- 이메일 -->
+    <form th:action="@{/user/insert}" th:object="${userDto}" method="post" onsubmit="return validateForm()">
+    <!-- 이메일 -->
         <div class="form-row">
             <label>이메일</label>
             <div class="email-row">
@@ -52,9 +51,8 @@
         <!-- 닉네임 -->
         <div class="form-row">
             <label>닉네임</label>
-            <input type="text" th:field="*{nickname}">
-            <p th:if="${#fields.hasErrors('nickname')}"
-               th:errors="*{nickname}" class="error"></p>
+            <input type="text" id="nicknameInput" th:field="*{nickname}" maxlength="12">
+            <p id="nicknameCheckResult" class="error"></p>
         </div>
 
         <!-- 생년월일 + 나이 -->
@@ -94,7 +92,7 @@
         <!-- 키 -->
         <div class="form-row">
             <label>키 (cm)</label>
-            <input type="number" th:field="*{height}">
+            <input type="number" th:field="*{height}" min="1" max="250">
             <p th:if="${#fields.hasErrors('height')}"
                th:errors="*{height}" class="error"></p>
         </div>
@@ -102,7 +100,7 @@
         <!-- 몸무게 -->
         <div class="form-row">
             <label>몸무게 (kg)</label>
-            <input type="number" th:field="*{currentWeight}">
+            <input type="number" th:field="*{currentWeight}" min="1" max="300">
             <p th:if="${#fields.hasErrors('currentWeight')}"
                th:errors="*{currentWeight}" class="error"></p>
         </div>

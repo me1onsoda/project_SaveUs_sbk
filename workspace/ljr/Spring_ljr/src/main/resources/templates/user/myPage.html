@@ -10,19 +10,8 @@
 </head>
 
 <main layout:fragment="content">
-
-<!-- user null → 로그인 이동 -->
-<th:block th:if="${user == null}">
-    <script>
-        alert("로그인이 필요합니다.");
-        location.href = "/login";
-    </script>
-</th:block>
-
-
 <!-- 페이지 제목 -->
-<h2 class="mypage-title">My Page & Settings</h2>
-
+<h2 class="mypage-title">마이페이지</h2>
 
 <!-- 프로필 카드 -->
 <section class="profile-section">
@@ -44,7 +33,6 @@
 
                 <!-- Goal 태그 (1번 위치) -->
                 <span class="persona-tag">
-                    <span>목표 : </span>
                     <span th:switch="${user.mainGoal}">
                         <span th:case="0">감량</span>
                         <span th:case="1">증량</span>
@@ -52,6 +40,11 @@
                         <span th:case="*">목표 없음</span>
                     </span>
                 </span>
+                <!-- 식단 유형 (survey 결과) -->
+                <span class="persona-tag" style="background:#66c4ff;">
+                    <span th:text="${dietType != null ? dietType : '미분석'}"></span>
+                </span>
+
 
                 <!-- 성별 -->
                 <p>
@@ -62,18 +55,11 @@
                 <!-- 이메일 -->
                 <p>이메일 : <span th:text="${user.email}"></span></p>
 
-                <!-- 식단 유형 (survey 결과) -->
-                <p>
-                    식단 유형:
-                    <span class="persona-tag" style="background:#66c4ff;">
-                    <span th:text="${dietType != null ? dietType : '미분석'}"></span>
-                </span>
-                </p>
 
                 <!-- 가입일 -->
                 <p>
-                    가입일:
-                <span th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}"></span>
+                    가입일 :
+                    <span th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd') : '-'}"></span>
                 </p>
             </div>
 
@@ -84,81 +70,83 @@
     </div>
 </section>
 
-
-
-
 <!-- Badges Section -->
 <section class="badge-section">
-    <h3>뱃지</h3>
+    <h3>획득 뱃지</h3>
     <div class="badge-list">
         <div class="badge-card">
-            <img src="/images/icon/veg.png" alt="">
-            <h4>Veggie Vanguard</h4>
-            <p>Included greens in every meal for a week</p>
+            <img src="/images/icon/challenges.png" alt="">
+            <h4>뱃지 이름</h4>
+            <p>뱃지 설명이 표시됩니다.</p>
         </div>
 
         <div class="badge-card">
-            <img src="/images/icon/macro.png" alt="">
-            <h4>Macro Master</h4>
-            <p>Hit protein goal 5 days in a row</p>
+            <img src="/images/icon/challenges.png" alt="">
+            <h4>뱃지 이름</h4>
+            <p>뱃지 설명이 표시됩니다.</p>
         </div>
 
         <div class="badge-card">
-            <img src="/images/icon/sugar.png" alt="">
-            <h4>Sugar Slayer</h4>
-            <p>Reduced sugar intake</p>
+            <img src="/images/icon/challenges.png" alt="">
+            <h4>뱃지 이름</h4>
+            <p>뱃지 설명이 표시됩니다.</p>
         </div>
 
         <div class="badge-card">
-            <img src="/images/icon/diet.png" alt="">
-            <h4>Diet Virtuoso</h4>
-            <p>Secured weight success with balanced eating</p>
+            <img src="/images/icon/challenges.png" alt="">
+            <h4>뱃지 이름</h4>
+            <p>뱃지 설명이 표시됩니다.</p>
         </div>
 
     </div>
 </section>
 
-
-
-<!-- Active Challenges -->
+<!-- 하단 활동중인 챌린지 진행상황 -->
 <section class="challenge-section">
-    <h3>활동중인 챌린지</h3>
+    <h3>진행 중인 챌린지</h3>
 
     <div class="challenge-list">
 
         <div class="challenge-card">
-            <h4>30-Day Sugar Detox</h4>
-            <span>7 days left</span>
-            <p>Eliminate added sugars for a month.</p>
+            <h4>챌린지 제목</h4>
+            <span>남은 기간 7일 </span>
+            <p>한 달 동안 추가 당 섭취 줄이기</p>
 
             <div class="progress-bar">
                 <div class="fill" style="width: 75%;"></div>
             </div>
-            <p class="percent">75% Complete</p>
+            <p class="percent">75% 완료!</p>
         </div>
 
         <div class="challenge-card">
-            <h4>Veggie Vanguard</h4>
-            <span>18 days left</span>
-            <p>Included greens every meal for 7 days straight.</p>
+            <h4>챌린지 제목</h4>
+            <span>남은 기간 18일</span>
+            <p>일주일 동안 매끼 채소 포함하기</p>
 
             <div class="progress-bar">
                 <div class="fill" style="width: 40%;"></div>
             </div>
-            <p class="percent">40% Complete</p>
+            <p class="percent">40% 완료!</p>
         </div>
 
     </div>
 </section>
 
-<!-- 계정 액션 -->
+<!-- 로그아웃 & 회원탈퇴 -->
 <section class="account-section">
-    <h3>Account Actions</h3>
+    <h3>계정 관리</h3>
 
     <button class="btn-logout" onclick="location.href='/logout'">로그아웃</button>
-    <button class="btn-delete">회원 탈퇴</button>
+    <button class="btn-delete" onclick="deleteAccount()">회원 탈퇴</button>
 </section>
 
 
+<script src="/js/mypage.js"></script>
+
+<th:block th:if="${user == null}">
+    <script>
+        requireLogin();
+    </script>
+</th:block>
 </main>
 </html>

@@ -5,24 +5,29 @@
 
 <mapper namespace="com.example.Ex02.mapper.SurveyMapper">
 
-    <!-- 설문 원본 + 유형 INSERT -->
-    <insert id="insertSurvey">
-        INSERT INTO SURVEY_RESULT
-        (USER_ID, Q1, Q2, Q3, Q4, Q5, Q6, Q7,
-        FAT_TYPE, PROTEIN_TYPE, CARB_TYPE)
-        VALUES
-        (#{userId},
-        #{survey.q1}, #{survey.q2}, #{survey.q3},
-        #{survey.q4}, #{survey.q5}, #{survey.q6}, #{survey.q7},
-        #{fatType}, #{proteinType}, #{carbType})
+    <!-- 설문 결과 저장 -->
+    <insert id="saveSurveyResult">
+        MERGE INTO USER_DIET_TYPE t
+        USING (SELECT #{userId} AS USER_ID FROM dual) s
+        ON (t.USER_ID = s.USER_ID)
+
+        WHEN MATCHED THEN
+        UPDATE SET
+        PROTEIN_TYPE = #{dto.proteinType},
+        FAT_TYPE     = #{dto.fatType},
+        CARB_TYPE    = #{dto.carbType},
+        DIET_TYPE    = #{dietType},
+        UPDATED_AT   = SYSTIMESTAMP
+
+        WHEN NOT MATCHED THEN
+        INSERT (USER_ID, PROTEIN_TYPE, FAT_TYPE, CARB_TYPE, DIET_TYPE)
+        VALUES (#{userId}, #{dto.proteinType}, #{dto.fatType}, #{dto.carbType}, #{dietType})
     </insert>
 
-    <!-- 사용자 설문 조회 -->
-    <select id="findByUserId" resultType="com.example.Ex02.dto.SurveyDto">
-        SELECT
-        Q1, Q2, Q3, Q4, Q5, Q6, Q7,
-        FAT_TYPE, PROTEIN_TYPE, CARB_TYPE
-        FROM SURVEY_RESULT
+    <!-- 마이페이지에서 식단 유형 조회 -->
+    <select id="findDietType" resultType="String">
+        SELECT DIET_TYPE
+        FROM USER_DIET_TYPE
         WHERE USER_ID = #{userId}
     </select>
 

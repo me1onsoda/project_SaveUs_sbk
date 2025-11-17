@@ -14,7 +14,12 @@
         <result column="CURRENT_WEIGHT" property="currentWeight"/>
         <result column="MAIN_GOAL" property="mainGoal"/>
         <result column="PROFILE_IMAGE_URL" property="profileImageUrl"/>
+        <result column="BIRTHDATE" property="birthdate"/>
+        <result column="AGE" property="age"/>
+        <result column="GENDER" property="gender"/>
+        <result column="CREATED_AT" property="createdAt"/>
     </resultMap>
+
     <!-- 회원가입 -->
     <insert id="insertUser" parameterType="com.example.Ex02.dto.UserJoinDto">
 
@@ -30,22 +35,103 @@
 
     <!-- 이메일로 조회 -->
     <select id="findByEmail" resultMap="userMap">
-        SELECT *
+        SELECT
+        USER_ID,
+        EMAIL,
+        PASSWORD,
+        NICKNAME,
+        HEIGHT,
+        CURRENT_WEIGHT,
+        MAIN_GOAL,
+        PROFILE_IMAGE_URL,
+        TO_CHAR(BIRTHDATE, 'YYYY-MM-DD') AS BIRTHDATE,
+        AGE,
+        GENDER,
+        CREATED_AT
         FROM USERS
         WHERE EMAIL = #{email}
     </select>
 
     <!-- ID로 조회 -->
     <select id="findById" resultMap="userMap">
-        SELECT *
+        SELECT
+        USER_ID,
+        EMAIL,
+        PASSWORD,
+        NICKNAME,
+        HEIGHT,
+        CURRENT_WEIGHT,
+        MAIN_GOAL,
+        PROFILE_IMAGE_URL,
+        TO_CHAR(BIRTHDATE, 'YYYY-MM-DD') AS BIRTHDATE,
+        AGE,
+        GENDER,
+        CREATED_AT
         FROM USERS
         WHERE USER_ID = #{userId}
     </select>
+
+    <!-- 닉네임 중복 체크 -->
+    <select id="countByNickname" resultType="int">
+        SELECT COUNT(*)
+        FROM USERS
+        WHERE NICKNAME = #{nickname}
+    </select>
+
 
     <!-- 이메일 중복 체크 -->
     <select id="countByEmail" resultType="int">
         SELECT COUNT(*) FROM USERS WHERE EMAIL = #{email}
     </select>
 
+    <!--회원 탈퇴 -->
+    <delete id="deleteUser">
+        DELETE FROM USERS
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!--회원 정보 수정-->
+    <update id="updateUser" parameterType="com.example.Ex02.dto.UserJoinDto">
+        UPDATE USERS
+        SET
+        HEIGHT          = #{height},
+        CURRENT_WEIGHT  = #{currentWeight},
+        MAIN_GOAL       = #{mainGoal},
+        PROFILE_IMAGE_URL = #{profileImageUrl}
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <!-- 비밀번호 변경 (현재 비밀번호 체크 후 변경) -->
+    <select id="checkPassword" resultType="int">
+        SELECT COUNT(*)
+        FROM USERS
+        WHERE USER_ID = #{userId}
+        AND PASSWORD = #{currentPassword}
+    </select>
+
+    <update id="updatePassword">
+        UPDATE USERS
+        SET PASSWORD = #{newPassword}
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <!-- 다른 사람 프로필 조회 -->
+    <select id="findMainInfo" resultMap="userMap">
+        SELECT
+        USER_ID,
+        EMAIL,
+        PASSWORD,
+        NICKNAME,
+        HEIGHT,
+        CURRENT_WEIGHT,
+        MAIN_GOAL,
+        PROFILE_IMAGE_URL,
+        TO_CHAR(BIRTHDATE, 'YYYY-MM-DD') AS BIRTHDATE,
+        AGE,
+        GENDER,
+        CREATED_AT
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
 
 </mapper>

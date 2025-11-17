@@ -1,11 +1,9 @@
 package com.example.Ex02.controller;
 
-import com.example.Ex02.dto.SurveyDto;
 import com.example.Ex02.dto.UserJoinDto;
 import com.example.Ex02.dto.UserLoginDto;
 import com.example.Ex02.mapper.SurveyMapper;
 import com.example.Ex02.mapper.UserMapper;
-import com.example.Ex02.service.SurveyService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.File;
+import java.util.UUID;
 
 @Controller
 public class UserController {
@@ -23,9 +25,6 @@ public class UserController {
 
     @Autowired
     private SurveyMapper surveyMapper;
-
-    @Autowired
-    private SurveyService surveyService;
 
     // 회원가입 페이지 이동
     @GetMapping("/join")
@@ -44,71 +43,26 @@ public class UserController {
             return "user/userInsert";
         }
 
-        // DB에 INSERT (userId는 MyBatis에서 keyProperty로 채워져야 함)
         userMapper.insertUser(userJoinDto);
 
-        // userId가 정상적으로 들어왔는지 확인
-        System.out.println("회원가입 후 생성된 userId = " + userJoinDto.getUserId());
-
-        // 세션 저장
         session.setAttribute("userId", userJoinDto.getUserId());
         session.setAttribute("loginUser", userJoinDto);
 
-        return "redirect:/survey"; // 필요하면 survey로 변경
+        return "redirect:/survey";
     }
 
     // 이메일 중복확인
     @GetMapping("/user/checkEmail")
     @ResponseBody
     public String checkEmail(@RequestParam("email") String email) {
-        int cnt = userMapper.countByEmail(email);
-        return cnt > 0 ? "duplicate" : "ok";
+        return userMapper.countByEmail(email) > 0 ? "duplicate" : "ok";
     }
 
-    // 설문 페이지
-    @GetMapping("/survey")
-    public String surveyPage(@ModelAttribute("surveyDto")SurveyDto surveyDto, HttpSession session, Model model) {
-
-        Long userId = (Long) session.getAttribute("userId");
-
-        // 회원가입/로그인 안 했으면 접근 불가
-        if (userId == null) {
-            return "redirect:/login";
-        }
-        return "survey/surveyForm";   // templates/survey/surveyForm.html
-    }
-
-    // 설문지 결과
-    @PostMapping("/survey/submit")
-    public String submitSurvey(@Valid @ModelAttribute("surveyDto") SurveyDto surveyDto,
-                               BindingResult bindingResult,
-                               HttpSession session,
-                               Model model) {
-
-        Long userId = (Long) session.getAttribute("userId");
-
-        // 비정상 접근 방지
-        if (userId == null) {
-            return "redirect:/login";
-        }
-
-        // 문항 체크 안 했을 때
-        if (bindingResult.hasErrors()) {
-            return "survey/surveyForm";
-        }
-
-        // 설문지 점수계산
-        surveyService.evaluateSurvey(surveyDto);
-        // 결과 페이지로 전달
-        UserJoinDto user = userMapper.findById(userId);
-        model.addAttribute("nickname", user.getNickname());
-        model.addAttribute("result", surveyDto);
-
-        String dietType = surveyService.getDietType(surveyDto);
-        session.setAttribute("dietType", dietType);
-        model.addAttribute("dietType", dietType);
-
-        return "survey/surveyResult";
+    // 닉네임 중복확인
+    @GetMapping("/user/checkNickname")
+    @ResponseBody
+    public String checkNickname(@RequestParam("nickname") String nickname) {
+        return userMapper.countByNickname(nickname) > 0 ? "duplicate" : "ok";
     }
 
     // 로그인 페이지
@@ -125,23 +79,13 @@ public class UserController {
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        // 로그인 DTO의 이메일로 조회
         UserJoinDto user = userMapper.findByEmail(userLoginDto.getEmail());
-        System.out.println("조회된 유저: " + user);
 
-        // 아이디 없음
-        if (user == null) {
+        if (user == null || !user.getPassword().equals(userLoginDto.getPassword())) {
             redirectAttributes.addFlashAttribute("loginError", "이메일 또는 비밀번호가 일치하지 않습니다.");
             return "redirect:/login";
         }
 
-        // 비밀번호 불일치
-        if (!user.getPassword().equals(userLoginDto.getPassword())) {
-            redirectAttributes.addFlashAttribute("loginError", "이메일 또는 비밀번호가 일치하지 않습니다.");
-            return "redirect:/login";
-        }
-
-        // 로그인 성공 > 세션 저장
         session.setAttribute("userId", user.getUserId());
         session.setAttribute("loginUser", user);
 
@@ -153,41 +97,152 @@ public class UserController {
     public String myPage(HttpSession session, Model model) {
 
         Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
 
-        // 로그인 안 되어 있을 때
-        if (userId == null) {
-            return "redirect:/login";
-        }
-
-        // 사용자 정보 조회
         UserJoinDto user = userMapper.findById(userId);
         model.addAttribute("user", user);
 
-        // 세션에 저장된 식단유형을 모델에 추가
-        String dietType = (String) session.getAttribute("dietType");
+        String dietType = surveyMapper.findDietType(userId);
         model.addAttribute("dietType", dietType);
 
         return "user/myPage";
     }
 
+    // 프로필 수정 이동
     @GetMapping("/profile/edit")
-    public String editProfilePage(HttpSession session, Model model) {
+    public String editProfilePage(@ModelAttribute("user") UserJoinDto dto,
+                                  HttpSession session, Model model) {
 
         Long userId = (Long) session.getAttribute("userId");
-
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
         UserJoinDto user = userMapper.findById(userId);
         model.addAttribute("user", user);
 
-        return "user/profileEdit";   // ← templates/user/profileEdit.html 로 이동
+        return "user/profileEdit";
     }
 
+    // 프로필 수정
+    @PostMapping("/profile/edit")
+    public String updateProfile(
+            @ModelAttribute("user") UserJoinDto userDto,
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+            HttpSession session
+    ) {
+        Long userId = (Long) session.getAttribute("userId");
+        userDto.setUserId(userId);
+
+        // 기존 이미지 유지
+        UserJoinDto originUser = userMapper.findById(userId);
+
+        try {
+            if (profileImage != null && !profileImage.isEmpty()) {
+
+                String uploadDir = "C:/uploads/profile/";
+                File folder = new File(uploadDir);
+                if (!folder.exists()) folder.mkdirs();
+
+                String fileName = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
+                File filePath = new File(uploadDir + fileName);
+                profileImage.transferTo(filePath);
+
+                String dbPath = "/uploads/profile/" + fileName;
+                userDto.setProfileImageUrl(dbPath);
+            } else {
+                // 🔥 이미지 변경하지 않았다면 기존 이미지 유지
+                userDto.setProfileImageUrl(originUser.getProfileImageUrl());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        userMapper.updateUser(userDto);
+        return "redirect:/my-page";
+    }
+
+    // 로그아웃
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();   // 세션 전체 삭제
+        session.invalidate();
         return "redirect:/login";
     }
+
+    // 회원 탈퇴
+    @PostMapping("/user/delete")
+    public String deleteUser(HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+
+        userMapper.deleteUser(userId);
+        session.invalidate();
+
+        return "redirect:/login";
+    }
+
+    // 비밀번호 변경
+
+    @PostMapping("/profile/password")
+    public String changePassword(
+            @RequestParam("currentPassword") String currentPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("pwError", "새 비밀번호가 일치하지 않습니다.");
+            return "redirect:/profile/edit";
+        }
+
+        int checkPw = userMapper.checkPassword(userId, currentPassword);
+        if (checkPw == 0) {
+            redirectAttributes.addFlashAttribute("pwError", "현재 비밀번호가 일치하지 않습니다.");
+            return "redirect:/profile/edit";
+        }
+
+        userMapper.updatePassword(userId, newPassword);
+
+        redirectAttributes.addFlashAttribute("pwSuccess", "비밀번호가 성공적으로 변경되었습니다.");
+        return "redirect:/profile/edit";
+    }
+
+
+    // 다른 사람의 프로필 조회
+    @GetMapping("/user/profile/{targetUserId}")
+    public String viewOtherProfile(
+            @PathVariable("targetUserId") Long targetUserId,
+            HttpSession session,
+            Model model) {
+
+        Long loginUserId = (Long) session.getAttribute("userId");
+
+        // 로그인 하지 않은 사용자는 로그인 페이지로 이동
+        if (loginUserId == null) {
+            return "redirect:/login";
+        }
+
+        // 대상 유저 정보 조회
+        UserJoinDto profile = userMapper.findMainInfo(targetUserId);
+
+        // 유저가 존재하지 않으면 404 페이지 이동
+        if (profile == null) {
+            return "error/404";
+        }
+
+        // 사용자 프로필 데이터 전달
+        model.addAttribute("profile", profile);
+
+        // 해당 프로필이 본인 것인지 여부
+        model.addAttribute("isOwner", loginUserId.equals(targetUserId));
+
+        // 식단 유형(설문 결과) 로드
+        String dietType = surveyMapper.findDietType(targetUserId);
+        model.addAttribute("dietType", dietType);
+
+        return "user/otherProfile";  
+    }
+
 }
