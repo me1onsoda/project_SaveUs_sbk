@@ -5,6 +5,25 @@
 
 ---
 
+## 목차
+
+1. [구성 개요](#1-구성-개요)  
+2. [서버 실행 준비](#2-서버-실행-준비)  
+   2-1. [의존성 설치](#2-1-의존성-설치)  
+   2-2. [서버 실행](#2-2-서버-실행)  
+3. [FastAPI 엔드포인트 설명](#3-fastapi-엔드포인트-설명)  
+   3-1. [요청](#3-1-요청)  
+   3-2. [응답](#3-2-응답)  
+4. [Java(Spring) 연동 예시](#4-javaspring-연동-예시)  
+   4-1. [컨트롤러 예시](#4-1-컨트롤러-예시)  
+   4-2. [Service 예시](#4-2-service-예시)  
+   4-3. [DTO 예시](#4-3-dto-예시)  
+5. [동작 흐름 요약](#5-동작-흐름-요약)  
+6. [현재 상태](#6-현재-상태)  
+7. [동작 예](#7-동작-예)
+
+---
+
 ## 1. 구성 개요
 
 - 백엔드 서버: Python FastAPI (`main.py`)
@@ -133,15 +152,12 @@ public class TestService {
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);  
   
         String url = "http://localhost:8000/api_test";  
-        ResponseEntity<ResultDto> response = restTemplate.postForEntity(url, request, ResultDto.class);  
-        ResultDto result = response.getBody();  
-        List<TestDto> items = result.getItems();  
-        System.out.println(items);  
+        ResponseEntity<ResultDto> response = restTemplat현
     }  
 }
 ```
 
-### 4-3. DTO 예시 (생성자/setter/getter 생략)
+### 4-3. DTO 예시 (생성자/setter/getter/toString 생략)
 ```java
 // ResultDto.java
   
@@ -152,16 +168,20 @@ public class ResultDto {
 
 // TestDto.java
 
-public class TestDto {
-    private String name;
-    private float kcal;
-    private float carbohydrate;
-    private float protein;
-    private float fat;
-    private MultipartFile file;
-}
+public class TestDto {  
+    private int food_id;  
+    private String food_name;  
+    private String category;  
+    private float calories_kcal;  
+    private float carbs_g;  
+    private float protein_g;  
+    private float fat_g;  
+    private float sugar_g;  
+    private float fiber_g;  
+    private float sodium_mg;  
+    private float calcium_mg;
 ```
-- FastAPI 응답 JSON 키(`name`, `kcal`, `carbohydrate`, `protein`, `fat`)와 DTO 필드명이 매핑됩니다.
+- FastAPI 응답 JSON 키(`food_id`, `food_name`, `category`, ...)와 DTO 필드명이 매핑됩니다.
 - `file` 필드는 업로드용으로 사용하며, 응답에는 포함되지 않습니다.
 
 ---
@@ -191,5 +211,5 @@ public class TestDto {
 
 ## 7. 동작 예
 
-`[TestDto{carbohydrate=0.0, name='김밥 1줄', kcal=450.0, protein=7.0, fat=8.0, file=null}, TestDto{carbohydrate=0.0, name='떡볶이', kcal=459.0, protein=9.0, fat=2.0, file=null}]`
+`[TestDto{calcium_mg=3.0, food_id=1, food_name='김밥', category='밥류', calories_kcal=450.0, carbs_g=55.0, protein_g=7.0, fat_g=8.0, sugar_g=6.0, fiber_g=13.0, sodium_mg=10.0}, TestDto{calcium_mg=0.0, food_id=2, food_name='떡볶이', category='볶음류', calories_kcal=450.0, carbs_g=102.0, protein_g=9.0, fat_g=2.0, sugar_g=17.0, fiber_g=7.0, sodium_mg=10.0}]`
 `jpeg`/`jpg`/`png` 파일을 `POST` 했을 때, 콘솔에 위 메세지가 출력되면 성공
