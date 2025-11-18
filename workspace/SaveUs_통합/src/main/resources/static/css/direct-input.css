@@ -1,0 +1,152 @@
+:root {
+    --green: #2fb675;
+    --red: #ff4d4d;
+    --text-dark: #333;
+    --text-light: #666;
+    --border: #e6e6e6;
+    --bg-light: #fafafa;
+}
+
+/* 페이지 전체 */
+main {
+    padding: 20px 30px 80px 30px;
+}
+
+h2 {
+    margin-bottom: 8px;
+}
+
+.sub {
+    color: var(--text-light);
+    margin-bottom: 25px;
+}
+
+/* 입력(수정) 컨테이너 */
+.input-container {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    width: 750px;
+}
+
+/* 섹션 구분 제목 */
+.section-title {
+    margin-top: 25px;
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 기본 form-row */
+.form-row {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2개(시간 + 칼로리) 정렬 */
+.form-half {
+    flex-direction: row;
+    gap: 16px;
+}
+
+/* 3개(탄수 + 단백질 + 지방) 정렬 */
+.form-three {
+    flex-direction: row;
+    gap: 16px;
+}
+
+/* label */
+.form-row label {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+/* input 기본 스타일 */
+.form-row input {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    width: 100%;
+}
+
+/* 버튼 영역 (왼쪽 삭제/취소 + 오른쪽 완료) */
+.form-actions {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;  /* 양쪽 배치 */
+    align-items: center;
+}
+
+/* 왼쪽 버튼들 묶음 */
+.left-btns {
+    display: flex;
+    gap: 10px;
+}
+
+/* 오른쪽 버튼들 묶음 */
+.right-btns {
+    display: flex;
+    gap: 10px;
+}
+
+/* 버튼 기본 */
+button,
+a.cancel-btn,
+a.delete-btn {
+    padding: 12px 24px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+
+/* 취소 버튼 */
+.cancel-btn {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--text-dark);
+}
+
+/* 삭제 버튼 */
+.delete-btn {
+    background: var(--red);
+    border: none;
+    color: #fff;
+}
+
+.delete-btn:hover {
+    background: #e03b3b;
+}
+
+/* 저장/수정 버튼 */
+.save-btn {
+    background: var(--green);
+    border: none;
+    color: #fff;
+}
+
+.save-btn:hover {
+    background: #26a766;
+}
+
+/* 버튼 영역 공통 */
+.btn-row {
+    display: flex;
+    justify-content: flex-end;   /* 오른쪽 정렬 */
+    gap: 12px;                   /* 버튼 간 간격 */
+    margin-top: 20px;
+}
+
+/* 입력 페이지의 form-actions (직접 입력) */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;   /* 오른쪽 정렬 */
+    gap: 12px;                   /* 간격 */
+    margin-top: 20px;
+}

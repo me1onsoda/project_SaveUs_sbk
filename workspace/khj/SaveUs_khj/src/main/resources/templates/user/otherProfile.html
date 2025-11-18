@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>사용자 프로필</title>
+
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/otherProfile.css}">
+    </th:block>
+
+    <th:block layout:fragment="script">
+        <script th:src="@{/js/otherProfile.js}"></script>
+    </th:block>
+</head>
+
+<body>
+<main class="page-content" layout:fragment="content">
+
+    <div class="profile-wrapper">
+
+        <!-- 프로필 카드 -->
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+
+            <div class="profile-inner">
+                <img class="profile-img"
+                     th:src="${profile.profileImageUrl != null ? profile.profileImageUrl : '/images/user-default.png'}">
+
+                <div class="profile-info">
+                    <h3 th:text="${profile.nickname}"></h3>
+
+                    <div class="user-meta">
+                        <p>Email:
+                            <span th:text="${profile.email}"></span>
+                        </p>
+                        <p>가입일:
+                            <span th:text="${#temporals.format(profile.createdAt, 'yyyy-MM')}"></span>
+                        </p>
+                        <p th:if="${dietType != null}">
+                            식단 유형:
+                            <span th:text="${dietType}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 배지 섹션 -->
+        <div class="badge-section">
+            <h3 class="section-title">획득한 배지</h3>
+
+            <div class="badge-list">
+                <div class="badge-card">
+                    <p class="badge-title">Veggie Vanguard</p>
+                    <p class="badge-desc">채소 섭취 실천</p>
+                </div>
+
+                <div class="badge-card">
+                    <p class="badge-title">Macro Master</p>
+                    <p class="badge-desc">단백질 목표 달성</p>
+                </div>
+
+                <div class="badge-card">
+                    <p class="badge-title">Sugar Slayer</p>
+                    <p class="badge-desc">당 섭취 절감</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 챌린지 -->
+        <div class="challenge-section">
+            <h3 class="section-title">진행 중인 챌린지</h3>
+            <p class="challenge-desc">해당 사용자가 참여 중인 챌린지 정보가 표시됩니다.</p>
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>
