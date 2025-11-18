@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<div layout:fragment="content">
+
+    <link rel="stylesheet" th:href="@{/css/challenges.css}">
+
+    <div class="challenge-hub-container">
+
+        <div class="main-content">
+            <header class="hub-header">
+                <h1>챌린지 허브</h1>
+                <p>"나만의 식단 챌린지에 도전하고, 멋진 배지도 모아보세요!"</p>
+            </header>
+
+            <section class="challenge-section ai-recommendations">
+                <h2>AI가 추천하는 맞춤형 챌린지</h2>
+                <p>AI가 분석한 맞춤형 챌린지를 시작해보세요.</p>
+
+                <div class="challenge-carousel">
+                    <div class="challenge-card">
+                        <img src="/images/challenges/heart-boost.png" alt="Challenge Image" class="card-image">
+                        <div class="card-content">
+                            <h3>Heart Health Boost</h3>
+                            <p>Moderate heart-healthy foods.</p>
+                            <div class="tags">
+                                <span class="tag">Nutrition</span>
+                                <span class="tag">Intermediate</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-join">참여하기</a>
+                    </div>
+
+                    <div class="challenge-card">
+                        <img src="/images/challenges/vegan-prep.png" alt="Challenge Image" class="card-image">
+                        <div class="card-content">
+                            <h3>Vegetarian Prep</h3>
+                            <p>Transition to a plant-based diet.</p>
+                            <div class="tags">
+                                <span class="tag">Vegan</span>
+                                <span class="tag">Meal Prep</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-join">참여하기</a>
+                    </div>
+
+                    <div class="challenge-card">
+                        <img src="/images/challenges/weight-loss.png" alt="Challenge Image" class="card-image">
+                        <div class="card-content">
+                            <h3>Weight Loss Kickstart</h3>
+                            <p>7-day low-carb meal plan.</p>
+                            <div class="tags">
+                                <span class="tag">Weight Loss</span>
+                                <span class="tag">Low Carb</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-join disabled">진행중</a> </div>
+
+                </div>
+            </section>
+
+            <section class="challenge-section all-challenges">
+                <h2>전체 챌린지 둘러보기</h2>
+
+                <div class="filter-controls">
+                    <form action="/challenges" method="get" class="filter-form">
+                        <input type="search" name="keyword" placeholder="원하는 챌린지 검색..." class="search-input">
+                        <div class="tag-filters">
+                            <button type="submit" name="tag" value="" class="active">All</button>
+                            <button type="submit" name="tag" value="Weight Loss">Weight Loss</button>
+                            <button type="submit" name="tag" value="Muscle Gain">Muscle Gain</button>
+                            <button type="submit" name="tag" value="Vegan">Vegan</button>
+                            <button type="submit" name="tag" value="Hydration">Hydration</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="challenge-list">
+                    <div class="challenge-list-item">
+                        <img src="/images/challenges/hydration.png" alt="Challenge Image" class="item-image">
+                        <div class="item-content">
+                            <h3>Hydration Hero</h3>
+                            <p>Track your water intake for 7 days and reach your daily goal.</p>
+                            <div class="tags">
+                                <span class="tag">Hydration</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-join">참여하기</a>
+                    </div>
+                    <div class="challenge-list-item">
+                        <img src="/images/challenges/mindful-muncher.png" alt="Challenge Image" class="item-image">
+                        <div class="item-content">
+                            <h3>Mindful Muncher</h3>
+                            <p>Log 3 consecutive mindful meals, focusing on satisfaction.</p>
+                            <div class="tags">
+                                <span class="tag">Mindfulness</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-join">참여하기</a>
+                    </div>
+                    <div class="challenge-list-item">
+                        <img src="/images/challenges/green-giant.png" alt="Challenge Image" class="item-image">
+                        <div class="item-content">
+                            <h3>Green Giant</h3>
+                            <p>Include a portion of green vegetables in every meal for 3 days.</p>
+                            <div class="tags">
+                                <span class="tag">Vegan</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-join">참여하기</a>
+                    </div>
+                </div>
+
+                <nav class="pagination">
+                    <a href="#" class="disabled">Previous</a>
+                    <a href="#" class="active">1</a>
+                    <a href="#">2</a>
+                    <a href="#">Next</a>
+                </nav>
+            </section>
+        </div>
+
+        <aside class="leaderboard">
+            <h3>Leaderboard</h3>
+            <h4>최근 챌린지 완료 랭킹</h4>
+            <ul>
+                <li>
+                    <span class="rank">1</span>
+                    <img src="/images/avatars/avatar1.png" alt="User Avatar" class="avatar">
+                    <span class="username">SaveUs-Fit</span>
+                    <span class="score">1326점</span>
+                </li>
+                <li>
+                    <span class="rank">2</span>
+                    <img src="/images/avatars/avatar2.png" alt="User Avatar" class="avatar">
+                    <span class="username">HealthyMike</span>
+                    <span class="score">1105점</span>
+                </li>
+                <li>
+                    <span class="rank">3</span>
+                    <img src="/images/avatars/avatar3.png" alt="User Avatar" class="avatar">
+                    <span class="username">VeggieQueen</span>
+                    <span class="score">980점</span>
+                </li>
+                <li>
+                    <span class="rank">4</span>
+                    <img src="/images/avatars/avatar4.png" alt="User Avatar" class="avatar">
+                    <span class="username">NutriNerd</span>
+                    <span class="score">900점</span>
+                </li>
+            </ul>
+            <a href="/leaderboard" class="btn-view-all">전체 순위 보기</a>
+        </aside>
+
+    </div> </div> </html>

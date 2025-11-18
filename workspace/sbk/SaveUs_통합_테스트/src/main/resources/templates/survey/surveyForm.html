@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>식습관 설문조사</title>
+    <link rel="stylesheet" th:href="@{/css/survey.css}">
+</head>
+<body>
+
+<div class="survey-container">
+
+    <!-- 좌측 컬러 영역 -->
+    <div class="survey-side"></div>
+
+    <!-- 중앙 설문 영역 -->
+    <div class="survey-center">
+
+        <div class="logo-area">
+            <img src="/images/icon/logo.png" alt="SaveUs">
+            <h1>식습관 설문조사</h1>
+        </div>
+
+        <form th:action="@{/survey/submit}" method="post" th:object="${surveyDto}">
+
+            <!-- 단백질 섭취 -->
+            <div class="question">1. 단백질 식품을 얼마나 자주 먹나요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{protein1}" value="1"> 거의 먹지 않는다</label>
+                <label><input type="radio" th:field="*{protein1}" value="2"> 가끔 먹는다</label>
+                <label><input type="radio" th:field="*{protein1}" value="3"> 보통 먹는다</label>
+                <label><input type="radio" th:field="*{protein1}" value="4"> 자주 먹는다</label>
+                <label><input type="radio" th:field="*{protein1}" value="5"> 매우 자주 먹는다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('protein1')}"
+               th:errors="*{protein1}"></p>
+
+            <div class="question">2. 단백질 보충제 섭취 빈도는 어느 정도인가요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{protein2}" value="1"> 거의 먹지 않는다</label>
+                <label><input type="radio" th:field="*{protein2}" value="2"> 가끔 먹는다</label>
+                <label><input type="radio" th:field="*{protein2}" value="3"> 보통 먹는다</label>
+                <label><input type="radio" th:field="*{protein2}" value="4"> 자주 먹는다</label>
+                <label><input type="radio" th:field="*{protein2}" value="5"> 매우 자주 먹는다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('protein2')}"
+               th:errors="*{protein2}"></p>
+
+
+            <div class="question">3. 단백질 위주의 식사를 의도적으로 선택하나요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{protein3}" value="1"> 전혀 그렇지 않다</label>
+                <label><input type="radio" th:field="*{protein3}" value="2"> 그렇지 않은 편이다</label>
+                <label><input type="radio" th:field="*{protein3}" value="3"> 보통이다</label>
+                <label><input type="radio" th:field="*{protein3}" value="4"> 그렇다</label>
+                <label><input type="radio" th:field="*{protein3}" value="5"> 매우 그렇다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('protein3')}"
+               th:errors="*{protein3}"></p>
+
+            <!-- 지방 섭취 -->
+            <div class="question">4. 지방 많은 음식을 얼마나 자주 먹나요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{fat1}" value="1"> 거의 먹지 않는다</label>
+                <label><input type="radio" th:field="*{fat1}" value="2"> 가끔 먹는다</label>
+                <label><input type="radio" th:field="*{fat1}" value="3"> 보통 먹는다</label>
+                <label><input type="radio" th:field="*{fat1}" value="4"> 자주 먹는다</label>
+                <label><input type="radio" th:field="*{fat1}" value="5"> 매우 자주 먹는다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('fat1')}"
+               th:errors="*{fat1}"></p>
+
+            <div class="question">5. 식단에서 지방 많은 요리가 자주 포함되나요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{fat2}" value="1"> 거의 포함되지 않는다</label>
+                <label><input type="radio" th:field="*{fat2}" value="2"> 가끔 포함된다</label>
+                <label><input type="radio" th:field="*{fat2}" value="3"> 보통 포함된다</label>
+                <label><input type="radio" th:field="*{fat2}" value="4"> 자주 포함된다</label>
+                <label><input type="radio" th:field="*{fat2}" value="5"> 매우 자주 포함된다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('fat2')}"
+               th:errors="*{fat2}"></p>
+
+
+            <div class="question">6. 포만감을 위해 지방이 많은 음식을 선호하나요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{fat3}" value="1"> 전혀 선호하지 않는다</label>
+                <label><input type="radio" th:field="*{fat3}" value="2"> 별로 선호하지 않는다</label>
+                <label><input type="radio" th:field="*{fat3}" value="3"> 보통이다</label>
+                <label><input type="radio" th:field="*{fat3}" value="4"> 선호한다</label>
+                <label><input type="radio" th:field="*{fat3}" value="5"> 매우 선호한다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('fat3')}"
+               th:errors="*{fat3}"></p>
+
+            <!-- 탄수화물 섭취 -->
+            <div class="question">7. 탄수화물 기반 음식을 주로 먹는 편인가요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{carb1}" value="1"> 거의 먹지 않는다</label>
+                <label><input type="radio" th:field="*{carb1}" value="2"> 가끔 먹는다</label>
+                <label><input type="radio" th:field="*{carb1}" value="3"> 보통 먹는다</label>
+                <label><input type="radio" th:field="*{carb1}" value="4"> 자주 먹는다</label>
+                <label><input type="radio" th:field="*{carb1}" value="5"> 매우 자주 먹는다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('carb1')}"
+               th:errors="*{carb1}"></p>
+
+            <div class="question">8. 식사 시 밥/빵/면 등 탄수화물 비중이 높은가요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{carb2}" value="1"> 전혀 그렇지 않다</label>
+                <label><input type="radio" th:field="*{carb2}" value="2"> 그렇지 않은 편이다</label>
+                <label><input type="radio" th:field="*{carb2}" value="3"> 보통이다</label>
+                <label><input type="radio" th:field="*{carb2}" value="4"> 그렇다</label>
+                <label><input type="radio" th:field="*{carb2}" value="5"> 매우 그렇다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('carb2')}"
+               th:errors="*{carb2}"></p>
+
+            <div class="question">9. 단 음식이나 간식을 자주 찾는 편인가요?</div>
+            <div class="options">
+                <label><input type="radio" th:field="*{carb3}" value="1"> 거의 찾지 않는다</label>
+                <label><input type="radio" th:field="*{carb3}" value="2"> 가끔 찾는다</label>
+                <label><input type="radio" th:field="*{carb3}" value="3"> 보통 찾는다</label>
+                <label><input type="radio" th:field="*{carb3}" value="4"> 자주 찾는다</label>
+                <label><input type="radio" th:field="*{carb3}" value="5"> 매우 자주 찾는다</label>
+            </div>
+            <p class="error" th:if="${#fields.hasErrors('carb3')}"
+               th:errors="*{carb3}"></p>
+
+            <!-- 제출 버튼 -->
+            <div class="submit-area">
+                <button type="submit">결과 확인</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 우측 컬러 영역 -->
+    <div class="survey-side"></div>
+
+</div>
+
+</body>
+</html>
