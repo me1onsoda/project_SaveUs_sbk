@@ -54,7 +54,7 @@ public class SurveyService {
         List<String> TypeOfMeal = new ArrayList<String>();
         if (p.equals("균형형") && f.equals("균형형") && c.equals("균형형")) {
             TypeOfMeal.add("완전 균형형 식단");
-            return TypeOfMeal.toString();
+            return "완전 균형형 식단";
         }
         // 단백질만 균형형 → 나머지 2개만 반환
         if (!p.equals("균형형")){

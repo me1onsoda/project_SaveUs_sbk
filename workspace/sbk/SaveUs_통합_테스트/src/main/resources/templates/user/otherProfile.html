@@ -5,14 +5,10 @@
       layout:decorate="~{layout}">
 
 <head>
-    <title>사용자 프로필</title>
+    <title th:text="${profile.nickname + ' 상세정보'}"></title>
 
     <th:block layout:fragment="css">
         <link rel="stylesheet" th:href="@{/css/otherProfile.css}">
-    </th:block>
-
-    <th:block layout:fragment="script">
-        <script th:src="@{/js/otherProfile.js}"></script>
     </th:block>
 </head>
 
@@ -21,60 +17,83 @@
 
     <div class="profile-wrapper">
 
+        <!-- 페이지 타이틀 -->
+        <h2 class="mypage-title" th:text="${profile.nickname + ' 프로필'}"></h2>
+
         <!-- 프로필 카드 -->
         <div class="profile-card">
+
             <div class="profile-banner"></div>
 
             <div class="profile-inner">
+
+                <!-- 프로필 이미지 -->
                 <img class="profile-img"
                      th:src="${profile.profileImageUrl != null ? profile.profileImageUrl : '/images/user-default.png'}">
 
+                <!-- 프로필 정보 -->
                 <div class="profile-info">
+
                     <h3 th:text="${profile.nickname}"></h3>
 
-                    <div class="user-meta">
-                        <p>Email:
-                            <span th:text="${profile.email}"></span>
-                        </p>
-                        <p>가입일:
-                            <span th:text="${#temporals.format(profile.createdAt, 'yyyy-MM')}"></span>
-                        </p>
-                        <p th:if="${dietType != null}">
-                            식단 유형:
-                            <span th:text="${dietType}"></span>
-                        </p>
+                    <!-- 태그 (목표 + 식단 유형) -->
+                    <div class="profile-tags">
+                        <span class="goal-tag"
+                              th:text="${profile.mainGoal == 0 ? '감량' :
+                                       profile.mainGoal == 1 ? '증량' : '건강식'}"></span>
+
+                        <span class="persona-tag"
+                              th:if="${dietType != null}"
+                              th:text="${dietType}"></span>
                     </div>
+
+                    <p>이메일 : <span th:text="${profile.email}"></span></p>
+                    <p>가입일 : <span th:text="${#temporals.format(profile.createdAt,'yyyy-MM-dd')}"></span></p>
+
                 </div>
             </div>
         </div>
 
-        <!-- 배지 섹션 -->
-        <div class="badge-section">
-            <h3 class="section-title">획득한 배지</h3>
+
+        <!-- 획득 뱃지 -->
+        <section class="badge-section">
+            <h3>획득 뱃지</h3>
 
             <div class="badge-list">
+
                 <div class="badge-card">
-                    <p class="badge-title">Veggie Vanguard</p>
-                    <p class="badge-desc">채소 섭취 실천</p>
+                    <img src="/images/icon/challenges.png" alt="">
+                    <h4>Veggie Vanguard</h4>
+                    <p>채소 섭취 실천</p>
                 </div>
 
                 <div class="badge-card">
-                    <p class="badge-title">Macro Master</p>
-                    <p class="badge-desc">단백질 목표 달성</p>
+                    <img src="/images/icon/challenges.png" alt="">
+                    <h4>Macro Master</h4>
+                    <p>단백질 목표 달성</p>
                 </div>
 
                 <div class="badge-card">
-                    <p class="badge-title">Sugar Slayer</p>
-                    <p class="badge-desc">당 섭취 절감</p>
+                    <img src="/images/icon/challenges.png" alt="">
+                    <h4>Sugar Slayer</h4>
+                    <p>당 섭취 절감</p>
                 </div>
+
+                <div class="badge-card">
+                    <img src="/images/icon/challenges.png" alt="">
+                    <h4>Diet Virtuoso</h4>
+                    <p>건강 식단 마스터</p>
+                </div>
+
             </div>
-        </div>
+        </section>
 
-        <!-- 챌린지 -->
-        <div class="challenge-section">
-            <h3 class="section-title">진행 중인 챌린지</h3>
+
+        <!-- 진행 중 챌린지 -->
+        <section class="challenge-section">
+            <h3>진행 중인 챌린지</h3>
             <p class="challenge-desc">해당 사용자가 참여 중인 챌린지 정보가 표시됩니다.</p>
-        </div>
+        </section>
 
     </div>
 

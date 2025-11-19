@@ -12,7 +12,7 @@
 
         <div class="main-content">
             <header class="hub-header">
-                <h1>챌린지 허브</h1>
+                <h1>챌린지</h1>
                 <p>"나만의 식단 챌린지에 도전하고, 멋진 배지도 모아보세요!"</p>
             </header>
 
@@ -29,7 +29,7 @@
                         <strong th:text="${summary.activeCount}">0</strong>
                     </div>
                     <div class="summary-card card">
-                        <span>완료 챌린지</span>
+                        <span>총 완료 횟수</span>
                         <strong th:text="${summary.completedCount}">0</strong>
                     </div>
                     <div class="summary-card card">
@@ -51,6 +51,9 @@
                             <img th:src="${challenge.imageUrl != null ? challenge.imageUrl : '/images/challenges/default.png'}" alt="Challenge Icon" class="item-image-small">
                             <div class="progress-content">
                                 <h3 th:text="${challenge.title}">Challenge Title</h3>
+                                <span class="point-badge">
+                                    💰 <span th:text="${challenge.points}">100</span> P
+                                </span>
                                 <p th:text="${challenge.description}">Challenge Description</p>
                                 <div class="progress-bar-container">
                                     <div class="progress-bar" th:style="'width: ' + ${challenge.progressPercent} + '%;'"></div>
@@ -69,9 +72,52 @@
                             <img th:src="${challenge.imageUrl != null ? challenge.imageUrl : '/images/challenges/default.png'}" alt="Challenge Icon" class="item-image-small">
                             <div class="progress-content">
                                 <h3 th:text="${challenge.title}">Completed Challenge</h3>
+                                <span class="point-badge">
+                                    💰 <span th:text="${challenge.points}">100</span> P
+                                </span>
                                 <p th:text="${challenge.description}">Description</p>
                             </div>
-                            <span class="badge-icon">🏆</span>
+
+                            <div class="action-buttons">
+                                <span class="badge-count">
+                                    🏆 <span th:text="${challenge.successCount}">1</span>회 완료
+                                </span>
+                                <form th:action="@{/challenges/{id}/restart(id=${challenge.userChallengeId})}" method="post">
+                                    <button type="submit" class="btn-action restart" onclick="return confirm('다시 도전하시겠습니까?');">
+                                        🔄 재도전
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 th:if="${!#lists.isEmpty(failedChallenges)}">아쉽게 실패한 챌린지 😢</h2>
+                    <div class="challenge-progress-list">
+                        <div class="progress-card card failed" th:each="challenge : ${failedChallenges}">
+                            <img th:src="${challenge.imageUrl != null ? challenge.imageUrl : '/images/challenges/default.png'}"
+                                 class="item-image-small" alt="Challenge Image">
+                            <div class="progress-content">
+                                <h3 th:text="${challenge.title}">실패한 챌린지</h3>
+                                <span class="point-badge">
+                                    💰 <span th:text="${challenge.points}">100</span> P
+                                </span>
+                                <p class="failed-text">목표 달성 실패</p>
+                            </div>
+
+                            <div class="action-buttons">
+                                <form th:action="@{/challenges/{id}/restart(id=${challenge.userChallengeId})}" method="post">
+                                    <button type="submit" class="btn-action retry" onclick="return confirm('다시 도전하시겠습니까?');">
+                                        🔄 재도전
+                                    </button>
+                                </form>
+
+                                <form th:action="@{/challenges/{id}/delete(id=${challenge.userChallengeId})}" method="post"
+                                      onsubmit="return confirm('정말 삭제하시겠습니까? 삭제 후에는 둘러보기에서 다시 참여할 수 있습니다.');">
+                                    <button type="submit" class="btn-action delete">
+                                        🗑️ 삭제
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -87,12 +133,19 @@
                             <img th:src="${challenge.imageUrl != null ? challenge.imageUrl : '/images/challenges/default.png'}" alt="Challenge Image" class="card-image">
                             <div class="card-content">
                                 <h3 th:text="${challenge.title}">Heart Health Boost</h3>
+                                <span class="point-badge">
+                                    💰 <span th:text="${challenge.points}">100</span> P
+                                </span>
                                 <p th:text="${challenge.description}">Moderate heart-healthy foods.</p>
                                 <div class="tags">
-                                    <span class="tag" th:each="tag : ${challenge.tags}" th:if="${tag != null}" th:text="${tag.tagName}">Nutrition</span>
+                                    <span class="tag" th:each="tag : ${challenge.tags}" th:text="${tag != null ? tag.tagName : ''}">Nutrition</span>
                                 </div>
                             </div>
-                            <a href="#" class="btn-join" th:if="${!challenge.isUserParticipating()}">참여하기</a>
+                            <form th:if="${!challenge.isUserParticipating()}"
+                                  th:action="@{/challenges/{id}/join(id=${challenge.challengeId})}"
+                                  method="post">
+                                <button type="submit" class="btn-join">참여하기</button>
+                            </form>
                             <a href="#" class="btn-join disabled" th:if="${challenge.isUserParticipating()}">진행중</a>
                         </div>
                     </div>
@@ -102,10 +155,13 @@
                     <h2>전체 챌린지 둘러보기</h2>
                     <div class="filter-controls">
                         <form action="/challenges" method="get" class="filter-form">
+                            <input type="hidden" name="tab" value="explore-tab">
+
                             <input type="search" name="keyword" placeholder="원하는 챌린지 검색..." class="search-input" th:value="${currentKeyword}">
                             <div class="tag-filters">
                                 <button type="submit" name="tag" value="" th:classappend="${currentTag == null ? 'active' : ''}">All</button>
                                 <button type="submit" name="tag" th:each="tag : ${allTags}"
+                                        th:if="${tag != null}"
                                         th:value="${tag.tagName}"
                                         th:text="${tag.tagName}"
                                         th:classappend="${currentTag == tag.tagName ? 'active' : ''}">
@@ -120,27 +176,34 @@
                             <img th:src="${challenge.imageUrl != null ? challenge.imageUrl : '/images/challenges/default.png'}" alt="Challenge Image" class="item-image">
                             <div class="item-content">
                                 <h3 th:text="${challenge.title}">Hydration Hero</h3>
+                                <span class="point-badge">
+                                    💰 <span th:text="${challenge.points}">100</span> P
+                                </span>
                                 <p th:text="${challenge.description}">Track your water intake...</p>
                                 <div class="tags">
-                                    <span class="tag" th:each="tag : ${challenge.tags}" th:if="${tag != null}" th:text="${tag.tagName}">Hydration</span>
+                                    <span class="tag" th:each="tag : ${challenge.tags}" th:text="${tag != null ? tag.tagName : ''}">Nutrition</span>
                                 </div>
                             </div>
-                            <a href="#" class="btn-join" th:if="${!challenge.isUserParticipating()}">참여하기</a>
+                            <form th:if="${!challenge.isUserParticipating()}"
+                                  th:action="@{/challenges/{id}/join(id=${challenge.challengeId})}"
+                                  method="post">
+                                <button type="submit" class="btn-join">참여하기</button>
+                            </form>
                             <a href="#" class="btn-join disabled" th:if="${challenge.isUserParticipating()}">진행중</a>
                         </div>
                     </div>
 
                     <nav class="pagination" th:if="${challengePage.totalPages > 1}">
-                        <a th:href="@{/challenges(page=${challengePage.currentPage - 1}, keyword=${currentKeyword}, tag=${currentTag})}"
+                        <a th:href="@{/challenges(page=${challengePage.currentPage - 1}, keyword=${currentKeyword}, tag=${currentTag}, tab='explore-tab')}"
                            th:classappend="${challengePage.currentPage == 1 ? 'disabled' : ''}">Previous</a>
 
                         <th:block th:each="i : ${#numbers.sequence(1, challengePage.totalPages)}">
-                            <a th:href="@{/challenges(page=${i}, keyword=${currentKeyword}, tag=${currentTag})}"
+                            <a th:href="@{/challenges(page=${i}, keyword=${currentKeyword}, tag=${currentTag}, tab='explore-tab')}"
                                th:text="${i}"
                                th:classappend="${challengePage.currentPage == i ? 'active' : ''}">1</a>
                         </th:block>
 
-                        <a th:href="@{/challenges(page=${challengePage.currentPage + 1}, keyword=${currentKeyword}, tag=${currentTag})}"
+                        <a th:href="@{/challenges(page=${challengePage.currentPage + 1}, keyword=${currentKeyword}, tag=${currentTag}, tab='explore-tab')}"
                            th:classappend="${challengePage.currentPage == challengePage.totalPages ? 'disabled' : ''}">Next</a>
                     </nav>
                 </section>

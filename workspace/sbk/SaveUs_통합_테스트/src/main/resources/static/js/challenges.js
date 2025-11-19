@@ -1,51 +1,69 @@
-// /static/js/challenges.js
+// challenges.js
 
 document.addEventListener('DOMContentLoaded', () => {
 
     const tabsContainer = document.querySelector('.challenge-tabs');
     const tabContents = document.querySelectorAll('.tab-content');
+    const tabButtons = document.querySelectorAll('.tab-btn');
 
-    // 1. 탭 클릭 이벤트 (나의 챌린지 <-> 둘러보기)
+    // URL 파라미터에서 탭 정보 가져오기
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // 탭 활성화 함수 (UI 업데이트)
+    function activateTab(tabId) {
+        // 모든 버튼 비활성화
+        tabButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tab === tabId) btn.classList.add('active');
+        });
+
+        // 모든 컨텐츠 숨기기
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+            if (content.id === tabId) content.classList.add('active');
+        });
+    }
+
+    // 페이지 로드 시 실행: URL에 tab 파라미터가 있으면 해당 탭 열기
+    const currentTab = getQueryParam('tab');
+    if (currentTab === 'explore-tab') {
+        activateTab('explore-tab');
+    } else {
+        // 기본값은 나의 챌린지
+        activateTab('my-challenges-tab');
+    }
+
+    // 탭 클릭 이벤트
     if (tabsContainer) {
         tabsContainer.addEventListener('click', (e) => {
             const clickedTab = e.target.closest('.tab-btn');
             if (!clickedTab) return;
 
-            // 이미 활성화된 탭이면 무시
-            if (clickedTab.classList.contains('active')) return;
-
-            // data-tab 속성값 (예: "my-challenges-tab")
             const tabId = clickedTab.dataset.tab;
-            const targetContent = document.getElementById(tabId);
 
-            if (!targetContent) return;
+            // UI 변경
+            activateTab(tabId);
 
-            // 모든 탭 버튼 비활성화
-            tabsContainer.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            // 클릭된 탭 버튼 활성화
-            clickedTab.classList.add('active');
-
-            // 모든 탭 컨텐츠 숨기기
-            tabContents.forEach(content => {
-                content.classList.remove('active'); // (display: none)
-            });
-            // 타겟 탭 컨텐츠 보여주기
-            targetContent.classList.add('active'); // (display: flex)
+            // URL을 변경하여 새로고침 해도 상태 유지 (history API 사용)
+            // 기존 검색어(keyword, tag)가 있다면 유지해야 함
+            const url = new URL(window.location);
+            url.searchParams.set('tab', tabId);
+            window.history.pushState({}, '', url);
         });
     }
 
-    // 2. "나의 챌린지"가 비어있을 때 "둘러보기" 버튼 클릭 이벤트
+    // "지금 챌린지 둘러보기" 버튼 클릭 시 처리
     const exploreNowBtn = document.querySelector('.btn-explore-now');
     if (exploreNowBtn) {
         exploreNowBtn.addEventListener('click', () => {
-            // '둘러보기' 탭 버튼을 찾아서 강제로 클릭
-            const exploreTabButton = document.querySelector('.tab-btn[data-tab="explore-tab"]');
-            if (exploreTabButton) {
-                exploreTabButton.click();
-            }
+            activateTab('explore-tab');
+            // URL 업데이트
+            const url = new URL(window.location);
+            url.searchParams.set('tab', 'explore-tab');
+            window.history.pushState({}, '', url);
         });
     }
-
 });

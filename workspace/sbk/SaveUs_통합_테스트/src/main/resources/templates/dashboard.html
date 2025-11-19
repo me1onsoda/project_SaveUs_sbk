@@ -18,7 +18,11 @@
         <div class="welcome-card">
             <div class="user-info">
                 <img class="user-photo"
-                     th:src="${user.profileImageUrl != null ? user.profileImageUrl : '/images/profile_sample.png'}">
+                     th:src="${(user.profileImageUrl != null && user.profileImageUrl != '')
+                     ? user.profileImageUrl
+                     : '/images/user-default.png'}"
+                     alt="user">
+
                 <div>
                     <h2>
                         환영합니다, <span th:text="${user.nickname}"></span>님!
@@ -41,7 +45,7 @@
     <!-- 식사 기록 -->
     <section class="log-meal">
         <h3>식사 기록하기</h3>
-        <p class="sub">AI 사진 분석 또는 직접 입력을 통해 식사를 기록할 수 있습니다.</p>
+        <p class="sub">AI 사진 분석 또는 입력을 통해 식사를 기록할 수 있습니다.</p>
 
         <div class="log-actions">
             <button class="photo-upload-btn">
@@ -51,8 +55,10 @@
                 직접 입력
             </button>
             <div class="meal-search-area">
-                <input type="text" id="mealSearchInput" placeholder="음식명 검색">
-                <button id="mealAddBtn">추가</button>
+                <div class="search-group">
+                    <input type="text" id="mealSearchInput" placeholder="음식명 검색">
+                    <button id="mealAddBtn">추가</button>
+                </div>
             </div>
         </div>
     </section>
@@ -64,7 +70,6 @@
         <!-- 오늘의 식사 -->
         <div class="meals-card">
             <h4>오늘의 식사</h4>
-            <p class="sub">오늘 기록된 식사 목록입니다.</p>
 
             <ul class="meal-list">
 

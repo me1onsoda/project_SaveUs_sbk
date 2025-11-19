@@ -1,20 +1,36 @@
-/* 기본 색상 */
+/* ===============================
+    기본 색상
+================================ */
 :root {
     --green: #2fb675;
+    --green-dark: #27a567;
+
+    --blue: #4A90E2;
+    --blue-dark: #357ABD;
+
+    --black: #333;
+    --black-dark: #000;
+
     --text-dark: #333;
     --text-light: #666;
+
     --bg-light: #f8f9fa;
     --border: #e6e6e6;
+    --border-dark: #ccc;
 }
 
-/* 전체 여백 */
+/* ===============================
+    전체 레이아웃
+================================ */
 main {
     padding: 20px 30px 80px 30px;
     font-family: 'Arial', sans-serif;
     color: var(--text-dark);
 }
 
-/* 상단 정보 카드 */
+/* ===============================
+    상단 카드
+================================ */
 .top-section {
     display: flex;
     gap: 20px;
@@ -43,19 +59,16 @@ main {
 }
 
 .persona-tag {
-    display: inline-block;
     background: #1da1f2;
     color: #fff;
     padding: 4px 10px;
-    font-size: 14px;
     border-radius: 12px;
-    margin-top: 4px;
+    font-size: 14px;
 }
 
-/* ------------------------------------------ */
-/* Log Meal */
-/* ------------------------------------------ */
-
+/* ===============================
+    식사 기록하기 - 버튼 스타일
+================================ */
 .log-meal {
     margin-bottom: 50px;
 }
@@ -65,8 +78,8 @@ main {
 }
 
 .log-meal .sub {
-    color: var(--text-light);
     font-size: 14px;
+    color: var(--text-light);
     margin-bottom: 20px;
 }
 
@@ -79,31 +92,85 @@ main {
 .log-actions button {
     height: 48px;
     padding: 0 24px;
+
     border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
+    transition: 0.16s ease-in-out;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
-}
 
-.photo-upload-btn {
-    background: var(--green);
-    color: #fff;
     border: none;
 }
 
-.add-meal-btn {
-    background: #fff;
-    border: 1px solid var(--border);
-    color: var(--text-dark);
+/* =========== AI 사진 업로드 버튼 =========== */
+.photo-upload-btn {
+    background: var(--green);
+    color: #fff;
+}
+.photo-upload-btn:hover {
+    background: var(--green-dark);
 }
 
-/* ------------------------------------------ */
-/* 오늘의 식사 + 오른쪽 요약 */
-/* ------------------------------------------ */
+/* =========== 직접 입력 버튼 =========== */
+.add-meal-btn {
+    background: var(--blue);
+    color: #fff;
+}
+.add-meal-btn:hover {
+    background: var(--blue-dark);
+}
 
+/* =========== 추가 버튼 =========== */
+#mealAddBtn {
+    background: #F5A623;
+    color: white;
+
+    border: none;
+    border-radius: 10px;
+
+    height: 48px;
+    padding: 0 24px;
+
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+#mealAddBtn:hover {
+    background: #E5951E;
+}
+
+
+/* ===============================
+    검색 Input
+================================ */
+.meal-search-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#mealSearchInput {
+    width: 200px;
+    height: 48px;
+    padding: 0 12px;
+
+    border: 1.5px solid var(--border-dark);
+    border-radius: 10px;
+
+    font-size: 15px;
+    transition: 0.15s;
+}
+#mealSearchInput:focus {
+    border-color: var(--green);
+}
+
+/* ===============================
+    오늘의 식사 카드
+================================ */
 .stats-section {
     display: flex;
     gap: 20px;
@@ -118,30 +185,16 @@ main {
     width: 35%;
 }
 
-.meals-card h4 {
-    font-size: 20px;
-    margin-bottom: 8px;
-}
-
-.meals-card .sub {
-    color: var(--text-light);
-    margin-bottom: 18px;
-    font-size: 14px;
-}
-
-/* 식사 목록 스타일 */
 .meal-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-/* li는 컨테이너 역할 */
 .meal-item {
     margin-bottom: 12px;
 }
 
-/* 실제 박스를 만드는 주체는 a 태그 */
 .meal-link {
     display: flex;
     justify-content: space-between;
@@ -152,29 +205,18 @@ main {
     border-radius: 10px;
 
     padding: 12px;
-    width: 100%;
-    height: auto;
-
     text-decoration: none;
     color: inherit;
 }
 
-.meal-left strong {
-    font-size: 15px;
-}
-
-.meal-left .time {
-    font-size: 12px;
-    color: var(--text-light);
-}
-
 .kcal {
-    font-size: 14px;
     color: var(--green);
     font-weight: bold;
 }
 
-/* 오른쪽 전체 컨테이너 */
+/* ===============================
+    오른쪽 요약
+================================ */
 .right-summary {
     width: 65%;
     display: flex;
@@ -182,7 +224,6 @@ main {
     gap: 20px;
 }
 
-/* 총 칼로리 카드 */
 .cal-summary-card {
     background: #fff;
     border: 1px solid var(--border);
@@ -191,29 +232,17 @@ main {
     text-align: center;
 }
 
-.cal-summary-card .title {
-    font-size: 16px;
-    color: var(--text-light);
-}
-
 .cal-summary-card .value {
     font-size: 32px;
-    margin: 10px 0;
     color: var(--green);
 }
 
-.cal-summary-card .goal {
-    font-size: 14px;
-    color: var(--text-light);
-}
-
-/* 영양 3카드 */
+/* ===============================
+    영양 요약 카드
+================================ */
 .nutrient-summary {
     display: flex;
-    justify-content: center;
-    align-items: stretch;
     gap: 24px;
-    width: 100%;
 }
 
 .nutrient-card {
@@ -225,81 +254,46 @@ main {
     text-align: center;
 }
 
-.nutrient-card .title {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: var(--text-light);
-}
-
 .nutrient-card .value {
     font-size: 32px;
     color: var(--green);
-    margin: 8px 0;
-}
-
-.nutrient-card .goal {
-    font-size: 14px;
-    color: var(--text-light);
-}
-
-/* ------------------------------------------ */
-/* 차트 */
-/* ------------------------------------------ */
-
-.nutrient-chart {
-    margin-bottom: 40px;
-}
-
-.chart-box {
-    background: #fff;
-    padding: 30px;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    height: 320px;
 }
 
 .meal-search-area {
     display: flex;
     align-items: center;
-    gap: 8px;
+}
+
+.search-group {
+    display: flex;
+    align-items: center;
 }
 
 #mealSearchInput {
-    width: 200px;
+    width: 220px;
     height: 48px;
     padding: 0 12px;
+
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-right: none;          /* 오른쪽 테두리 제거 → 버튼과 붙임 */
+    border-radius: 10px 0 0 10px; /* 왼쪽 둥글게 */
     font-size: 15px;
 }
 
-#mealSearchBtn {
-    height: 48px;
-    padding: 0 18px;
-    background: var(--green);
-    color: #fff;
+#mealAddBtn {
+    background: #F5A623;
+    color: white;
+
     border: none;
-    border-radius: 10px;
+    border-radius: 0 10px 10px 0;   /* 오른쪽만 둥글게 */
+
+    height: 48px;
+    padding: 0 24px;
+    font-size: 16px;
     cursor: pointer;
+    transition: 0.15s;
 }
 
-.meal-search-result {
-    margin-top: 8px;
-    width: 330px;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    display: none;
-    position: absolute;
-    z-index: 99;
-}
-
-.meal-search-result .item {
-    padding: 10px 15px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-}
-
-.meal-search-result .item:hover {
-    background: #f1f1f1;
+#mealAddBtn:hover {
+    background: #E5951E;
 }

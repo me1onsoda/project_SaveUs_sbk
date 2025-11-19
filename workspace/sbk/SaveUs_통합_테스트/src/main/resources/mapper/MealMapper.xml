@@ -52,7 +52,7 @@
 
     </select>
 
-    <!-- 저장 -->
+    <!-- 삽입 -->
     <insert id="saveMeal" parameterType="map">
         INSERT INTO MEAL_ENTRY (
         USER_ID,
@@ -75,12 +75,13 @@
         #{protein},
         #{carbs},
         #{fat},
-        #{sugar},
-        #{fiber},
-        #{calcium},
-        #{sodium}
+        NVL(#{sugar, jdbcType=INTEGER}, 0),
+        NVL(#{fiber, jdbcType=INTEGER}, 0),
+        NVL(#{calcium, jdbcType=INTEGER}, 0),
+        NVL(#{sodium, jdbcType=INTEGER}, 0)
         )
     </insert>
+
 
     <!-- 단건 조회 -->
     <select id="findMealById" parameterType="long"
@@ -120,12 +121,13 @@
         PROTEIN_G = #{protein},
         CARBS_G = #{carbs},
         FATS_G = #{fat},
-        SUGAR_G = #{sugar},
-        FIBER_G = #{fiber},
-        CALCIUM_MG = #{calcium},
-        SODIUM_MG = #{sodium}
+        SUGAR_G = NVL(#{sugar, jdbcType=INTEGER}, 0),
+        FIBER_G = NVL(#{fiber, jdbcType=INTEGER}, 0),
+        CALCIUM_MG = NVL(#{calcium, jdbcType=INTEGER}, 0),
+        SODIUM_MG = NVL(#{sodium, jdbcType=INTEGER}, 0)
         WHERE ENTRY_ID = #{entryId}
     </update>
+
 
     <!-- 삭제 -->
     <delete id="deleteMeal">
