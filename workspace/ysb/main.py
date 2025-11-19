@@ -4,6 +4,9 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 
+from food_nutrition_repository import get_food_nutrition_by_name
+from yolo_inference import detect_objects
+
 test = FastAPI()
 
 test.add_middleware(
@@ -14,12 +17,11 @@ test.add_middleware(
     allow_headers=["*"],
 )
 
-
 class FoodItem(BaseModel):
     food_id: int
     food_name: str
     category: str
-    calories_kcal: int
+    calories_kcal: float
     carbs_g: Optional[float] = None
     protein_g: Optional[float] = None
     fat_g: Optional[float] = None
@@ -44,9 +46,8 @@ async def api_test(
     if len(content) == 0:
         raise HTTPException(status_code=400, detail="빈 파일")
 
-    # 파일 확인용 코드
-    with open("test.png", "wb") as f:
-        f.write(content)
+    # 사진 전송 및 모델 작동 확인 코드
+    print(detect_objects(content))
 
     items = make_dummy_data()
 
@@ -54,33 +55,10 @@ async def api_test(
         "items": items
     }
 
+def make_dummy_data(items=None):
+    items = items or ["김밥", "떡볶이", "yolo"]
+    return [FoodItem(**food_info) for item in items if (food_info:=get_food_nutrition_by_name(item))]
 
-def make_dummy_data():
-    items = []
-    items.extend([FoodItem(
-        food_id=1,
-        food_name="김밥",
-        category="밥류",
-        carbs_g=55,
-        calories_kcal=450,
-        protein_g=7,
-        fat_g=8,
-        sugar_g=6,
-        fiber_g=13,
-        sodium_mg=10,
-        calcium_mg=3
-    ),
-    FoodItem(
-        food_id=2,
-        food_name="떡볶이",
-        category="볶음류",
-        carbs_g=102,
-        calories_kcal=450,
-        protein_g=9,
-        fat_g=2,
-        sugar_g=17,
-        fiber_g=7,
-        sodium_mg=10,
-    )
-    ])
-    return items
+
+if __name__ == "__main__":
+    print(make_dummy_data())

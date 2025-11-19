@@ -1,7 +1,9 @@
-# 이미지 기반 식단 분석 test API
+# 이미지 기반 식단 분석 API
 
-업로드된 음식 사진 파일을 FastAPI 서버로 전송하고, 서버에서 더미 영양정보를 응답으로 주는 테스트용 API입니다.  
-현재는 분석 로직 없이 고정된 더미 데이터만 반환합니다.
+업로드된 음식 사진 파일을 FastAPI 서버로 전송하면,  
+YOLO 모델로 객체 탐지를 수행하고, Oracle DB에 저장된 영양 정보를 조회해 반환하는 API입니다.  
+현재는 YOLO 감지 결과는 로그 출력용으로만 사용하고, 하드코딩된 예시 음식명을 기준으로 DB를 조회합니다.
+
 
 ---
 
@@ -11,14 +13,16 @@
 2. [서버 실행 준비](#2-서버-실행-준비)  
    2-1. [의존성 설치](#2-1-의존성-설치)  
    2-2. [서버 실행](#2-2-서버-실행)  
-3. [FastAPI 엔드포인트 설명](#3-fastapi-엔드포인트-설명)  
+3. [FastAPI 엔드포인트](#3-fastapi-엔드포인트)  
    3-1. [요청](#3-1-요청)  
-   3-2. [응답](#3-2-응답)  
-4. [Java(Spring) 연동 예시](#4-javaspring-연동-예시)  
-   4-1. [컨트롤러 예시](#4-1-컨트롤러-예시)  
-   4-2. [Service 예시](#4-2-service-예시)  
-   4-3. [DTO 예시](#4-3-dto-예시)  
-5. [동작 흐름 요약](#5-동작-흐름-요약)  
+   3-2. [처리 흐름](#3-2-처리-흐름)  
+   3-3. [응답](#3-3-응답)  
+4. [Java(Spring) 연동 개요](#4-javaspring-연동-개요)  
+   4-1. [호출 방식](#4-1-호출-방식)  
+   4-2. [컨트롤러 예시](#4-2-컨트롤러-예시)  
+   4-3. [Service 예시](#4-3-service-예시)  
+   4-4. [DTO 예시](#4-4-dto-예시)  
+5. [전체 동작 흐름 요약](#5-전체-동작-흐름-요약)  
 6. [현재 상태](#6-현재-상태)  
 7. [동작 예](#7-동작-예)
 
@@ -29,8 +33,14 @@
 - 백엔드 서버: Python FastAPI (`main.py`)
 - 엔드포인트: `POST /api_test`
 - 요청 형식: `multipart/form-data` 이미지 파일 1개
-- 응답 형식: 음식 정보 리스트(JSON)
+- 응답 형식: `{"items": [음식 정보 리스트]}` 형태의 JSON
+-  데이터 접근 모듈:  
+	- `yolo_inference.py`  
+	- `food_nutrition_repository.py`
+- 이미지 인식 모델: Ultralytics YOLOv10s (`yolov10s.pt`)
+- 영양정보 저장소: Oracle DB `food_nutrition` 테이블
 - 클라이언트 예시: Java(Spring)에서 `RestTemplate`로 호출
+
 
 ---
 
@@ -67,6 +77,7 @@ uvicorn main:test --reload
 - 기본 실행 주소: `http://127.0.0.1:8000`
 - CORS 허용 도메인: `http://127.0.0.1`
 
+로그 예시:
 ```
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [19924] using WatchFiles
@@ -74,11 +85,12 @@ INFO:     Started server process [13720]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ```
-위와 같은 메세지가 뜨면 성공
+위와 같은 형태의 메시지가 출력되면 정상 실행된 상태입니다.
+
 
 ---
 
-## 3. FastAPI 엔드포인트 설명 (`main.py`)
+## 3. FastAPI 엔드포인트
 
 ### 3-1. 요청
 - Method: `POST`
@@ -88,27 +100,74 @@ INFO:     Application startup complete.
     - `file`: 이미지 파일
         - 허용 확장자: `image/png`, `image/jpeg`
 
-### 3-2. 응답
-- 성공 시: HTTP 200, JSON 배열
+유효성 검사:
+1. `file` 존재 여부 (`None` 체크)
+2. `file.content_type` 검사 (`image/png`, `image/jpeg`)
+3. 바이트 길이 검사 
+검증 실패 시 HTTP 400 에러 반환
+
+### 3-2. 처리 흐름
+`main.py`의 `/api_test`의 처리 순서는 아래와 같습니다.
+1. 파일 유효성 검사
+2. 파일 바이너리(`bytes`)를 `yolo_inference.detect_objects`에 전달
+3. YOLOv10s 모델로 객체 감지 수행
+4. 감지 결과(`Counter`)를 콘솔에 출력 (현재는 디버깅용 로그만 사용)
+5. `make_dummy_data()` 호출
+    - 음식명 리스트를 사용해 Oracle DB 조회
+    - 각 이름에 대해 `get_food_nutrition_by_name(food_name)` 호출
+    - DB에 존재하는 음식만 필터링
+    - 조회된 행을 `FoodItem` 스키마로 변환
+6. `{"items": [...]}` 형태로 응답 반환
+
+`FoodItem` 필드는 아래와 같습니다.
+- `food_id: int`
+- `food_name: str`
+- `category: str`
+- `calories_kcal: float`
+- `carbs_g: float | null`
+- `protein_g: float | null`
+- `fat_g: float | null`
+- `sugar_g: float | null`
+- `fiber_g: float | null`
+- `sodium_mg: float | null`
+- `calcium_mg: float | null`
+DB 컬럼명은 모두 소문자로 변환되어 `FoodItem` 필드와 매핑됩니다.
+
+### 3-3. 응답
+- 성공 시: HTTP 200, JSON 객체
 - 응답 데이터 예시)
 ```JSON
 {
-  "name": "김밥 1줄",
-  "kcal": 450,
-  "carbohydrate": 55,
-  "protein": 7,
-  "fat": 8
+  "items": [
+    {
+      "food_id": 1,
+      "food_name": "김밥",
+      "category": "밥류",
+      "calories_kcal": 450.0,
+      "carbs_g": 55.0,
+      "protein_g": 7.0,
+      "fat_g": 8.0,
+      "sugar_g": 6.0,
+      "fiber_g": 13.0,
+      "sodium_mg": 10.0,
+      "calcium_mg": 3.0
+    }
+  ]
 }
 ```
+- 실제 값은 Oracle DB `food_nutrition` 테이블의 데이터에 따라 달라질 수 있습니다.
+- 조회 결과가 없는 경우 `items`는 빈 배열이 될 수 있습니다.
 
-에러 예시)
-- 400 `"파일 없음"`
-- 400 `"잘못된 파일 유형"`
-- 400 `"빈 파일"`
 
-## 4. Java(Spring) 연동 예시
+---
 
-### 4-1. 컨트롤러 예시
+## 4. Java(Spring) 연동 개요
+### 4-1. 호출 방식
+- 컨트롤러에서 `MultipartFile`을 입력으로 받습니다.
+- 서비스에서 `RestTemplate`(또는 `WebClient`)를 사용해 FastAPI 엔드포인트를 호출합니다.
+- 요청은 `multipart/form-data`로 전송합니다.
+
+### 4-2. 컨트롤러 예시
 ```java
 // controller.java
 
@@ -134,7 +193,7 @@ public class TestController {
 }
 ```
 
-### 4-2. Service 예시
+### 4-3. Service 예시
 ```java
 // TestService.java
 
@@ -157,7 +216,8 @@ public class TestService {
 }
 ```
 
-### 4-3. DTO 예시 (생성자/setter/getter/toString 생략)
+### 4-4. DTO 예시
+ (생성자/setter/getter/toString 생략)
 ```java
 // ResultDto.java
   
@@ -173,43 +233,55 @@ public class TestDto {
     private String food_name;  
     private String category;  
     private float calories_kcal;  
-    private float carbs_g;  
-    private float protein_g;  
-    private float fat_g;  
-    private float sugar_g;  
-    private float fiber_g;  
-    private float sodium_mg;  
-    private float calcium_mg;
+    private Float carbs_g;  
+    private Float protein_g;  
+    private Float fat_g;  
+    private Float sugar_g;  
+    private Float fiber_g;  
+    private Float sodium_mg;  
+    private Float calcium_mg;
 ```
 - FastAPI 응답 JSON 키(`food_id`, `food_name`, `category`, ...)와 DTO 필드명이 매핑됩니다.
+- 필드명은 FastAPI `FoodItem` 스키마 및 DB 컬럼명과 동일해야 직렬화/역직렬화가 정상 동작합니다.
 - `file` 필드는 업로드용으로 사용하며, 응답에는 포함되지 않습니다.
+
 
 ---
 
-## 5. 동작 흐름 요약
+## 5. 전체 동작 흐름 요약
 
-1. 클라이언트(웹/앱)에서 음식 사진을 선택해 `/test`로 업로드합니다.
-2. `TestController`에서 전달받은 파일을 `testService.get_items(file)`을 호출합니다.
-3. `TestService.get_items`에서
-    - `multipart/form-data` 형식으로 요청 바디를 구성하고
-    - `RestTemplate`을 사용해 FastAPI 서버의 `POST http://localhost:8000/api_test`를 호출합니다.
+1. 클라이언트(웹/앱)에서 음식 사진을 선택해 Spring `/test` 엔드포인트로 업로드합니다.
+2. `TestController`에서 전달받은 `MultipartFile`을 서비스로 넘깁니다.
+3. `TestService`에서
+    - `multipart/form-data` 요청 바디를 구성하고
+    - `POST http://localhost:8000/api_test`로 FastAPI 서버를 호출합니다.
 4. FastAPI 서버에서
     - 파일 유효성 검사(존재 여부, MIME 타입, 빈 파일 여부)를 수행하고
-    - 업로드된 파일을 `test.png`로 저장한 뒤
-    - 더미 음식 정보 리스트(JSON)를 응답으로 반환합니다.
-5.  `TestService`에서 응답을 `ResultDto`로 역직렬화하고, 내부의 `items`를 콘솔에 출력합니다.
+    - YOLO 모델로 객체 감지를 수행 후 결과를 콘솔에 출력합니다.
+    - 하드코딩된 음식명 리스트를 기준으로 Oracle `food_nutrition` 테이블을 조회합니다.
+    - 조회된 행들을 `FoodItem` 리스트로 변환해 `items` 배열로 응답합니다.
+5. Spring 서비스에서 응답을 `ResultDto` → `List<TestDto>`로 역직렬화하고, 필요에 따라 로깅/후처리를 수행합니다.
+
 
 ---
 
 ## 6. 현재 상태
 
-- 실제 이미지 분석/영양소 인식 기능은 구현되어 있지 않습니다.
-- 항상 고정된 더미 데이터(김밥, 떡볶이)를 응답으로 반환합니다.
-- 반환은 응답 형식 예시로 작성된 것으로 변경될 수 있습니다.
-- 파일 저장(`test.png`)은 업로드 파일 확인용입니다.
+- 이미지 업로드 → YOLO 객체 감지 → Oracle 영양 DB 조회까지의 파이프라인이 구성돼 있습니다.
+- YOLO 감지 결과는 현재 콘솔 로그 출력용이며, 응답에 포함되지 않습니다.
+- 응답에 포함되는 음식은 `make_dummy_data` 내부 음식명 리스트와 DB 데이터에 의해 결정됩니다.
+- `food_nutrition` 테이블 스키마에 따라 `FoodItem`/`TestDto` 필드 구성이 맞아야 합니다.
 
+---
 
 ## 7. 동작 예
 
-`[TestDto{calcium_mg=3.0, food_id=1, food_name='김밥', category='밥류', calories_kcal=450.0, carbs_g=55.0, protein_g=7.0, fat_g=8.0, sugar_g=6.0, fiber_g=13.0, sodium_mg=10.0}, TestDto{calcium_mg=0.0, food_id=2, food_name='떡볶이', category='볶음류', calories_kcal=450.0, carbs_g=102.0, protein_g=9.0, fat_g=2.0, sugar_g=17.0, fiber_g=7.0, sodium_mg=10.0}]`
-`jpeg`/`jpg`/`png` 파일을 `POST` 했을 때, 콘솔에 위 메세지가 출력되면 성공
+1. Spring에서 `jpeg`/`jpg`/`png` 파일을 `POST /test`로 업로드합니다.
+2. FastAPI 서버 콘솔:
+    - `detect_objects` 결과가 `Counter({...})` 형태로 출력됩니다.
+    - Oracle 조회 에러가 없다면 `make_dummy_data()` 결과가 정상적으로 생성됩니다.
+3. Spring 콘솔:
+    - `ResultDto.items`를 로그로 찍을 경우 예시:
+`[TestDto{calcium_mg=3.0, food_id=1, food_name='김밥', category='밥류',  calories_kcal=450.0, carbs_g=55.0, protein_g=7.0, fat_g=8.0,  sugar_g=6.0, fiber_g=13.0, sodium_mg=10.0},  TestDto{calcium_mg=0.0, food_id=2, food_name='떡볶이', category='볶음류',  calories_kcal=450.0, carbs_g=102.0, protein_g=9.0, fat_g=2.0,  sugar_g=17.0, fiber_g=7.0, sodium_mg=10.0}]`
+
+위와 같이 `items` 리스트가 정상 출력되면 FastAPI ↔ Spring 연동이 동작하는 상태입니다.
