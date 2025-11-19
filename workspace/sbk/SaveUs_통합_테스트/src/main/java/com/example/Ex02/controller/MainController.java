@@ -2,10 +2,12 @@ package com.example.Ex02.controller;
 
 import com.example.Ex02.dto.MealDto;
 import com.example.Ex02.dto.UserGoalDto;
+import com.example.Ex02.dto.UserJoinDto;
 import com.example.Ex02.dto.UserMainDto;
 import com.example.Ex02.mapper.MealMapper;
 import com.example.Ex02.mapper.UserGoalMapper;
 import com.example.Ex02.mapper.UserMainMapper;
+import com.example.Ex02.mapper.UserMapper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,13 +28,16 @@ public class MainController {
     @Autowired
     private UserGoalMapper userGoalMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
     // 직접 입력 페이지 매핑 추가
     @GetMapping("/direct-input")
     public String directInput() {
         return "direct-input";
     }
 
-    @GetMapping("/dashboard")
+    @GetMapping({"/", "/dashboard"})
     public String dashboard(HttpSession session, Model model) {
 
         // 로그인 체크
@@ -54,14 +59,25 @@ public class MainController {
         List<MealDto> todayMeals = mealMapper.findTodayMeals(userId);
 
         // 오늘 섭취한 영양소 합계 계산
+        // 오늘 섭취한 영양소 합계 계산
         int totalProtein = 0;
         int totalCarbs = 0;
         int totalFat = 0;
+
+        int totalSugar = 0;    // 추가
+        int totalFiber = 0;    // 추가
+        int totalCalcium = 0;  // 추가
+        int totalSodium = 0;   // 추가
 
         for (MealDto m : todayMeals) {
             totalProtein += (m.getProtein() != null ? m.getProtein() : 0);
             totalCarbs += (m.getCarbs() != null ? m.getCarbs() : 0);
             totalFat += (m.getFat() != null ? m.getFat() : 0);
+
+            totalSugar += (m.getSugar() != null ? m.getSugar() : 0);
+            totalFiber += (m.getFiber() != null ? m.getFiber() : 0);
+            totalCalcium += (m.getCalcium() != null ? m.getCalcium() : 0);
+            totalSodium += (m.getSodium() != null ? m.getSodium() : 0);
         }
 
         // 오늘의 총 칼로리 계산
@@ -88,6 +104,11 @@ public class MainController {
         model.addAttribute("totalProtein", totalProtein);
         model.addAttribute("totalCarbs", totalCarbs);
         model.addAttribute("totalFat", totalFat);
+        model.addAttribute("totalSugar", totalSugar);
+        model.addAttribute("totalFiber", totalFiber);
+        model.addAttribute("totalCalcium", totalCalcium);
+        model.addAttribute("totalSodium", totalSodium);
+
 
         model.addAttribute("goal", goal);
 

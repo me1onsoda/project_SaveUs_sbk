@@ -1,91 +1,135 @@
+/* 전체 wrapper — 하단 공간 확보 */
 .profile-wrapper {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 35px 20px 120px; /* 하단 여백 크게 증가 */
+}
+
+/* 타이틀 */
+.mypage-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 22px;
+    color: #333;
 }
 
 /* 프로필 카드 */
 .profile-card {
-    background: #ffffff;
-    border: 1px solid #e6e6e6;
+    background: #fff;
     border-radius: 16px;
-    padding: 30px;
-    margin-bottom: 30px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    margin-bottom: 45px;
 }
 
 .profile-banner {
-    width: 100%;
     height: 130px;
-    border-radius: 12px;
-    background: linear-gradient(to right, #e8e8e8, #f5f5f5);
-    margin-bottom: -50px;
+    background: linear-gradient(90deg, #e8f5f1, #d4eeee);
 }
 
-/* 프로필 내부 */
 .profile-inner {
     display: flex;
     align-items: center;
-    padding-top: 10px;
+    padding: 26px 30px;
+    gap: 25px;
 }
 
 .profile-img {
-    width: 90px;
-    height: 90px;
+    width: 115px;
+    height: 115px;
     border-radius: 50%;
-    border: 4px solid #ffffff;
-    background: #ffffff;
+    border: 5px solid #fff;
     object-fit: cover;
-    margin-right: 25px;
 }
 
+/* 프로필 정보 */
 .profile-info h3 {
-    margin-bottom: 4px;
     font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.profile-info p {
+    font-size: 14px;
+    color: #555;
+    margin: 3px 0;
+}
+
+/* 태그들 */
+.profile-tags {
+    display: flex;
+    gap: 8px;
+    margin: 4px 0 12px;
+}
+
+.goal-tag {
+    background: #eaf7f3;
+    color: #1ABC9C;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
     font-weight: 600;
 }
 
-.user-meta {
-    color: #666;
-    font-size: 14px;
-    line-height: 1.5;
+.persona-tag {
+    background: #1ABC9C;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 /* 배지 */
-.badge-section {
-    margin-top: 30px;
-}
-
-.section-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 15px;
+.badge-section h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
 }
 
 .badge-list {
     display: flex;
-    gap: 16px;
+    gap: 22px;
+    flex-wrap: wrap; /* 자동 줄바꿈 */
 }
 
 .badge-card {
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 14px;
-    border: 1px solid #e8e8e8;
     width: 160px;
+    padding: 18px;
+    background: #fff;
+    border-radius: 14px;
     text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
-.badge-title {
-    font-weight: 600;
+.badge-card img {
+    width: 55px;
+    height: 55px;
+    margin-bottom: 10px;
+}
+
+.badge-card h4 {
+    font-size: 15px;
+    font-weight: 700;
     margin-bottom: 6px;
 }
 
-.badge-desc {
-    font-size: 12px;
-    color: #777;
+.badge-card p {
+    font-size: 13px;
+    color: #666;
 }
 
 /* 챌린지 */
+.challenge-section {
+    margin-top: 45px;
+}
+
+.challenge-section h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
 .challenge-desc {
     font-size: 14px;
     color: #666;

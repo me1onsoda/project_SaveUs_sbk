@@ -18,6 +18,16 @@ public interface ChallengeService {
     // (Spring Page 객체 대신 Map과 DTO를 사용하여 수동 페이징 처리)
     Map<String, Object> findAllChallengesPaginated(Long userId, String keyword, String tag, int page, int size);
 
-    // "사이드바" 랭킹
+    // 랭킹
     List<LeaderboardEntryDto> findLeaderboardTop5();
+
+    void joinChallenge(Long userId, Long challengeId);
+
+    //매일밤 자동 실행
+    void runDailyCheck();
+
+    void restartChallenge(Long userChallengeId);
+
+    // 삭제 메서드 추가
+    void deleteChallenge(Long userChallengeId);
 }

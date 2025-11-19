@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         ` : '';
 
-        // [버그 수정] (post.content || '') 로 null 예외 처리
+        // (post.content || '') 로 null 예외 처리
         const postContentHtml = (post.content || '').replace(/\n/g, '<br>');
 
         return `
