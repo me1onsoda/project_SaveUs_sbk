@@ -27,4 +27,15 @@
         VALUES (d.USER_ID, d.SCORE_DATE, d.SCORE, d.STATUS_MESSAGE)
     </insert>
 
+    <select id="findScoresOfMonth" resultType="com.example.Ex02.dto.CalendarScoreDto">
+        SELECT
+        SCORE_DATE AS scoreDate,
+        SCORE AS score
+        FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND EXTRACT(YEAR FROM SCORE_DATE) = #{year}
+        AND EXTRACT(MONTH FROM SCORE_DATE) = #{month}
+        ORDER BY SCORE_DATE
+    </select>
+
 </mapper>

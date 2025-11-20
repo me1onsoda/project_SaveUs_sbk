@@ -18,4 +18,22 @@
         ORDER BY eatDate
     </select>
 
+    <select id="findDailyIntakeForMonth" resultType="com.example.Ex02.dto.DailyIntakeDto">
+        SELECT
+        USER_ID,
+        TRUNC(EAT_TIME) AS eatDate,
+        SUM(CALORIES_KCAL) AS calories,
+        SUM(CARBS_G) AS carbs,
+        SUM(PROTEIN_G) AS protein,
+        SUM(FATS_G) AS fats
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND EXTRACT(YEAR FROM EAT_TIME) = #{year}
+        AND EXTRACT(MONTH FROM EAT_TIME) = #{month}
+        GROUP BY USER_ID, TRUNC(EAT_TIME)
+        ORDER BY eatDate
+    </select>
+
+
+
 </mapper>
