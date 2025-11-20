@@ -60,13 +60,17 @@ main {
     border-radius: 50%;
 }
 
-.persona-tag {
-    background: #1da1f2;
-    color: #fff;
-    padding: 4px 10px;
-    border-radius: 12px;
+.goal-tag {
+    background: #1ABC9C !important;  /* 감량 태그 고유 민트색 */
+    color: #ffffff !important;        /* 흰색 글씨 */
+    padding: 4px 12px;
+    border-radius: 10px;
     font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
 }
+
+
 
 /* ===============================
     식사 기록하기
@@ -94,16 +98,13 @@ main {
 .log-actions button {
     height: 48px;
     padding: 0 24px;
-
     border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
     transition: 0.16s ease-in-out;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border: none;
 }
 
@@ -123,13 +124,12 @@ main {
     background: var(--blue-dark);
 }
 
-/* 검색 부분 */
-.meal-search-area {
-    display: flex;
-    align-items: center;
-}
+/* ===============================
+    검색창 + 자동완성
+================================ */
 
 .search-group {
+    position: relative;
     display: flex;
     align-items: center;
 }
@@ -138,7 +138,6 @@ main {
     width: 220px;
     height: 48px;
     padding: 0 12px;
-
     border: 1px solid var(--border);
     border-right: none;
     border-radius: 10px 0 0 10px;
@@ -150,7 +149,6 @@ main {
     height: 48px;
     padding: 0 24px;
     font-size: 16px;
-
     border: none;
     border-radius: 0 10px 10px 0;
     cursor: pointer;
@@ -159,6 +157,34 @@ main {
     background: #E5951E;
 }
 
+/* 자동완성 박스 (최종 안정 버전) */
+.autocomplete-box {
+    display: none;
+    position: absolute;
+
+    top: 48px;     /* input 아래 밀착 */
+    left: 0;
+    width: 220px;  /* input 너비와 동일 */
+
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 0 0 10px 10px;
+
+    max-height: 180px;
+    overflow-y: auto;
+
+    z-index: 9999;
+}
+
+.autocomplete-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.autocomplete-item:hover {
+    background: #f5f5f5;
+}
 
 /* ===============================
     오늘의 식사 카드
@@ -169,7 +195,6 @@ main {
     margin-bottom: 40px;
 }
 
-/* 왼쪽 식사 목록 */
 .meals-card {
     background: #fff;
     border: 1px solid var(--border);
@@ -192,11 +217,9 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     background: #fafafa;
     border: 1px solid #eee;
     border-radius: 10px;
-
     padding: 12px;
     text-decoration: none;
     color: inherit;
@@ -217,7 +240,6 @@ main {
     gap: 24px;
 }
 
-/* =============== 공통 summary card =============== */
 .summary-card {
     background: #fff;
     border: 1px solid var(--border);
@@ -232,8 +254,9 @@ main {
 }
 
 .summary-card .title {
-    font-size: 15px;
-    color: var(--text-light);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
 .summary-card .value {
@@ -242,7 +265,6 @@ main {
     color: var(--green);
 }
 
-/* Progress Bar 공통 */
 .progress-bar {
     width: 100%;
     height: 10px;
@@ -258,37 +280,20 @@ main {
     transition: width 0.4s ease;
 }
 
-/* nutrient 별 색 */
 .calorie-bar {
-    background: #FFA94D;   /* 오렌지 */
+    background: #FFA94D;
 }
 
 .protein-bar {
-    background: #38C6A7;   /* 민트 */
+    background: #38C6A7;
 }
 
 .carbs-bar {
-    background: #5AA0F2;   /* 블루 */
+    background: #5AA0F2;
 }
 
 .fat-bar {
-    background: #D4A373;   /* 브라운 */
-}
-
-
-.goal-text {
-    font-size: 14px;
-    color: var(--text-light);
-}
-
-/* 3대 영양 summary */
-.nutrient-summary {
-    display: flex;
-    gap: 18px;
-}
-
-.summary-card {
-    flex: 1;
+    background: #D4A373;
 }
 
 .percent-text {
@@ -298,39 +303,37 @@ main {
     margin-top: 4px;
 }
 
-/* 영양 타이틀(총 칼로리, 단백질, 탄수화물, 지방) 글씨 크기 증가 */
-.summary-card .title {
-    font-size: 18px !important;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-/* 상단 총 칼로리 전용 */
-.calorie-title {
-    font-size: 19px !important;
-    font-weight: 600;
-}
-
-/* 목표 초과 시 텍스트 빨간색 */
 .over {
     color: #FF3B30 !important;
 }
 
-/* Progress Bar 초과 시 빨간색 */
 .progress-over {
     background: #FF3B30 !important;
 }
 
 
-/* ===============================
-    영양소 차트
-================================ */
-.nutrient-chart {
-    margin-top: 40px;
+/* 오른쪽 요약 전체를 하나의 박스로 만들기 */
+.right-summary {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;   /* 개별 카드 간격 제거 */
 }
 
-.chart-box {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
+/* 기존 개별 summary-card 디자인 제거 */
+.right-summary .summary-card {
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 16px 0;
+    margin: 0;
+    border-bottom: 1px solid #eee;  /* 항목 구분선 */
+}
+
+/* 마지막 항목 구분선 제거 */
+.right-summary .summary-card:last-child {
+    border-bottom: none;
 }

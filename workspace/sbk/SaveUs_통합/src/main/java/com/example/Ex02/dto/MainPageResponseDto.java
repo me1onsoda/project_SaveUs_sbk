@@ -7,5 +7,4 @@ public class MainPageResponseDto {
     public DailyNutritionDto dailyNutrition;
     public UserGoalDto userGoal;
     public List<MealEntryDto> todayMeals;
-    public HealthScoreDailyDto todayScore;
 }

@@ -14,7 +14,7 @@ public class FoodSearchService {
     private FoodSearchMapper foodSearchMapper;
 
     /**
-     * 음식명으로 검색
+     * 음식명으로 전체 정보 검색 (영양성분 포함)
      * @param keyword 검색어
      * @return 음식 리스트
      */
@@ -23,5 +23,17 @@ public class FoodSearchService {
             return List.of();
         }
         return foodSearchMapper.searchFood(keyword);
+    }
+
+    /**
+     * 음식 자동완성용 음식명 검색
+     * @param keyword 검색어
+     * @return 음식명 리스트
+     */
+    public List<String> searchFoodNames(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+        return foodSearchMapper.searchFoodNames(keyword);
     }
 }
