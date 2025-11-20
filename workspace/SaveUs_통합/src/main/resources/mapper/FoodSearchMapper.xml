@@ -5,7 +5,10 @@
 
 <mapper namespace="com.example.Ex02.mapper.FoodSearchMapper">
 
-    <select id="searchFood" parameterType="string" resultType="com.example.Ex02.dto.FoodNutritionDto">
+    <!-- 전체 정보 검색 (영양성분 포함) -->
+    <select id="searchFood" parameterType="string"
+            resultType="com.example.Ex02.dto.FoodNutritionDto">
+
         SELECT
         FOOD_ID       AS foodId,
         FOOD_NAME     AS foodName,
@@ -21,6 +24,18 @@
         FROM FOOD_NUTRITION
         WHERE LOWER(FOOD_NAME) LIKE '%' || LOWER(#{keyword}) || '%'
         ORDER BY FOOD_NAME
+
+    </select>
+
+
+    <!-- 자동완성: 음식명 검색 -->
+    <select id="searchFoodNames" parameterType="string" resultType="string">
+        SELECT
+        FOOD_NAME
+        FROM FOOD_NUTRITION
+        WHERE LOWER(FOOD_NAME) LIKE '%' || LOWER(#{keyword}) || '%'
+        ORDER BY FOOD_NAME
+        FETCH FIRST 10 ROWS ONLY
     </select>
 
 </mapper>

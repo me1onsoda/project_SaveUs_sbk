@@ -5,7 +5,7 @@
 
 <mapper namespace="com.example.Ex02.mapper.UserGoalMapper">
 
-    <!-- 최신 목표 1개 조회 -->
+    <!-- 사용자 목표 조회 -->
     <select id="findUserGoal" parameterType="long"
             resultType="com.example.Ex02.dto.UserGoalDto">
 
@@ -22,7 +22,7 @@
         FETCH FIRST 1 ROWS ONLY
     </select>
 
-    <!-- 목표 추가 -->
+    <!-- 사용자 목표 추가 -->
     <insert id="insertUserGoal" parameterType="com.example.Ex02.dto.UserGoalDto">
         INSERT INTO USER_GOAL (
         USER_ID,

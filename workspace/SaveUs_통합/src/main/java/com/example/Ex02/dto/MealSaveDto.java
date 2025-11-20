@@ -29,11 +29,11 @@ public class MealSaveDto {
         this.mealTime = mealTime;
     }
 
-    public Integer getCalories() { // ← 수정됨
+    public Integer getCalories() {
         return calories;
     }
 
-    public void setCalories(Integer calories) { // ← 수정됨
+    public void setCalories(Integer calories) {
         this.calories = calories;
     }
 

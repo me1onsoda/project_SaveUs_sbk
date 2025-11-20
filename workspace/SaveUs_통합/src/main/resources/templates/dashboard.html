@@ -25,7 +25,7 @@
                     <h2>
                         환영합니다, <span th:text="${user.nickname}"></span>님!
                     </h2>
-                    <span class="persona-tag" th:text="${goalName}"></span>
+                    <span class="goal-tag" th:text="${goalName}"></span>
                 </div>
             </div>
         </div>
@@ -33,7 +33,6 @@
         <!-- 팁 카드 -->
         <div class="tip-card">
             <h4>오늘의 팁</h4>
-            <p class="tip-sub">몸과 마음을 건강하게</p>
             <p class="tip-text">
                 다양한 색깔의 채소를 식단에 포함해 보십시오.
                 항산화 성분을 높여 전반적인 건강 유지에 도움이 됩니다.
@@ -55,8 +54,13 @@
             <div class="meal-search-area">
                 <div class="search-group">
                     <input type="text" id="mealSearchInput" placeholder="음식명 검색">
+
+                    <!-- 자동완성 결과 박스 추가 -->
+                    <div id="autocompleteBox" class="autocomplete-box"></div>
+
                     <button id="mealAddBtn">추가</button>
                 </div>
+
             </div>
         </div>
     </section>
@@ -124,6 +128,33 @@
             <!-- 3대 영양 progress -->
             <div class="nutrient-summary">
 
+                <!-- 탄수화물 -->
+                <div class="summary-card">
+                    <div class="summary-header">
+                        <p class="title">탄수화물</p>
+
+                        <h3 class="value"
+                            th:classappend="${totalCarbs > goal.carbsG} ? ' over'">
+                            <span th:text="${totalCarbs}"></span>
+                            /
+                            <span th:text="${goal.carbsG}"></span> g
+                        </h3>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill carbs-bar"
+                             th:classappend="${totalCarbs > goal.carbsG} ? ' progress-over'"
+                             th:style="'width:' + ( (${totalCarbs} / ${goal.carbsG}) > 1 ? 100 : (${totalCarbs} / ${goal.carbsG} * 100) ) + '%' ">
+                        </div>
+                    </div>
+
+                    <p class="percent-text"
+                       th:classappend="${totalCarbs > goal.carbsG} ? ' over'"
+                       th:text="${(totalCarbs * 100 / goal.carbsG) > 100 ? 100 : T(java.lang.Math).round((totalCarbs * 100.0) / goal.carbsG)} + '%'">
+                    </p>
+                </div>
+
+
                 <!-- 단백질 -->
                 <div class="summary-card">
                     <div class="summary-header">
@@ -152,31 +183,7 @@
 
 
 
-                <!-- 탄수화물 -->
-                <div class="summary-card">
-                    <div class="summary-header">
-                        <p class="title">탄수화물</p>
 
-                        <h3 class="value"
-                            th:classappend="${totalCarbs > goal.carbsG} ? ' over'">
-                            <span th:text="${totalCarbs}"></span>
-                            /
-                            <span th:text="${goal.carbsG}"></span> g
-                        </h3>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill carbs-bar"
-                             th:classappend="${totalCarbs > goal.carbsG} ? ' progress-over'"
-                             th:style="'width:' + ( (${totalCarbs} / ${goal.carbsG}) > 1 ? 100 : (${totalCarbs} / ${goal.carbsG} * 100) ) + '%' ">
-                        </div>
-                    </div>
-
-                    <p class="percent-text"
-                       th:classappend="${totalCarbs > goal.carbsG} ? ' over'"
-                       th:text="${(totalCarbs * 100 / goal.carbsG) > 100 ? 100 : T(java.lang.Math).round((totalCarbs * 100.0) / goal.carbsG)} + '%'">
-                    </p>
-                </div>
 
 
 
@@ -211,19 +218,6 @@
         </div>
 
     </div>
-
-
-    <!-- 영양소 차트 -->
-    <section class="nutrient-chart">
-        <h4>영양소 분포</h4>
-        <p class="sub">섭취한 주요 영양소의 분포입니다.</p>
-
-
-
-        <div class="chart-box">
-            <canvas id="nutrientChart"></canvas>
-        </div>
-    </section>
 
 </main>
 
