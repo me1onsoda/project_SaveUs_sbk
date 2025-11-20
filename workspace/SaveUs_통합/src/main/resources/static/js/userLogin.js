@@ -35,3 +35,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
+window.onload = function () {
+    const resetSuccess = document.getElementById("resetSuccess")?.value;
+
+    if (resetSuccess === "true") {
+        Swal.fire({
+            title: "비밀번호 변경 완료",
+            html: `
+                <p style="font-size:16px; margin-top:6px;">
+                    비밀번호가 성공적으로 변경되었습니다.
+                </p>
+                <p style="font-size:16px;">새 비밀번호로 로그인해주세요.</p>
+            `,
+            confirmButtonText: "확인",
+            customClass: {
+                confirmButton: "sw-btn"
+            },
+
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            buttonsStyling: false,
+            background: "#ffffff",
+            width: "420px",
+            allowOutsideClick: false
+        });
+    }
+};

@@ -1,3 +1,4 @@
+/* 이메일 조합 */
 function updateEmail() {
     const id = document.getElementById("emailId").value;
     const domain = document.getElementById("emailDomain").value;
@@ -12,6 +13,7 @@ function resetEmailCheck() {
     result.style.color = "";
 }
 
+/* 이메일 중복 체크 */
 function checkEmail() {
     const email = document.getElementById("emailInput").value;
     const result = document.getElementById("emailCheckResult");
@@ -35,8 +37,46 @@ function checkEmail() {
         });
 }
 
-/* 이메일 복원 기능 + 생년월일 나이 계산 기능 */
-window.addEventListener('DOMContentLoaded', function () {
+/* 숫자만 입력 */
+function onlyNumber(input) {
+    input.value = input.value.replace(/[^0-9]/g, "");
+}
+
+/* 1자리 → 2자리 보정 */
+function autoPad(input) {
+    if (input.value.length === 1) {
+        input.value = "0" + input.value;
+    }
+}
+
+/* 나이 자동 계산 */
+function calculateAge() {
+
+    const year = document.getElementById("year").value;
+    const month = document.getElementById("month").value;
+    const day = document.getElementById("day").value;
+
+    if (year.length !== 4 || month.length !== 2 || day.length !== 2) return;
+
+    const birthStr = `${year}-${month}-${day}`;
+    const today = new Date();
+    const birthDate = new Date(birthStr);
+
+    if (isNaN(birthDate.getTime())) return;
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() + 1 - (birthDate.getMonth() + 1);
+
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    document.getElementById("age").value = age;
+    document.getElementById("birthdate").value = birthStr;
+}
+
+/* 닉네임 중복 + 유효성 */
+document.addEventListener("DOMContentLoaded", () => {
 
     /* 이메일 복원 */
     const full = document.getElementById('emailInput')?.value;
@@ -47,62 +87,44 @@ window.addEventListener('DOMContentLoaded', function () {
         document.getElementById('emailDomain').value = parts[1];
     }
 
-    /* 생년월일 -> 나이 자동 계산 */
-    const birthInput = document.getElementById("birthdate");
-    const ageInput = document.getElementById("age");
+    /* 생년월일 텍스트박스 이벤트 */
+    ["year", "month", "day"].forEach(id => {
+        const input = document.getElementById(id);
 
-    if (birthInput && ageInput) {
-        birthInput.addEventListener("change", function () {
-            ageInput.value = calculateAge(this.value);
+        input.addEventListener("input", () => {
+            onlyNumber(input);
+
+            if (id === "month" || id === "day") {
+                if (input.value.length >= 2) autoPad(input);
+            }
         });
 
-        /* 페이지 로딩 시 이미 값이 있을 경우 자동 계산 */
-        if (birthInput.value) {
-            ageInput.value = calculateAge(birthInput.value);
-        }
-    }
-});
+        input.addEventListener("blur", () => {
+            if (id === "month" || id === "day") {
+                if (input.value.length === 1) autoPad(input);
+            }
+            calculateAge();
+        });
+    });
 
-/* 나이 계산 함수 */
-function calculateAge(birth) {
-    if (!birth) return "";
-
-    const today = new Date();
-    const birthDate = new Date(birth);
-
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    const d = today.getDate() - birthDate.getDate();
-
-    if (m < 0 || (m === 0 && d < 0)) {
-        age--;
-    }
-    return age;
-}
-
-// 닉네임 유효성 검사
-document.addEventListener("DOMContentLoaded", () => {
-
+    /* 닉네임 검사 */
     const nicknameInput = document.getElementById("nicknameInput");
     const result = document.getElementById("nicknameCheckResult");
 
     nicknameInput.addEventListener("input", () => {
         const nickname = nicknameInput.value.trim();
 
-        // 1) 빈 값 검사
         if (nickname.length === 0) {
             result.textContent = "";
             return;
         }
 
-        // 2) 길이 검사
         if (nickname.length < 2 || nickname.length > 12) {
             result.textContent = "닉네임은 2~12자 사이여야 합니다.";
             result.style.color = "#E74C3C";
             return;
         }
 
-        // 3) 정규식 검사 (한글, 숫자, 영문, _ 허용)
         const regex = /^[a-zA-Z0-9가-힣_]+$/;
         if (!regex.test(nickname)) {
             result.textContent = "닉네임은 한글,영문,숫자, _ 만 사용할 수 있습니다.";
@@ -110,7 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // 4) 중복 검사 요청
         fetch(`/user/checkNickname?nickname=${nickname}`)
             .then(res => res.text())
             .then(data => {
@@ -130,19 +151,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-
-// 이메일 중복이면 제출막기
+/* 제출 전 검사 */
 function validateForm() {
+
     const emailMsg = document.getElementById("emailCheckResult").innerText;
     const nicknameMsg = document.getElementById("nicknameCheckResult").innerText;
+    const birth = document.getElementById("birthdate").value;
 
-    // 이메일 중복이면 제출 막기
+    if (!birth) {
+        alert("생년월일을 올바르게 입력해주세요.");
+        return false;
+    }
+
     if (emailMsg.includes("이미 사용 중")) {
         alert("이미 사용 중인 이메일입니다.");
         return false;
     }
 
-    // 닉네임 중복이면 제출 막기
     if (nicknameMsg.includes("이미 사용 중") ||
         nicknameMsg.includes("닉네임은")) {
         alert("닉네임을 다시 확인해주세요.");

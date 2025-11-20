@@ -214,22 +214,51 @@ button[type="submit"]:hover {
 }
 
 /* ================================
-   생년월일 + 나이 2칸 구조
+   생년월일 + 나이 박스 구조
 ================================ */
 .row-2col {
     display: flex;
     justify-content: space-between;
-    gap: 20px;
+    gap: 24px;
 }
 
+/* 왼쪽 - 생년월일 */
 .half-box {
     flex: 1;
     position: relative;
 }
 
-.half-box input {
-    width: 100%;
+/* 생년월일 텍스트박스 */
+.birth-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
+
+.birth-row input {
+    height: 46px;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+    padding: 0 12px;
+    font-size: 15px;
+}
+
+/* 연도는 길게 */
+#year {
+    width: 140px !important;
+}
+
+/* 월/일은 짧게 */
+#month, #day {
+    width: 110px !important;
+}
+
+/* 나이 input 크기 조절 */
+#age {
+    width: 110px !important;   /* 원하는 너비로 조정 */
+    text-align: center;
+}
+
 
 /* 에러 메시지가 칸 아래 고정되도록 */
 .half-box .error {
@@ -237,4 +266,3 @@ button[type="submit"]:hover {
     bottom: -18px;
     left: 4px;
 }
-

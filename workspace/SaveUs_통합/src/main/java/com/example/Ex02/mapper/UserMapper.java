@@ -14,8 +14,6 @@ public interface UserMapper {
 
     UserJoinDto findById(Long userId);
 
-    void deleteUser(Long userId);
-
     int countByNickname(String nickname);
 
     void updateUser(UserJoinDto userDto);
@@ -26,4 +24,13 @@ public interface UserMapper {
 
     UserJoinDto findMainInfo(Long userId);
 
+    void deleteUserMeals(Long userId);
+
+    void deleteUserGoals(Long userId);
+
+    void deleteUserHealthScores(Long userId);
+
+    void deleteUser(Long userId);
+
+    UserJoinDto findByNicknameAndBirthdate(String nickname, String birthdate);
 }

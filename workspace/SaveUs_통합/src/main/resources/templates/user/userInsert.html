@@ -10,7 +10,7 @@
 
 <div class="signup-container">
 
-    <h1>Create an account</h1>
+    <h1>회원가입</h1>
 
     <form th:action="@{/user/insert}" th:object="${userDto}" method="post" onsubmit="return validateForm()">
     <!-- 이메일 -->
@@ -59,7 +59,16 @@
         <div class="form-row row-2col">
             <div class="half-box">
                 <label>생년월일</label>
-                <input type="date" id="birthdate" th:field="*{birthdate}">
+
+                <div class="birth-row">
+                    <input type="text" id="year" placeholder="YYYY" maxlength="4" required>
+                    <input type="text" id="month" placeholder="MM" maxlength="2" required>
+                    <input type="text" id="day" placeholder="DD" maxlength="2" required>
+                </div>
+
+                <!-- 실제로 서버에 전달되는 숨김값 -->
+                <input type="hidden" id="birthdate" th:field="*{birthdate}">
+
                 <p th:if="${#fields.hasErrors('birthdate')}"
                    th:errors="*{birthdate}" class="error"></p>
             </div>

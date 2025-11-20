@@ -1,9 +1,14 @@
 package com.example.Ex02.controller;
 
+import com.example.Ex02.dto.UserBadgeDto;
+import com.example.Ex02.dto.UserChallengeDto;
 import com.example.Ex02.dto.UserJoinDto;
 import com.example.Ex02.dto.UserLoginDto;
 import com.example.Ex02.mapper.SurveyMapper;
+import com.example.Ex02.mapper.UserBadgeMapper;
+import com.example.Ex02.mapper.UserChallengeMapper;
 import com.example.Ex02.mapper.UserMapper;
+import com.example.Ex02.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
+import java.util.List;
 import java.util.UUID;
+
 
 @Controller
 public class UserController {
@@ -25,6 +32,15 @@ public class UserController {
 
     @Autowired
     private SurveyMapper surveyMapper;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserBadgeMapper userBadgeMapper;
+
+    @Autowired
+    private UserChallengeMapper userChallengeMapper;
 
     // 회원가입 페이지 이동
     @GetMapping("/join")
@@ -67,8 +83,13 @@ public class UserController {
 
     // 로그인 페이지
     @GetMapping("/login")
-    public String loginForm(Model model) {
+    public String loginForm(Model model,  @RequestParam(value = "resetSuccess", required = false) String resetSuccess) {
         model.addAttribute("userLoginDto", new UserLoginDto());
+
+        if (resetSuccess != null) {
+            model.addAttribute("resetSuccess", true);
+        }
+
         return "user/userLogin";
     }
 
@@ -99,27 +120,19 @@ public class UserController {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
+        // 사용자 정보
         UserJoinDto user = userMapper.findById(userId);
         model.addAttribute("user", user);
 
-        String dietType = surveyMapper.findDietType(userId);
-        model.addAttribute("dietType", dietType);
+        // 획득 뱃지 목록
+        List<UserBadgeDto> badges = userBadgeMapper.findBadgesByUser(userId);
+        model.addAttribute("badges", badges);
+
+        // 획득 챌린지 목록
+        List<UserChallengeDto> challenges  = userChallengeMapper.findActiveChallenges(userId);
+        model.addAttribute("challenges", challenges);
 
         return "user/myPage";
-    }
-
-    // 프로필 수정 이동
-    @GetMapping("/profile/edit")
-    public String editProfilePage(@ModelAttribute("user") UserJoinDto dto,
-                                  HttpSession session, Model model) {
-
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) return "redirect:/login";
-
-        UserJoinDto user = userMapper.findById(userId);
-        model.addAttribute("user", user);
-
-        return "user/profileEdit";
     }
 
     // 프로필 수정
@@ -192,7 +205,7 @@ public class UserController {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        userMapper.deleteUser(userId);
+        userService.deleteUserAll(userId);
         session.invalidate();
 
         return "redirect:/login";
@@ -244,31 +257,15 @@ public class UserController {
             Model model) {
 
         Long loginUserId = (Long) session.getAttribute("userId");
+        if (loginUserId == null) return "redirect:/login";
 
-        // 로그인 하지 않은 사용자는 로그인 페이지로 이동
-        if (loginUserId == null) {
-            return "redirect:/login";
-        }
-
-        // 대상 유저 정보 조회
         UserJoinDto profile = userMapper.findMainInfo(targetUserId);
+        if (profile == null) return "error/404";
 
-        // 유저가 존재하지 않으면 404 페이지 이동
-        if (profile == null) {
-            return "error/404";
-        }
-
-        // 사용자 프로필 데이터 전달
         model.addAttribute("profile", profile);
-
-        // 해당 프로필이 본인 것인지 여부
         model.addAttribute("isOwner", loginUserId.equals(targetUserId));
 
-        // 식단 유형(설문 결과) 로드
-        String dietType = surveyMapper.findDietType(targetUserId);
-        model.addAttribute("dietType", dietType);
-
-        return "user/otherProfile";  
+        return "user/otherProfile";
     }
 
 }
