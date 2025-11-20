@@ -18,4 +18,7 @@ public interface MealMapper {
     List<MealDto> findTodayMeals(Long userId);
 
     void deleteMeal(Long entryId);
+
+    // 전날 영양소 합계 조회
+    MealDto findYesterdayTotalNutrition(Long userId);
 }

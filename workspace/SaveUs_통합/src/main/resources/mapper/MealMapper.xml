@@ -135,4 +135,20 @@
         WHERE ENTRY_ID = #{entryId}
     </delete>
 
+    <!--전날 영양소 합계 조회-->
+    <select id="findYesterdayTotalNutrition" resultMap="MealResultMap">
+        SELECT
+            NVL(SUM(CALORIES_KCAL), 0) AS CALORIES_KCAL,
+            NVL(SUM(PROTEIN_G), 0)     AS PROTEIN_G,
+            NVL(SUM(CARBS_G), 0)       AS CARBS_G,
+            NVL(SUM(FATS_G), 0)        AS FATS_G,
+            NVL(SUM(SUGAR_G), 0)       AS SUGAR_G,
+            NVL(SUM(FIBER_G), 0)       AS FIBER_G,
+            NVL(SUM(CALCIUM_MG), 0)    AS CALCIUM_MG,
+            NVL(SUM(SODIUM_MG), 0)     AS SODIUM_MG
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND TRUNC(EAT_TIME) = TRUNC(SYSDATE - 1)
+    </select>
+
 </mapper>
