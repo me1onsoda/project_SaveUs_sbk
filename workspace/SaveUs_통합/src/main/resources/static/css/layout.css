@@ -140,25 +140,44 @@ ul {
 */
 .main-header {
     display: flex;
-    justify-content: flex-end; /* 아이템을 오른쪽 끝으로 정렬 */
+    justify-content: flex-end; /* 오른쪽 정렬 */
     align-items: center;
-    padding: 20px 32px; /* 상하 20px, 좌우 32px */
+    padding: 10px 32px;
     border-bottom: 2px solid var(--color-border);
-
+    background-color: var(--color-white); /* 배경색 명시 (깔끔하게) */
 }
 
+/* 프로필 버튼 전체 컨테이너 */
 .user-profile-button {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
+    padding: 6px 12px; /* 클릭 영역 확보 */
+    display: flex;     /* 이미지와 텍스트 가로 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    gap: 10px;         /* 이미지와 텍스트 사이 간격 */
+    border-radius: 30px; /* 둥근 모서리 */
+    transition: background-color 0.2s; /* 호버 효과 부드럽게 */
 }
 
+.user-profile-button:hover {
+    background-color: var(--color-bg-app); /* 호버 시 살짝 회색 배경 */
+}
+
+/* 프로필 이미지 */
 .user-profile-button img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
+    border: 1px solid var(--color-border); /* 이미지 테두리 (선택사항) */
+}
+
+/* 닉네임 텍스트 스타일 (새로 추가!) */
+.user-profile-button span {
+    font-size: 16px;       /* 글자 크기 키움 */
+    font-weight: 600;      /* 약간 두껍게 */
+    color: var(--color-text-primary); /* 진한 회색 */
 }
 
 /* ============================================

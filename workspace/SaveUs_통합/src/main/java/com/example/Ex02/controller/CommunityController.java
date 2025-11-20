@@ -23,7 +23,8 @@ public class CommunityController {
 
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
-            userId = 0L; // 비로그인 사용자는 0L로 처리 (게시물 좋아요 상태 확인용)
+            //userId = 0L; // 비로그인 사용자는 0L로 처리 (게시물 좋아요 상태 확인용)
+            return "redirect:/login";
         }
 
         // 서비스 호출

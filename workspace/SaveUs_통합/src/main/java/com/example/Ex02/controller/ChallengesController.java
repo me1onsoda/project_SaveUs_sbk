@@ -26,10 +26,11 @@ public class ChallengesController {
         // 사용자 ID 가져오기
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
-            userId = 0L; // 비로그인 사용자는 0L로 처리
+            //userId = 0L; // 비로그인 사용자는 0L로 처리
+            return "redirect:/login";
         }
 
-
+        model.addAttribute("currentUserId", userId);
         // "나의 챌린지" 탭 데이터 (기본 탭)
         model.addAttribute("summary", challengeService.getMyChallengeSummary(userId));
         model.addAttribute("ongoingChallenges", challengeService.findMyChallengesByStatus(userId, "ONGOING"));
@@ -75,7 +76,7 @@ public class ChallengesController {
     ) {
         // 로그인 체크 (없으면 로그인 페이지로 튕겨내기)
         if (userId == null) {
-            return "redirect:/user/login";
+            return "redirect:/login";
         }
 
         // 서비스 호출 (DB 저장)
