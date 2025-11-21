@@ -2,6 +2,7 @@ package com.ysb.library.dto;
 
 import java.util.List;
 
+// 응답으로 돌아온 JSON 객체를 받아오는 역할만 수행
 public class ResultDto {
     private List<TestDto> items;
 
