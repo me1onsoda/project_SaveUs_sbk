@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>설문 결과</title>
+    <link rel="stylesheet" th:href="@{/css/surveyResult.css}">
+</head>
+<body>
+
+<div class="result-container">
+
+    <div class="result-card">
+
+        <div class="logo-area">
+            <img src="/images/icon/logo.png" alt="SaveUs">
+            <h1>설문 결과</h1>
+            <h3 th:text="${nickname} + '님의 설문 결과'"></h3>
+        </div>
+
+
+        <div class="result-content">
+            <p><span class="label">단백질 유형</span>
+                <span class="value" th:text="${result.proteinType}"></span>
+            </p>
+
+            <p><span class="label">지방 유형</span>
+                <span class="value" th:text="${result.fatType}"></span>
+            </p>
+
+            <p><span class="label">탄수화물 유형</span>
+                <span class="value" th:text="${result.carbType}"></span>
+            </p>
+        </div>
+
+        <div class="btn-area">
+            <a class="btn-next" th:href="@{/dashboard}">메인으로 이동</a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.CommunityMapper">
+
+    <select id="selectPostList" resultType="com.example.Ex02.dto.CommunityPostDto">
+        SELECT
+        P.POST_ID AS postId,
+        P.USER_ID AS userId,
+        P.CONTENT AS content,
+        P.HEALTH_SCORE AS healthScore,
+        P.CREATED_AT AS createdAt,
+        U.NICKNAME AS authorNickname,
+        U.PROFILE_IMAGE_URL AS authorProfileImageUrl,
+        D.DIET_TYPE AS authorPersona, COUNT(DISTINCT L.LIKE_ID) AS likeCount,
+        COUNT(DISTINCT C.COMMENT_ID) AS commentCount,
+        CASE WHEN EXISTS (
+        SELECT 1
+        FROM LIKES LikedByMe
+        WHERE LikedByMe.POST_ID = P.POST_ID AND LikedByMe.USER_ID = #{currentUserId}
+        ) THEN 1 ELSE 0 END AS likedByMe
+        FROM
+        POSTS P
+        JOIN
+        USERS U ON P.USER_ID = U.USER_ID
+        LEFT JOIN
+        USER_DIET_TYPE D ON U.USER_ID = D.USER_ID LEFT JOIN
+        LIKES L ON P.POST_ID = L.POST_ID
+        LEFT JOIN
+        COMMENTS C ON P.POST_ID = C.POST_ID
+        <where>
+            <if test="persona != null and persona != ''">
+                AND D.DIET_TYPE = #{persona}
+            </if>
+        </where>
+        GROUP BY
+        P.POST_ID, P.USER_ID, P.CONTENT, P.HEALTH_SCORE, P.CREATED_AT,
+        U.NICKNAME, U.PROFILE_IMAGE_URL, D.DIET_TYPE ORDER BY
+        P.CREATED_AT DESC
+    </select>
+
+    <select id="selectImagesByPostId" resultType="String">
+        SELECT IMAGE_URL FROM POST_IMAGES WHERE POST_ID = #{postId} ORDER BY DISPLAY_ORDER
+    </select>
+    <select id="selectCommentsByPostId" resultType="com.example.Ex02.dto.CommentDto">
+        SELECT
+        C.COMMENT_ID AS commentId, C.POST_ID AS postId, C.USER_ID AS userId, C.CONTENT AS content, C.CREATED_AT AS createdAt,
+        U.NICKNAME AS authorNickname, U.PROFILE_IMAGE_URL AS authorProfileImageUrl
+        FROM COMMENTS C
+        JOIN USERS U ON C.USER_ID = U.USER_ID
+        WHERE C.POST_ID = #{postId}
+        ORDER BY C.CREATED_AT ASC
+    </select>
+    <select id="selectTrendingList" resultType="com.example.Ex02.dto.TrendingPostDto">
+        SELECT
+        P.POST_ID AS postId, U.NICKNAME AS authorNickname, SUBSTR(P.CONTENT, 1, 50) AS summary,
+        (COUNT(DISTINCT L.LIKE_ID) + COUNT(DISTINCT C.COMMENT_ID)) AS engagementScore
+        FROM POSTS P
+        JOIN USERS U ON P.USER_ID = U.USER_ID
+        LEFT JOIN LIKES L ON P.POST_ID = L.POST_ID
+        LEFT JOIN COMMENTS C ON P.POST_ID = C.POST_ID
+        WHERE P.CREATED_AT >= (SYSDATE - 7)
+        GROUP BY P.POST_ID, U.NICKNAME, P.CONTENT
+        ORDER BY engagementScore DESC
+        FETCH FIRST 5 ROWS ONLY
+    </select>
+    <insert id="insertPost" parameterType="com.example.Ex02.dto.CommunityPostDto"
+            useGeneratedKeys="true" keyProperty="postId" keyColumn="POST_ID">
+        INSERT INTO POSTS (USER_ID, CONTENT, HEALTH_SCORE)
+        VALUES (#{userId}, #{content}, #{healthScore})
+    </insert>
+    <insert id="insertPostImage">
+        INSERT INTO POST_IMAGES (POST_ID, IMAGE_URL, DISPLAY_ORDER)
+        VALUES (#{postId}, #{imageUrl}, #{displayOrder})
+    </insert>
+    <select id="isLikedByUser" resultType="boolean">
+        SELECT CASE WHEN COUNT(1) > 0 THEN 1 ELSE 0 END
+        FROM LIKES
+        WHERE POST_ID = #{postId} AND USER_ID = #{userId}
+    </select>
+    <insert id="insertLike">
+        INSERT INTO LIKES (POST_ID, USER_ID)
+        VALUES (#{postId}, #{userId})
+    </insert>
+    <delete id="deleteLike">
+        DELETE FROM LIKES
+        WHERE POST_ID = #{postId} AND USER_ID = #{userId}
+    </delete>
+    <select id="selectLikeCountByPostId" resultType="int">
+        SELECT COUNT(LIKE_ID)
+        FROM LIKES
+        WHERE POST_ID = #{postId}
+    </select>
+    <insert id="insertComment" parameterType="com.example.Ex02.dto.CommentDto"
+            useGeneratedKeys="true" keyProperty="commentId" keyColumn="COMMENT_ID">
+        INSERT INTO COMMENTS (POST_ID, USER_ID, CONTENT)
+        VALUES (#{postId}, #{userId}, #{content})
+    </insert>
+    <select id="selectCommentById" resultType="com.example.Ex02.dto.CommentDto">
+        SELECT
+        C.COMMENT_ID AS commentId, C.POST_ID AS postId, C.USER_ID AS userId, C.CONTENT AS content, C.CREATED_AT AS createdAt,
+        U.NICKNAME AS authorNickname, U.PROFILE_IMAGE_URL AS authorProfileImageUrl
+        FROM COMMENTS C
+        JOIN USERS U ON C.USER_ID = U.USER_ID
+        WHERE C.COMMENT_ID = #{commentId}
+    </select>
+    <select id="selectPostById" resultType="com.example.Ex02.dto.CommunityPostDto">
+        SELECT
+        P.POST_ID AS postId,
+        P.USER_ID AS userId,
+        P.CONTENT AS content,
+        P.HEALTH_SCORE AS healthScore,
+        P.CREATED_AT AS createdAt,
+        U.NICKNAME AS authorNickname,
+        U.PROFILE_IMAGE_URL AS authorProfileImageUrl
+        FROM
+        POSTS P
+        LEFT JOIN
+        USERS U ON P.USER_ID = U.USER_ID
+        WHERE
+        P.POST_ID = #{postId}
+    </select>
+    <select id="selectCommentCountByPostId" resultType="int">
+        SELECT COUNT(COMMENT_ID) FROM COMMENTS WHERE POST_ID = #{postId}
+    </select>
+    <delete id="deletePost">
+        DELETE FROM POSTS WHERE POST_ID = #{postId}
+    </delete>
+    <update id="updatePostContent">
+        UPDATE POSTS
+        SET CONTENT = #{content}
+        WHERE POST_ID = #{postId}
+    </update>
+    <delete id="deletePostImages">
+        DELETE FROM POST_IMAGES WHERE POST_ID = #{postId}
+    </delete>
+    <delete id="deleteComment">
+        DELETE FROM COMMENTS WHERE COMMENT_ID = #{commentId}
+    </delete>
+    <update id="updateCommentContent">
+        UPDATE COMMENTS
+        SET CONTENT = #{content}
+        WHERE COMMENT_ID = #{commentId}
+    </update>
+    <delete id="deletePostImageByUrl">
+        DELETE FROM POST_IMAGES
+        WHERE POST_ID = #{postId} AND IMAGE_URL = #{imageUrl}
+    </delete>
+    <select id="selectMaxDisplayOrder" resultType="Integer">
+        SELECT MAX(DISPLAY_ORDER)
+        FROM POST_IMAGES
+        WHERE POST_ID = #{postId}
+    </select>
+    <select id="selectPopularPostList" resultType="com.example.Ex02.dto.CommunityPostDto">
+        SELECT
+        P.POST_ID AS postId,
+        P.USER_ID AS userId,
+        P.CONTENT AS content,
+        P.HEALTH_SCORE AS healthScore,
+        P.CREATED_AT AS createdAt,
+        U.NICKNAME AS authorNickname,
+        U.PROFILE_IMAGE_URL AS authorProfileImageUrl,
+        D.DIET_TYPE AS authorPersona, COUNT(DISTINCT L.LIKE_ID) AS likeCount,
+        COUNT(DISTINCT C.COMMENT_ID) AS commentCount,
+        CASE WHEN EXISTS (
+        SELECT 1
+        FROM LIKES LikedByMe
+        WHERE LikedByMe.POST_ID = P.POST_ID AND LikedByMe.USER_ID = #{currentUserId}
+        ) THEN 1 ELSE 0 END AS likedByMe
+        FROM
+        POSTS P
+        JOIN
+        USERS U ON P.USER_ID = U.USER_ID
+        LEFT JOIN
+        USER_DIET_TYPE D ON U.USER_ID = D.USER_ID LEFT JOIN
+        LIKES L ON P.POST_ID = L.POST_ID
+        LEFT JOIN
+        COMMENTS C ON P.POST_ID = C.POST_ID
+        <where>
+            P.CREATED_AT >= (SYSDATE - 1)
+            <if test="persona != null and persona != ''">
+            AND D.DIET_TYPE = #{persona}
+            </if>
+        </where>
+        GROUP BY
+        P.POST_ID, P.USER_ID, P.CONTENT, P.HEALTH_SCORE, P.CREATED_AT,
+        U.NICKNAME, U.PROFILE_IMAGE_URL, D.DIET_TYPE ORDER BY
+        likeCount DESC, P.CREATED_AT DESC
+    </select>
+
+    <select id="selectDistinctPersonas" resultType="String">
+        SELECT DISTINCT DIET_TYPE
+        FROM USER_DIET_TYPE
+        WHERE DIET_TYPE IS NOT NULL
+        ORDER BY DIET_TYPE
+    </select>
+
+</mapper>

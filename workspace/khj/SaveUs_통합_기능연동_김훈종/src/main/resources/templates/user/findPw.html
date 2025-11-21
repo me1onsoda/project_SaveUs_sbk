@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>비밀번호 찾기</title>
+    <link rel="stylesheet" th:href="@{/css/findAccount.css}">
+</head>
+
+<body>
+
+<div class="find-container">
+    <div class="find-card">
+
+        <h1>비밀번호 찾기</h1>
+        <p class="subtitle">가입 이메일과 닉네임을 입력하세요</p>
+
+        <form th:action="@{/user/find-pw}" method="post">
+
+            <label>가입 이메일</label>
+            <input type="email" name="email" placeholder="email@example.com" required>
+
+            <label>닉네임</label>
+            <input type="text" name="nickname" placeholder="닉네임 입력" required>
+
+            <p th:if="${findError}" th:text="${findError}" class="error-global"></p>
+            <p th:if="${findSuccess}" th:text="${findSuccess}" style="color:#1ABC9C;"></p>
+
+            <button type="submit" class="btn-find">비밀번호 찾기</button>
+        </form>
+
+        <div class="footer-links">
+            <a th:href="@{/user/find-main}">뒤로가기</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

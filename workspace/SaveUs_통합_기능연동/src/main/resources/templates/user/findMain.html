@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>아이디/비밀번호 찾기 - SaveUs</title>
+    <link rel="stylesheet" th:href="@{/css/findMain.css}">
+</head>
+
+<body>
+
+<div class="find-container">
+    <div class="find-card">
+
+        <h1>찾기 서비스</h1>
+        <p class="subtitle">아래에서 원하는 항목을 선택하세요</p>
+
+        <a th:href="@{/user/find-id}" class="btn-select">아이디 찾기</a>
+        <a th:href="@{/user/find-pw}" class="btn-select">비밀번호 찾기</a>
+
+        <div class="footer-links">
+            <a th:href="@{/login}">로그인</a><span>|</span>
+            <a th:href="@{/join}">회원가입</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

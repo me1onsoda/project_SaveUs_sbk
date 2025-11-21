@@ -1,0 +1,223 @@
+/* ---------------------------------------
+   🟩 프로필 수정 제목
+---------------------------------------- */
+.edit-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.edit-sub {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+/* ---------------------------------------
+   🟩 프로필 수정 카드
+---------------------------------------- */
+.profile-edit-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    margin-bottom: 40px;
+    overflow: hidden;
+}
+
+.edit-banner {
+    height: 130px;
+    background: linear-gradient(to right, #1abc9c, #0e8c72);
+}
+
+.edit-profile-container {
+    padding: 60px 30px 30px 30px; /* 상단 공간 확보 */
+    background: #ffffff;
+    position: relative;
+}
+
+/* ---------------------------------------
+   🟩 프로필 이미지 + 변경 버튼
+---------------------------------------- */
+.profile-img-wrapper {
+    position: absolute;
+    top: -45px;
+    left: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+}
+
+/* 프로필 이미지 */
+.edit-profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid white;
+    background: #ffffff;
+    padding: 5px;
+}
+
+/* 이미지 변경 버튼 */
+.change-img-btn {
+    background: #17a589;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.change-img-btn:hover {
+    background: #169e84;
+}
+
+/* ---------------------------------------
+   🟩 입력 필드 영역
+---------------------------------------- */
+.edit-profile-info {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px 28px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.input-box {
+    background: #f9f9f9;
+    border: 1px solid #dcdcdc;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.input-box.small {
+    width: 100% !important;
+}
+
+/* 단위줄 */
+.input-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+}
+
+.unit-label {
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* 2열 묶음 */
+.form-row.two-col {
+    display: flex;
+    gap: 25px;
+}
+
+.form-row.two-col .form-group {
+    flex: 1;
+}
+
+/* 키·체중 */
+.form-row.two-col.key-weight {
+    display: flex;
+    gap: 20px;
+}
+.form-row.two-col.key-weight .form-group {
+    flex: 1;
+}
+
+/* 제출 버튼 */
+.save-profile-btn {
+    margin: 25px auto 10px auto;
+    display: block;
+    background: #1abc9c;
+    color: white;
+    padding: 12px 26px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.save-profile-btn:hover {
+    background: #169e84;
+}
+
+/* ---------------------------------------
+   🟦 비밀번호 변경 카드
+---------------------------------------- */
+.password-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    padding: 30px;
+    margin-bottom: 50px;
+}
+
+.pw-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.pw-sub {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 18px;
+}
+
+.pw-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* 비밀번호 메시지 */
+.pw-msg {
+    font-size: 12px;
+    height: 16px;
+    margin-top: -6px;
+}
+
+/* 비밀번호 변경 버튼 */
+.pw-update-btn {
+    background: #1abc9c;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    width: 180px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.15s;
+}
+
+/* 버튼 hover */
+.pw-update-btn:hover:not(:disabled) {
+    background: #169e84;
+}
+
+/* 버튼 비활성화 상태 */
+.pw-update-btn:disabled {
+    background: #bbbbbb !important;
+    cursor: not-allowed;
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.HealthScoreMapper">
+
+    <insert id="upsertDailyScore">
+        MERGE INTO HEALTH_SCORE_DAILY h
+        USING (
+        SELECT
+        #{userId} AS USER_ID,
+        #{scoreDate, jdbcType=DATE} AS SCORE_DATE,
+        #{score} AS SCORE,
+        #{statusMessage} AS STATUS_MESSAGE
+        FROM dual
+        ) d
+        ON (h.USER_ID = d.USER_ID AND h.SCORE_DATE = d.SCORE_DATE)
+
+        WHEN MATCHED THEN
+        UPDATE SET
+        h.SCORE = d.SCORE,
+        h.STATUS_MESSAGE = d.STATUS_MESSAGE
+
+        WHEN NOT MATCHED THEN
+        INSERT (USER_ID, SCORE_DATE, SCORE, STATUS_MESSAGE)
+        VALUES (d.USER_ID, d.SCORE_DATE, d.SCORE, d.STATUS_MESSAGE)
+    </insert>
+
+    <select id="findScoresOfMonth" resultType="com.example.Ex02.dto.CalendarScoreDto">
+        SELECT
+        SCORE_DATE AS scoreDate,
+        SCORE AS score
+        FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND EXTRACT(YEAR FROM SCORE_DATE) = #{year}
+        AND EXTRACT(MONTH FROM SCORE_DATE) = #{month}
+        ORDER BY SCORE_DATE
+    </select>
+
+</mapper>

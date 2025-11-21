@@ -1,0 +1,183 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* 전체 컨테이너 */
+.find-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 카드 박스 */
+.find-card {
+    width: 420px;
+    background: #ffffff;
+    padding: 50px 40px;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    text-align: center;
+}
+
+/* 제목 */
+.find-card h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111111;
+    margin-bottom: 10px;
+}
+
+/* 안내 텍스트 */
+.subtitle {
+    font-size: 14px;
+    color: #777777;
+    margin-bottom: 26px;
+}
+
+/* 폼 */
+form {
+    width: 100%;
+    text-align: left;
+}
+
+label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+    display: block;
+}
+
+input[type="email"],
+input[type="text"] {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #1ABC9C;
+}
+
+/* 버튼 */
+.btn-find {
+    width: 100%;
+    height: 46px;
+    background: #1ABC9C;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-find:hover {
+    opacity: 0.9;
+}
+
+/* 에러 메시지 */
+.error-global {
+    font-size: 14px;
+    color: #d9534f;
+    margin-bottom: 8px;
+}
+
+/* 하단 링크 */
+.footer-links {
+    margin-top: 16px;
+    font-size: 14px;
+    text-align: center;
+    color: #666;
+}
+
+.footer-links a {
+    color: #1ABC9C;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 2px 4px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.birth-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.birth-row input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.birth-row input:focus {
+    border-color: #1ABC9C;
+}
+
+
+/* 팝업 공통 */
+.saveus-popup {
+    border-radius: 14px !important;
+    padding: 25px 20px !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
+}
+
+/* 확인 버튼 (로그인) */
+.saveus-btn-confirm {
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+}
+
+/* 취소 버튼(비밀번호 찾기) */
+.saveus-btn-cancel {
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+}
+
+/* 경고 아이콘 색상 */
+.swal2-icon.swal2-warning {
+    border-color: #FFB74D !important;
+    color: #FFB74D !important;
+}
+
+.sw-btn {
+    background: #1ABC9C;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 6px;
+    min-width: 110px;
+    transition: 0.15s;
+}
+
+.sw-btn:hover {
+    background: #159E84;
+}
