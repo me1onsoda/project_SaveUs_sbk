@@ -23,14 +23,14 @@ class FoodItem(BaseModel):
     food_id: int
     food_name: str
     category: str
-    calories_kcal: int
-    carbsG: Optional[int] = None
-    proteinG: Optional[int] = None
-    fatG: Optional[int] = None
-    sugarG: Optional[int] = None
-    fiberG: Optional[int] = None
-    sodiumMg: Optional[int] = None
-    calciumMg: Optional[int] = None
+    calories_kcal: float
+    carbs_g: Optional[float] = None
+    protein_g: Optional[float] = None
+    fat_g: Optional[float] = None
+    sugar_g: Optional[float] = None
+    fiber_g: Optional[float] = None
+    sodium_mg: Optional[float] = None
+    calcium_mg: Optional[float] = None
 
 
 @test.post("/api_test")

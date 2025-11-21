@@ -2,61 +2,60 @@ package com.ysb.library.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
-// 검출된 음식 영양 데이터
 public class TestDto {
-    private int foodId;
-    private String foodName;
+    private int food_id;
+    private String food_name;
     private String category;
-    private int caloriesKcal;
-    private Integer carbsG;
-    private Integer proteinG;
-    private Integer fatG;
-    private Integer sugarG;
-    private Integer fiberG;
-    private Integer sodiumMg;
-    private Integer calciumMg;
+    private float calories_kcal;
+    private Float carbs_g;
+    private Float protein_g;
+    private Float fat_g;
+    private Float sugar_g;
+    private Float fiber_g;
+    private Float sodium_mg;
+    private Float calcium_mg;
 
     private MultipartFile file;
 
     public TestDto() {
     }
 
-    public TestDto(Integer calciumMg, int caloriesKcal, Integer carbsG, String category, Integer fatG, Integer fiberG, int foodId, String foodName, Integer proteinG, Integer sodiumMg, Integer sugarG) {
-        this.calciumMg = calciumMg;
-        this.caloriesKcal = caloriesKcal;
-        this.carbsG = carbsG;
+    public TestDto(Float calcium_mg, float calories_kcal, Float carbs_g, String category, Float fat_g, Float fiber_g, int food_id, String food_name, Float protein_g, Float sodium_mg, Float sugar_g) {
+        this.calcium_mg = calcium_mg;
+        this.calories_kcal = calories_kcal;
+        this.carbs_g = carbs_g;
         this.category = category;
-        this.fatG = fatG;
-        this.fiberG = fiberG;
-        this.foodId = foodId;
-        this.foodName = foodName;
-        this.proteinG = proteinG;
-        this.sodiumMg = sodiumMg;
-        this.sugarG = sugarG;
+        this.fat_g = fat_g;
+        this.fiber_g = fiber_g;
+        this.food_id = food_id;
+        this.food_name = food_name;
+        this.protein_g = protein_g;
+        this.sodium_mg = sodium_mg;
+        this.sugar_g = sugar_g;
     }
 
-    public Integer getCalciumMg() {
-        return calciumMg;
+    public Float getCalcium_mg() {
+        return calcium_mg;
     }
 
-    public void setCalciumMg(Integer calciumMg) {
-        this.calciumMg = calciumMg;
+    public void setCalcium_mg(Float calcium_mg) {
+        this.calcium_mg = calcium_mg;
     }
 
-    public int getCaloriesKcal() {
-        return caloriesKcal;
+    public float getCalories_kcal() {
+        return calories_kcal;
     }
 
-    public void setCaloriesKcal(int caloriesKcal) {
-        this.caloriesKcal = caloriesKcal;
+    public void setCalories_kcal(float calories_kcal) {
+        this.calories_kcal = calories_kcal;
     }
 
-    public Integer getCarbsG() {
-        return carbsG;
+    public Float getCarbs_g() {
+        return carbs_g;
     }
 
-    public void setCarbsG(Integer carbsG) {
-        this.carbsG = carbsG;
+    public void setCarbs_g(Float carbs_g) {
+        this.carbs_g = carbs_g;
     }
 
     public String getCategory() {
@@ -67,20 +66,20 @@ public class TestDto {
         this.category = category;
     }
 
-    public Integer getFatG() {
-        return fatG;
+    public Float getFat_g() {
+        return fat_g;
     }
 
-    public void setFatG(Integer fatG) {
-        this.fatG = fatG;
+    public void setFat_g(Float fat_g) {
+        this.fat_g = fat_g;
     }
 
-    public Integer getFiberG() {
-        return fiberG;
+    public Float getFiber_g() {
+        return fiber_g;
     }
 
-    public void setFiberG(Integer fiberG) {
-        this.fiberG = fiberG;
+    public void setFiber_g(Float fiber_g) {
+        this.fiber_g = fiber_g;
     }
 
     public MultipartFile getFile() {
@@ -91,60 +90,60 @@ public class TestDto {
         this.file = file;
     }
 
-    public int getFoodId() {
-        return foodId;
+    public int getFood_id() {
+        return food_id;
     }
 
-    public void setFoodId(int foodId) {
-        this.foodId = foodId;
+    public void setFood_id(int food_id) {
+        this.food_id = food_id;
     }
 
-    public String getFoodName() {
-        return foodName;
+    public String getFood_name() {
+        return food_name;
     }
 
-    public void setFoodName(String foodName) {
-        this.foodName = foodName;
+    public void setFood_name(String food_name) {
+        this.food_name = food_name;
     }
 
-    public Integer getProteinG() {
-        return proteinG;
+    public Float getProtein_g() {
+        return protein_g;
     }
 
-    public void setProteinG(Integer proteinG) {
-        this.proteinG = proteinG;
+    public void setProtein_g(Float protein_g) {
+        this.protein_g = protein_g;
     }
 
-    public Integer getSodiumMg() {
-        return sodiumMg;
+    public Float getSodium_mg() {
+        return sodium_mg;
     }
 
-    public void setSodiumMg(Integer sodiumMg) {
-        this.sodiumMg = sodiumMg;
+    public void setSodium_mg(Float sodium_mg) {
+        this.sodium_mg = sodium_mg;
     }
 
-    public Integer getSugarG() {
-        return sugarG;
+    public Float getSugar_g() {
+        return sugar_g;
     }
 
-    public void setSugarG(Integer sugarG) {
-        this.sugarG = sugarG;
+    public void setSugar_g(Float sugar_g) {
+        this.sugar_g = sugar_g;
     }
 
     @Override
     public String toString() {
         return "TestDto{" +
-                "calciumMg=" + calciumMg +
-                ", foodId=" + foodId +
-                ", foodName='" + foodName + '\'' +
+                ", food_id=" + food_id +
+                ", food_name='" + food_name + '\'' +
                 ", category='" + category + '\'' +
-                ", caloriesKcal=" + caloriesKcal +
-                ", carbsG=" + carbsG +
-                ", proteinG=" + proteinG +
-                ", fatG=" + fatG +
-                ", sugarG=" + sugarG +
-                ", fiberG=" + fiberG +
-                ", sodiumMg=" + sodiumMg +
+                ", calories_kcal=" + calories_kcal +
+                ", carbs_g=" + carbs_g +
+                ", protein_g=" + protein_g +
+                ", fat_g=" + fat_g +
+                ", sugar_g=" + sugar_g +
+                ", fiber_g=" + fiber_g +
+                "calcium_mg=" + calcium_mg +
+                ", sodium_mg=" + sodium_mg +
                 '}';
     }
 }
