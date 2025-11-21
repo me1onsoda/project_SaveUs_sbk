@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
-
 @Controller
 public class UserController {
 
@@ -56,11 +55,7 @@ public class UserController {
             return "user/userInsert";
         }
 
-        userMapper.insertUser(userJoinDto);
-
-        session.setAttribute("userId", userJoinDto.getUserId());
-        session.setAttribute("loginUser", userJoinDto);
-
+        session.setAttribute("tempUser", userJoinDto);
         return "redirect:/survey";
     }
 
@@ -80,7 +75,7 @@ public class UserController {
 
     // 로그인 페이지
     @GetMapping("/login")
-    public String loginForm(Model model,  @RequestParam(value = "resetSuccess", required = false) String resetSuccess) {
+    public String loginForm(Model model, @RequestParam(value = "resetSuccess", required = false) String resetSuccess) {
         model.addAttribute("userLoginDto", new UserLoginDto());
 
         if (resetSuccess != null) {
@@ -117,26 +112,22 @@ public class UserController {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        // 유저 식단 유형 조회 (Balanced, HC_HIGH, 등등)
         String dietType = surveyMapper.findDietType(userId);
         model.addAttribute("dietType", dietType);
 
-        // 사용자 정보
         UserJoinDto user = userMapper.findById(userId);
         model.addAttribute("user", user);
 
-        // 획득 뱃지 목록
         List<UserBadgeDto> badges = userBadgeMapper.findBadgesByUser(userId);
         model.addAttribute("badges", badges);
 
-        // 획득 챌린지 목록
-        List<UserChallengeDto> challenges  = userChallengeMapper.findActiveChallenges(userId);
+        List<UserChallengeDto> challenges = userChallengeMapper.findActiveChallenges(userId);
         model.addAttribute("challenges", challenges);
 
         return "user/myPage";
     }
 
-
+    // 프로필 수정 페이지
     @GetMapping("/profile/edit")
     public String editPage(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
@@ -148,23 +139,20 @@ public class UserController {
         return "user/profileEdit";
     }
 
-
-    // 프로필 수정
+    // 프로필 수정 처리
     @PostMapping("/profile/edit")
     public String updateProfile(
             @ModelAttribute("user") UserJoinDto userDto,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
-            HttpSession session
-    ) {
+            HttpSession session) {
+
         Long userId = (Long) session.getAttribute("userId");
         userDto.setUserId(userId);
 
-        // 기존 DB 값 불러오기
         UserJoinDto originUser = userMapper.findById(userId);
         if (originUser == null) return "redirect:/login";
 
         try {
-            // 1) 이미지 업로드한 경우
             if (profileImage != null && !profileImage.isEmpty()) {
 
                 String uploadDir = "C:/uploads/profile/";
@@ -175,19 +163,15 @@ public class UserController {
                 File uploadPath = new File(uploadDir + fileName);
                 profileImage.transferTo(uploadPath);
 
-                // DB에는 웹 경로 저장
                 userDto.setProfileImageUrl("/uploads/profile/" + fileName);
 
             } else {
-                // 2) 이미지 업로드 안한 경우 → 기존 거 유지
                 String oldPath = originUser.getProfileImageUrl();
 
-                // DB에 절대경로로 저장된 적이 있다면 변환
                 if (oldPath != null && oldPath.startsWith("C:/uploads")) {
                     oldPath = oldPath.replace("C:/uploads", "/uploads");
                 }
 
-                // null이면 기본 이미지
                 if (oldPath == null || oldPath.isEmpty()) {
                     oldPath = "/images/icon/mypage.png";
                 }
@@ -202,8 +186,6 @@ public class UserController {
         userMapper.updateUser(userDto);
         return "redirect:/my-page";
     }
-
-
 
     // 로그아웃
     @GetMapping("/logout")
@@ -226,42 +208,33 @@ public class UserController {
     }
 
     // 비밀번호 변경
-
     @PostMapping("/profile/password")
     public String changePassword(
             @RequestParam("currentPassword") String currentPassword,
             @RequestParam("newPassword") String newPassword,
             @RequestParam("confirmPassword") String confirmPassword,
             HttpSession session,
-            RedirectAttributes redirectAttributes
-    ) {
-        // 로그인 안 한 경우
+            RedirectAttributes redirectAttributes) {
+
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-
-
-        // 새 비밀번호 제확인 불일치 => 에러메시지 html에 전달 => js로 전달 후 alert
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("pwError", "새 비밀번호가 일치하지 않습니다.");
             return "redirect:/profile/edit";
         }
 
-        // DB에서 현재 비밀번호 체크
         int checkPw = userMapper.checkPassword(userId, currentPassword);
         if (checkPw == 0) {
             redirectAttributes.addFlashAttribute("pwError", "현재 비밀번호가 일치하지 않습니다.");
             return "redirect:/profile/edit";
         }
 
-        // 비밀번호 변경 실행
         userMapper.updatePassword(userId, newPassword);
 
-        // 성공 알림
         redirectAttributes.addFlashAttribute("pwSuccess", "비밀번호가 성공적으로 변경되었습니다.");
         return "redirect:/profile/edit";
     }
-
 
     // 다른 사람의 프로필 조회
     @GetMapping("/user/profile/{targetUserId}")
@@ -276,19 +249,15 @@ public class UserController {
         UserJoinDto profile = userMapper.findMainInfo(targetUserId);
         if (profile == null) return "error/404";
 
-        // 획득 뱃지 목록 (targetUserId 기준)
         List<UserBadgeDto> badges = userBadgeMapper.findBadgesByUser(targetUserId);
         model.addAttribute("badges", badges);
 
-        // 진행중인 챌린지 목록 (targetUserId 기준)
         List<UserChallengeDto> challenges = userChallengeMapper.findActiveChallenges(targetUserId);
         model.addAttribute("challenges", challenges);
-
 
         model.addAttribute("profile", profile);
         model.addAttribute("isOwner", loginUserId.equals(targetUserId));
 
         return "user/otherProfile";
     }
-
 }
