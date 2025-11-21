@@ -95,25 +95,23 @@
             <div class="challenge-card" th:each="c : ${challenges}">
                 <h4 th:text="${c.title}">챌린지 제목</h4>
 
-                <span th:text="'남은 기간 ' + c.remainingDays + '일'"></span>
-
                 <p th:text="${c.description}">챌린지 설명</p>
 
                 <div class="progress-bar">
                     <div class="fill"
-                         th:style="'width:' + c.progressPercent + '%'"></div>
+                         th:style="'width:' + ${c.progressPercent} + '%'"></div>
                 </div>
 
-                <p class="percent" th:text="${c.progressPercent + '% 완료!'}"></p>
+                <p class="percent" th:text="${c.progressPercent + '% 진행중!'}"></p>
             </div>
 
-            <!-- 참여중인 챌린지가 없을 때 -->
             <p th:if="${#lists.isEmpty(challenges)}" style="color:#aaa; margin-top:10px;">
                 진행 중인 챌린지가 없습니다.
             </p>
 
         </div>
     </section>
+
 
 <!-- 로그아웃 & 회원탈퇴 -->
 <section class="account-section">

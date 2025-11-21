@@ -14,7 +14,7 @@ public class UserChallengeDto {
     private String imageUrl;
 
     private String status;
-    private Integer progressPercent; // 진행률
+    private Integer progressPercent = 0; // 진행률
     private Integer durationDays;    // 총 기간
     private String metricKey;        // sugar, sodium 등
     private Integer points;
