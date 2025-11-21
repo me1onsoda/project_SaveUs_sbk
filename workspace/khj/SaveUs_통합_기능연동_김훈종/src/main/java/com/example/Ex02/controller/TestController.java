@@ -1,7 +1,8 @@
 package com.example.Ex02.controller;
 
-import com.ysb.library.dto.TestDto;
-import com.ysb.library.service.TestService;
+
+import com.example.Ex02.dto.TestDto;
+import com.example.Ex02.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

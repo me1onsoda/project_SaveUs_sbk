@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.DailyIntakeMapper">
+
+    <select id="findDailyIntake" resultType="com.example.Ex02.dto.DailyIntakeDto">
+        SELECT
+        TRUNC(EAT_TIME) AS eatDate,
+        SUM(CALORIES_KCAL) AS calories,
+        SUM(PROTEIN_G) AS protein,
+        SUM(CARBS_G) AS carbs,
+        SUM(FATS_G) AS fats
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        GROUP BY TRUNC(EAT_TIME)
+        ORDER BY eatDate
+    </select>
+
+    <select id="findDailyIntakeForMonth" resultType="com.example.Ex02.dto.DailyIntakeDto">
+        SELECT
+        USER_ID,
+        TRUNC(EAT_TIME) AS eatDate,
+        SUM(CALORIES_KCAL) AS calories,
+        SUM(CARBS_G) AS carbs,
+        SUM(PROTEIN_G) AS protein,
+        SUM(FATS_G) AS fats
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND EXTRACT(YEAR FROM EAT_TIME) = #{year}
+        AND EXTRACT(MONTH FROM EAT_TIME) = #{month}
+        GROUP BY USER_ID, TRUNC(EAT_TIME)
+        ORDER BY eatDate
+    </select>
+
+
+
+</mapper>
