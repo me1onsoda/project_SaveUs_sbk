@@ -23,7 +23,7 @@ public class MealDto {
 
 
     private String eatTime; // LocalDateTime → 문자열 형태
-
+    
 
     public Long getEntryId() { return entryId; }
     public void setEntryId(Long entryId) { this.entryId = entryId; }

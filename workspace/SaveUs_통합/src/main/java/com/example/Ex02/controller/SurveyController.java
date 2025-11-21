@@ -29,49 +29,63 @@ public class SurveyController {
 
     // 설문 페이지
     @GetMapping("/survey")
-    public String surveyPage(@ModelAttribute("surveyDto") SurveyDto surveyDto, HttpSession session, Model model) {
+    public String surveyPage(@ModelAttribute("surveyDto") SurveyDto surveyDto,
+                             HttpSession session,
+                             Model model) {
 
         Long userId = (Long) session.getAttribute("userId");
+        UserJoinDto tempUser = (UserJoinDto) session.getAttribute("tempUser");
 
-        // 회원가입/로그인 안 했으면 접근 불가
-        if (userId == null) {
+        // 로그인 상태 또는 회원가입 후 tempUser 존재 시 접근 허용
+        if (userId == null && tempUser == null) {
             return "redirect:/login";
         }
-        return "survey/surveyForm";   // templates/survey/surveyForm.html
+
+        return "survey/surveyForm";
     }
 
-    // 설문지 결과
+    // 설문 제출
     @PostMapping("/survey/submit")
-    public String submitSurvey(@Valid @ModelAttribute("surveyDto") SurveyDto surveyDto,
-                               BindingResult bindingResult,
-                               HttpSession session,
-                               Model model) {
+    public String submitSurvey(
+            @Valid @ModelAttribute("surveyDto") SurveyDto surveyDto,
+            BindingResult bindingResult,
+            HttpSession session,
+            Model model) {
 
         Long userId = (Long) session.getAttribute("userId");
+        UserJoinDto tempUser = (UserJoinDto) session.getAttribute("tempUser");
 
-        // 비정상 접근 방지
-        if (userId == null) {
+        if (userId == null && tempUser == null) {
             return "redirect:/login";
         }
 
-        // 문항 체크 안 했을 때
         if (bindingResult.hasErrors()) {
             return "survey/surveyForm";
         }
 
-        // 설문지 점수계산
         surveyService.evaluateSurvey(surveyDto);
-        // 결과 페이지로 전달
+        String dietType = surveyService.getDietType(surveyDto);
+
+        // 회원가입 직후 설문 제출 시 DB에 사용자 저장
+        if (userId == null && tempUser != null) {
+
+            userMapper.insertUser(tempUser);
+
+            UserJoinDto savedUser = userMapper.findByEmail(tempUser.getEmail());
+
+            session.setAttribute("userId", savedUser.getUserId());
+            session.removeAttribute("tempUser");
+
+            userId = savedUser.getUserId();
+        }
+
         UserJoinDto user = userMapper.findById(userId);
+
         model.addAttribute("nickname", user.getNickname());
         model.addAttribute("result", surveyDto);
-
-        String dietType = surveyService.getDietType(surveyDto);
-        session.setAttribute("dietType", dietType);
         model.addAttribute("dietType", dietType);
 
         surveyMapper.saveSurveyResult(userId, surveyDto, dietType);
-
 
         return "survey/surveyResult";
     }
