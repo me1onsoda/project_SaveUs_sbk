@@ -1,9 +1,6 @@
 package com.example.Ex02.controller;
 
-import com.example.Ex02.dto.UserBadgeDto;
-import com.example.Ex02.dto.UserChallengeDto;
-import com.example.Ex02.dto.UserJoinDto;
-import com.example.Ex02.dto.UserLoginDto;
+import com.example.Ex02.dto.*;
 import com.example.Ex02.mapper.SurveyMapper;
 import com.example.Ex02.mapper.UserBadgeMapper;
 import com.example.Ex02.mapper.UserChallengeMapper;
@@ -115,10 +112,14 @@ public class UserController {
 
     // 마이페이지
     @GetMapping("/my-page")
-    public String myPage(HttpSession session, Model model) {
+    public String myPage(HttpSession session, Model model, @ModelAttribute("surveyDto") SurveyDto surveyDto) {
 
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
+
+        // 유저 식단 유형 조회 (Balanced, HC_HIGH, 등등)
+        String dietType = surveyMapper.findDietType(userId);
+        model.addAttribute("dietType", dietType);
 
         // 사용자 정보
         UserJoinDto user = userMapper.findById(userId);
@@ -134,6 +135,19 @@ public class UserController {
 
         return "user/myPage";
     }
+
+
+    @GetMapping("/profile/edit")
+    public String editPage(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+
+        UserJoinDto user = userMapper.findById(userId);
+        model.addAttribute("user", user);
+
+        return "user/profileEdit";
+    }
+
 
     // 프로필 수정
     @PostMapping("/profile/edit")
@@ -261,6 +275,15 @@ public class UserController {
 
         UserJoinDto profile = userMapper.findMainInfo(targetUserId);
         if (profile == null) return "error/404";
+
+        // 획득 뱃지 목록 (targetUserId 기준)
+        List<UserBadgeDto> badges = userBadgeMapper.findBadgesByUser(targetUserId);
+        model.addAttribute("badges", badges);
+
+        // 진행중인 챌린지 목록 (targetUserId 기준)
+        List<UserChallengeDto> challenges = userChallengeMapper.findActiveChallenges(targetUserId);
+        model.addAttribute("challenges", challenges);
+
 
         model.addAttribute("profile", profile);
         model.addAttribute("isOwner", loginUserId.equals(targetUserId));
