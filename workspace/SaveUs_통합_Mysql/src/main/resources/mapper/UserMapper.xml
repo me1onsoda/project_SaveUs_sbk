@@ -103,14 +103,25 @@
     <update id="updateUser" parameterType="com.example.Ex02.dto.UserJoinDto">
         UPDATE USERS
         <set>
-            <if test="height != null"> HEIGHT = #{height}, </if>
-            <if test="currentWeight != null"> CURRENT_WEIGHT = #{currentWeight}, </if>
-            <if test="bmi != null"> BMI = #{bmi}, </if>
-            <if test="mainGoal != null"> MAIN_GOAL = #{mainGoal}, </if>
-            <if test="profileImageUrl != null and profileImageUrl != ''"> PROFILE_IMAGE_URL = #{profileImageUrl}, </if>
+
+            <if test="profileImageUrl != null and profileImageUrl != ''">
+                PROFILE_IMAGE_URL = #{profileImageUrl},
+            </if>
+            <if test="height != null">
+                HEIGHT = #{height},
+            </if>
+            <if test="currentWeight != null">
+                CURRENT_WEIGHT = #{currentWeight},
+            </if>
+            <if test="mainGoal != null">
+                MAIN_GOAL = #{mainGoal},
+            </if>
+            BMI = #{bmi}
+
         </set>
         WHERE USER_ID = #{userId}
     </update>
+
 
     <select id="checkPassword" resultType="int">
         SELECT COUNT(*)
