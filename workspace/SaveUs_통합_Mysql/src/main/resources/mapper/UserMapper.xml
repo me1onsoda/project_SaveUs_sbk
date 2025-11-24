@@ -100,6 +100,8 @@
         WHERE EMAIL = #{email}
     </select>
 
+
+    <!--유저 정보 수정-->
     <update id="updateUser" parameterType="com.example.Ex02.dto.UserJoinDto">
         UPDATE USERS
         <set>
