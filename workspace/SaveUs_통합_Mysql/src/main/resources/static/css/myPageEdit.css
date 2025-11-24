@@ -50,6 +50,9 @@
     border: 5px solid white;
     background: #ffffff;
     padding: 5px;
+
+    object-fit: cover;
+    object-position: center;
 }
 
 
