@@ -33,4 +33,6 @@ public interface UserMapper {
     void deleteUser(Long userId);
 
     UserJoinDto findByNicknameAndBirthdate(String nickname, String birthdate);
+
+    void updateWeightAndBmi(Long userId, double weight, double bmi);
 }

@@ -6,44 +6,51 @@
 <mapper namespace="com.example.Ex02.mapper.MealMapper">
 
     <resultMap id="MealResultMap" type="com.example.Ex02.dto.MealDto">
-        <id property="entryId" column="entryId"/>
-        <result property="userId" column="userId"/>
-        <result property="mealName" column="mealName"/>
+        <id property="entryId" column="ENTRY_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="mealName" column="MEAL_NAME"/>
+
+        <!-- 화면에서 HH:mm 표시용 -->
         <result property="mealTime" column="mealTime"/>
-        <result property="eatTime" column="eatTime"/>
 
-        <result property="calories" column="calories"/>
-        <result property="protein" column="protein"/>
-        <result property="carbs" column="carbs"/>
-        <result property="fat" column="fat"/>
+        <!-- ISO-Local datetime -->
+        <result property="eatTime" column="EAT_TIME"/>
 
-        <result property="sugar" column="sugar"/>
-        <result property="fiber" column="fiber"/>
-        <result property="calcium" column="calcium"/>
-        <result property="sodium" column="sodium"/>
+        <result property="calories" column="CALORIES_KCAL"/>
+        <result property="protein" column="PROTEIN_G"/>
+        <result property="carbs" column="CARBS_G"/>
+        <result property="fat" column="FATS_G"/>
+        <result property="sugar" column="SUGAR_G"/>
+        <result property="fiber" column="FIBER_G"/>
+        <result property="calcium" column="CALCIUM_MG"/>
+        <result property="sodium" column="SODIUM_MG"/>
     </resultMap>
 
+
+    <!-- 오늘의 식사 -->
     <select id="findTodayMeals" parameterType="long" resultMap="MealResultMap">
         SELECT
-        ENTRY_ID AS entryId,
-        USER_ID AS userId,
-        MEAL_NAME AS mealName,
+        ENTRY_ID,
+        USER_ID,
+        MEAL_NAME,
         DATE_FORMAT(EAT_TIME, '%H:%i') AS mealTime,
-        DATE_FORMAT(EAT_TIME, '%Y-%m-%dT%H:%i:%s') AS eatTime,
-        CALORIES_KCAL AS calories,
-        PROTEIN_G AS protein,
-        CARBS_G AS carbs,
-        FATS_G AS fat,
-        SUGAR_G AS sugar,
-        FIBER_G AS fiber,
-        CALCIUM_MG AS calcium,
-        SODIUM_MG AS sodium
+        EAT_TIME,
+        CALORIES_KCAL,
+        PROTEIN_G,
+        CARBS_G,
+        FATS_G,
+        SUGAR_G,
+        FIBER_G,
+        CALCIUM_MG,
+        SODIUM_MG
         FROM MEAL_ENTRY
         WHERE USER_ID = #{userId}
         AND DATE(EAT_TIME) = DATE(NOW())
         ORDER BY EAT_TIME
     </select>
 
+
+    <!-- 식사 저장(LocalDateTime 직접 저장) -->
     <insert id="saveMeal" parameterType="map">
         INSERT INTO MEAL_ENTRY (
         USER_ID,
@@ -56,12 +63,13 @@
         SUGAR_G,
         FIBER_G,
         CALCIUM_MG,
-        SODIUM_MG
+        SODIUM_MG,
+        CREATED_AT
         )
         VALUES (
         #{userId},
         #{mealName},
-        STR_TO_DATE(#{eatTime}, '%Y-%m-%dT%H:%i:%s'),
+        #{eatTime, jdbcType=TIMESTAMP},
         IFNULL(#{calories}, 0),
         IFNULL(#{protein}, 0),
         IFNULL(#{carbs}, 0),
@@ -69,37 +77,39 @@
         IFNULL(#{sugar}, 0),
         IFNULL(#{fiber}, 0),
         IFNULL(#{calcium}, 0),
-        IFNULL(#{sodium}, 0)
+        IFNULL(#{sodium}, 0),
+        NOW()
         )
     </insert>
 
+
+    <!-- 식사 상세 조회 -->
     <select id="findMealById" parameterType="long" resultMap="MealResultMap">
         SELECT
-        ENTRY_ID AS entryId,
-        USER_ID AS userId,
-        MEAL_NAME AS mealName,
+        ENTRY_ID,
+        USER_ID,
+        MEAL_NAME,
         DATE_FORMAT(EAT_TIME, '%H:%i') AS mealTime,
-        DATE_FORMAT(EAT_TIME, '%Y-%m-%dT%H:%i:%s') AS eatTime,
-        CALORIES_KCAL AS calories,
-        PROTEIN_G AS protein,
-        CARBS_G AS carbs,
-        FATS_G AS fat,
-        SUGAR_G AS sugar,
-        FIBER_G AS fiber,
-        CALCIUM_MG AS calcium,
-        SODIUM_MG AS sodium
+        EAT_TIME,
+        CALORIES_KCAL,
+        PROTEIN_G,
+        CARBS_G,
+        FATS_G,
+        SUGAR_G,
+        FIBER_G,
+        CALCIUM_MG,
+        SODIUM_MG
         FROM MEAL_ENTRY
         WHERE ENTRY_ID = #{entryId}
     </select>
 
+
+    <!-- 식사 수정(LocalDateTime 직접 저장) -->
     <update id="updateMeal" parameterType="com.example.Ex02.dto.MealDto">
         UPDATE MEAL_ENTRY
         SET
         MEAL_NAME = #{mealName},
-        EAT_TIME = STR_TO_DATE(
-        CONCAT(DATE_FORMAT(EAT_TIME, '%Y-%m-%d'), ' ', #{mealTime}),
-        '%Y-%m-%d %H:%i'
-        ),
+        EAT_TIME = #{eatTime, jdbcType=TIMESTAMP},
         CALORIES_KCAL = #{calories},
         PROTEIN_G = #{protein},
         CARBS_G = #{carbs},
@@ -111,6 +121,8 @@
         WHERE ENTRY_ID = #{entryId}
     </update>
 
+
+    <!-- 삭제 -->
     <delete id="deleteMeal">
         DELETE FROM MEAL_ENTRY
         WHERE ENTRY_ID = #{entryId}
@@ -179,5 +191,4 @@
         NOW()
         )
     </insert>
-
 </mapper>

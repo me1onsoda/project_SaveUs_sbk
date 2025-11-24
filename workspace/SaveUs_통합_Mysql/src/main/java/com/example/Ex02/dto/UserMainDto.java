@@ -12,6 +12,7 @@ public class UserMainDto {
     private String gender;            // USERS.GENDER
     private Double height;            // USERS.HEIGHT
     private Double currentWeight;     // USERS.CURRENT_WEIGHT
+    private Double bmi;
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
@@ -39,4 +40,11 @@ public class UserMainDto {
 
     public Double getCurrentWeight() { return currentWeight; }
     public void setCurrentWeight(Double currentWeight) { this.currentWeight = currentWeight; }
+
+    public Double getBmi() {
+        return bmi;
+    }
+    public void setBmi(Double bmi) {
+        this.bmi = bmi;
+    }
 }

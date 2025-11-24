@@ -10,11 +10,11 @@
         <link rel="stylesheet" th:href="@{/css/dashboard.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
     </th:block>
 </head>
 
 <main layout:fragment="content">
-    <!-- 상단 정보 카드 -->
     <div class="top-section">
         <div class="welcome-card">
             <div class="user-info">
@@ -31,16 +31,31 @@
             </div>
         </div>
 
-        <!-- 팁 카드 -->
         <div class="tip-card">
-            <h4>오늘의 팁</h4>
-            <p class="tip-text">
-                다양한 색깔의 채소를 식단에 포함해 보십시오.
-                항산화 성분을 높여 전반적인 건강 유지에 도움이 됩니다.
-            </p>
+            <h4>오늘의 체중</h4>
+
+            <div class="weight-input-wrapper">
+                <input type="number" id="todayWeightInput" placeholder="현재의 체중을 입력">
+                <button id="saveWeightBtn" type="button">입력</button>
+
+                <!-- 저장 버튼 오른쪽에 현재 체중과 BMI 표시 -->
+                <div class="weight-info">
+                    <span>현재의 체중: <strong id="currentWeightText" th:data-height="${user.height}" th:text="${user.currentWeight} + ' kg'"></strong></span>
+                    <span>BMI: <strong id="bmiValue" th:text="${user.bmi}"></strong></span>
+                    <span>상태: <strong id="bmiStatus"></strong></span>
+                </div>
+            </div>
         </div>
+
+
+
+
+
+
     </div>
 
+    <!-- 아래는 기존 식사/영양 요약 그대로 유지 -->
+    <!-- 생략하지 않고 전체 그대로 유지하여 정상 동작 -->
 
     <!-- 식사 기록 -->
     <section class="log-meal">
@@ -58,23 +73,15 @@
             <div class="meal-search-area">
                 <div class="search-group">
                     <input type="text" id="mealSearchInput" placeholder="음식명 검색">
-
-                    <!-- 자동완성 결과 박스 추가 -->
                     <div id="autocompleteBox" class="autocomplete-box"></div>
-
                     <button id="mealAddBtn">추가</button>
                 </div>
-
             </div>
         </div>
     </section>
 
-
-
-    <!-- 오늘의 식사 + 영양 요약 -->
     <div class="stats-section">
 
-        <!-- 오늘의 식사 -->
         <div class="meals-card">
             <h4>오늘의 식사</h4>
 
@@ -95,13 +102,8 @@
             </ul>
         </div>
 
-
-
-        <!-- 오른쪽 요약 전체 -->
         <div class="right-summary">
 
-
-            <!-- 총 칼로리 -->
             <div class="summary-card">
                 <div class="summary-header">
                     <p class="title">칼로리</p>
@@ -127,9 +129,6 @@
                 </p>
             </div>
 
-
-
-            <!-- 3대 영양 progress -->
             <div class="nutrient-summary">
 
                 <!-- 탄수화물 -->
@@ -153,11 +152,10 @@
                     </div>
 
                     <p class="percent-text"
-                       th:classappend="${totalCarbs > goal.carbsG} ? ' over'"
+                       th:classappend="${totalCarbs > goal.carbsG} ? ' over' "
                        th:text="${(totalCarbs * 100 / goal.carbsG) > 100 ? 100 : T(java.lang.Math).round((totalCarbs * 100.0) / goal.carbsG)} + '%'">
                     </p>
                 </div>
-
 
                 <!-- 단백질 -->
                 <div class="summary-card">
@@ -174,22 +172,16 @@
 
                     <div class="progress-bar">
                         <div class="progress-fill protein-bar"
-                             th:classappend="${totalProtein > goal.proteinG} ? ' progress-over'"
+                             th:classappend="${totalProtein > goal.proteinG} ? ' progress-over' "
                              th:style="'width:' + ( (${totalProtein} / ${goal.proteinG}) > 1 ? 100 : (${totalProtein} / ${goal.proteinG} * 100) ) + '%' ">
                         </div>
                     </div>
 
                     <p class="percent-text"
-                       th:classappend="${totalProtein > goal.proteinG} ? ' over'"
+                       th:classappend="${totalProtein > goal.proteinG} ? ' over' "
                        th:text="${(totalProtein * 100 / goal.proteinG) > 100 ? 100 : T(java.lang.Math).round((totalProtein * 100.0) / goal.proteinG)} + '%'">
                     </p>
                 </div>
-
-
-
-
-
-
 
                 <!-- 지방 -->
                 <div class="summary-card">
@@ -197,7 +189,7 @@
                         <p class="title">지방</p>
 
                         <h3 class="value"
-                            th:classappend="${totalFat > goal.fatsG} ? ' over'">
+                            th:classappend="${totalFat > goal.fatsG} ? ' over' ">
                             <span th:text="${totalFat}"></span>
                             /
                             <span th:text="${goal.fatsG}"></span> g
@@ -206,26 +198,47 @@
 
                     <div class="progress-bar">
                         <div class="progress-fill fat-bar"
-                             th:classappend="${totalFat > goal.fatsG} ? ' progress-over'"
+                             th:classappend="${totalFat > goal.fatsG} ? ' progress-over' "
                              th:style="'width:' + ( (${totalFat} / ${goal.fatsG}) > 1 ? 100 : (${totalFat} / ${goal.fatsG} * 100) ) + '%' ">
                         </div>
                     </div>
 
                     <p class="percent-text"
-                       th:classappend="${totalFat > goal.fatsG} ? ' over'"
+                       th:classappend="${totalFat > goal.fatsG} ? ' over' "
                        th:text="${(totalFat * 100 / goal.fatsG) > 100 ? 100 : T(java.lang.Math).round((totalFat * 100.0) / goal.fatsG)} + '%'">
                     </p>
                 </div>
 
+                <div class="extra-nutrients">
+                    <div class="extra-card">
+                        <p class="extra-title">당류</p>
+                        <h3 class="extra-value" th:text="${totalSugar + ' g'}"></h3>
+                    </div>
+
+                    <div class="extra-card">
+                        <p class="extra-title">식이섬유</p>
+                        <h3 class="extra-value" th:text="${totalFiber + ' g'}"></h3>
+                    </div>
+
+                    <div class="extra-card">
+                        <p class="extra-title">칼슘</p>
+                        <h3 class="extra-value" th:text="${totalCalcium + ' mg'}"></h3>
+                    </div>
+
+                    <div class="extra-card">
+                        <p class="extra-title">나트륨</p>
+                        <h3 class="extra-value" th:text="${totalSodium + ' mg'}"></h3>
+                    </div>
+                </div>
             </div>
 
         </div>
-
     </div>
 
 </main>
 
 <th:block layout:fragment="script">
+    <script src="/js/foodWeight.js"></script>
     <script src="/js/foodAdd.js?v=new_ai_ver1"></script>
 </th:block>
 

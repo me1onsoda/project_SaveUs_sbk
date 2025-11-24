@@ -150,3 +150,9 @@ a.delete-btn {
     gap: 12px;                   /* 간격 */
     margin-top: 20px;
 }
+
+.form-four {
+    flex-direction: row;
+    display: flex;
+    gap: 16px;
+}

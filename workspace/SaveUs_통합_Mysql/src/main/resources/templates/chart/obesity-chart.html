@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>비만 가능성 그래프</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h2 th:text="'유저 ' + ${userId} + ' 비만 가능성'">유저 비만 가능성</h2>
+
+<canvas id="obesityChart" width="400" height="400"></canvas>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const ctx = document.getElementById('obesityChart').getContext('2d');
+    const obesityProbability = [[${obesityProbability}]]; // 퍼센트로 표시
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['비만 가능성', '비만 아님 가능성'],
+            datasets: [{
+                data: [obesityProbability, 100 - obesityProbability],
+                backgroundColor: ['#FF6384', '#36A2EB']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

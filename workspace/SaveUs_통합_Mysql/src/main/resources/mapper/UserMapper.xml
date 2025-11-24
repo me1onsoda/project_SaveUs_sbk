@@ -197,4 +197,12 @@
         AND DATE(BIRTHDATE) = #{birthdate}
     </select>
 
+    <update id="updateWeightAndBmi">
+        UPDATE USERS
+        SET CURRENT_WEIGHT = #{weight},
+        BMI = #{bmi}
+        WHERE USER_ID = #{userId}
+    </update>
+
+
 </mapper>

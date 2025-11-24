@@ -31,12 +31,13 @@ main {
 }
 
 /* ===============================
-    상단 카드
+    상단 카드 레이아웃
 ================================ */
 .top-section {
     display: flex;
-    gap: 20px;
-    margin-bottom: 40px;
+    gap: 10px; /* 카드 사이 간격 줄임 */
+    margin-top: 20px;
+    margin-bottom: 20px; /* 상단 여백 줄임 */
 }
 
 .welcome-card,
@@ -44,8 +45,12 @@ main {
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 24px;
-    width: 50%;
+    padding: 16px; /* 카드 내부 여백 줄임 */
+    flex: 1; /* 동일한 비율로 늘림 */
+}
+
+.tip-card {
+    flex: 1.2; /* 오른쪽 체중 카드 살짝 넓게 */
 }
 
 .user-info {
@@ -61,8 +66,8 @@ main {
 }
 
 .goal-tag {
-    background: #1ABC9C !important;  /* 감량 태그 고유 민트색 */
-    color: #ffffff !important;        /* 흰색 글씨 */
+    background: #1ABC9C !important;
+    color: #ffffff !important;
     padding: 4px 12px;
     border-radius: 10px;
     font-size: 14px;
@@ -70,7 +75,55 @@ main {
     display: inline-block;
 }
 
+/* ===============================
+    오늘의 체중 (입력 및 정보)
+================================ */
+.tip-card h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
 
+.weight-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#todayWeightInput {
+    width: 200px;
+    height: 40px;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+#saveWeightBtn {
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+#saveWeightBtn:hover {
+    background: var(--green-dark);
+}
+
+.weight-info {
+    display: flex;
+    gap: 16px;
+    font-weight: 600;
+    color: #444;
+}
+
+.weight-info strong {
+    color: var(--green);
+}
 
 /* ===============================
     식사 기록하기
@@ -127,7 +180,6 @@ main {
 /* ===============================
     검색창 + 자동완성
 ================================ */
-
 .search-group {
     position: relative;
     display: flex;
@@ -157,22 +209,17 @@ main {
     background: #E5951E;
 }
 
-/* 자동완성 박스 (최종 안정 버전) */
 .autocomplete-box {
     display: none;
     position: absolute;
-
-    top: 48px;     /* input 아래 밀착 */
+    top: 48px;
     left: 0;
-    width: 220px;  /* input 너비와 동일 */
-
+    width: 220px;
     background: white;
     border: 1px solid #ccc;
     border-radius: 0 0 10px 10px;
-
     max-height: 180px;
     overflow-y: auto;
-
     z-index: 9999;
 }
 
@@ -234,17 +281,27 @@ main {
     오른쪽 요약
 ================================ */
 .right-summary {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
     width: 65%;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 0;
 }
 
 .summary-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 16px 0;
+    margin: 0;
+    border-bottom: 1px solid #eee;
+}
+
+.summary-card:last-child {
+    border-bottom: none;
 }
 
 .summary-header {
@@ -256,7 +313,6 @@ main {
 .summary-card .title {
     font-size: 18px;
     font-weight: 600;
-    color: var(--text-dark);
 }
 
 .summary-card .value {
@@ -280,27 +336,15 @@ main {
     transition: width 0.4s ease;
 }
 
-.calorie-bar {
-    background: #FFA94D;
-}
-
-.protein-bar {
-    background: #38C6A7;
-}
-
-.carbs-bar {
-    background: #5AA0F2;
-}
-
-.fat-bar {
-    background: #D4A373;
-}
+.calorie-bar { background: #FFA94D; }
+.protein-bar { background: #38C6A7; }
+.carbs-bar { background: #5AA0F2; }
+.fat-bar { background: #D4A373; }
 
 .percent-text {
     font-size: 15px;
     font-weight: 600;
     color: var(--green);
-    margin-top: 4px;
 }
 
 .over {
@@ -311,29 +355,29 @@ main {
     background: #FF3B30 !important;
 }
 
-
-/* 오른쪽 요약 전체를 하나의 박스로 만들기 */
-.right-summary {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 24px;
+.extra-nutrients {
     display: flex;
-    flex-direction: column;
-    gap: 0;   /* 개별 카드 간격 제거 */
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 16px;
 }
 
-/* 기존 개별 summary-card 디자인 제거 */
-.right-summary .summary-card {
-    background: none;
-    border: none;
-    border-radius: 0;
-    padding: 16px 0;
-    margin: 0;
-    border-bottom: 1px solid #eee;  /* 항목 구분선 */
+.extra-card {
+    flex: 1;
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
 }
 
-/* 마지막 항목 구분선 제거 */
-.right-summary .summary-card:last-child {
-    border-bottom: none;
+.extra-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.extra-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--green);
 }
