@@ -21,7 +21,7 @@ public class ObesityChartController {
             @RequestParam(name = "userId", required = false, defaultValue = "1") Integer userId,
             Model model) {
 
-        String url = "http://3.37.90.119:8000/predict-obesity/" + userId;
+        String url = "http://3.37.90.119:8001/predict-obesity/" + userId;
 
         ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
         Map<String, Object> result = response.getBody();
