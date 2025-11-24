@@ -215,11 +215,36 @@
                     </p>
                 </div>
 
+                <!-- 추가 영양소 4개 카드 -->
+                <div class="extra-nutrients">
+                    <div class="extra-card">
+                        <p class="extra-title">당(g)</p>
+                        <h3 class="extra-value" th:text="${totalSugar + ' g'}"></h3>
+                    </div>
+
+                    <div class="extra-card">
+                        <p class="extra-title">식이섬유(g)</p>
+                        <h3 class="extra-value" th:text="${totalFiber + ' g'}"></h3>
+                    </div>
+
+                    <div class="extra-card">
+                        <p class="extra-title">칼슘(mg)</p>
+                        <h3 class="extra-value" th:text="${totalCalcium + ' mg'}"></h3>
+                    </div>
+
+                    <div class="extra-card">
+                        <p class="extra-title">나트륨(mg)</p>
+                        <h3 class="extra-value" th:text="${totalSodium + ' mg'}"></h3>
+                    </div>
+                </div>
             </div>
 
         </div>
 
+
     </div>
+
+
 </main>
 
 <th:block layout:fragment="script">

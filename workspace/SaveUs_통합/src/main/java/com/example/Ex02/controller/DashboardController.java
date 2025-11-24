@@ -103,6 +103,11 @@ public class DashboardController {
         model.addAttribute("totalProtein", totalProtein);
         model.addAttribute("totalCarbs", totalCarbs);
         model.addAttribute("totalFat", totalFat);
+        model.addAttribute("totalSugar", totalSugar);
+        model.addAttribute("totalFiber", totalFiber);
+        model.addAttribute("totalCalcium", totalCalcium);
+        model.addAttribute("totalSodium", totalSodium);
+
 
         model.addAttribute("goal", goal);
         model.addAttribute("goalCalories", goal.getCaloriesKcal());

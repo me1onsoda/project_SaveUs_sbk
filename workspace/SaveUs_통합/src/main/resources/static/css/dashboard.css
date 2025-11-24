@@ -337,3 +337,37 @@ main {
 .right-summary .summary-card:last-child {
     border-bottom: none;
 }
+
+/* ===============================
+    추가 영양소 4개 카드
+================================ */
+.extra-nutrients {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 16px;
+}
+
+.extra-card {
+    flex: 1;
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.extra-title {
+    font-size: 14px;
+    color: var(--text-dark);   /* 진한 검정색 */
+    font-weight: 600;          /* 제목처럼 굵게 */
+    margin-bottom: 6px;
+}
+
+
+.extra-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--green);
+}

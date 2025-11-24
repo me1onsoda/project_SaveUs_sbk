@@ -60,9 +60,15 @@ public class MealController {
         map.put("carbs", dto.getCarbs());
         map.put("fat", dto.getFat());
 
+        map.put("sugar", dto.getSugar());
+        map.put("fiber", dto.getFiber());
+        map.put("calcium", dto.getCalcium());
+        map.put("sodium", dto.getSodium());
+
         mealMapper.saveMeal(map);
         return "redirect:/dashboard";
     }
+
 
 
     // 식사 기록 수정 페이지 이동
