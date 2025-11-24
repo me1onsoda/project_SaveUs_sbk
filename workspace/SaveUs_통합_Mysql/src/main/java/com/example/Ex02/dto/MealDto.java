@@ -1,9 +1,6 @@
 package com.example.Ex02.dto;
-
-<<<<<<< HEAD
-=======
 import java.time.LocalDateTime;
->>>>>>> master
+
 
 public class MealDto {
 
