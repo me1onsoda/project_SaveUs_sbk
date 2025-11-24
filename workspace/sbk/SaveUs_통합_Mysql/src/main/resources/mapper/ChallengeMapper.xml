@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.ChallengeMapper">
+
+    <!-- ChallengeCardDto 매핑 -->
+    <resultMap id="ChallengeCardResultMap" type="com.example.Ex02.dto.ChallengeCardDto">
+        <id property="challengeId" column="CHALLENGE_ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="imageUrl" column="IMAGE_URL"/>
+        <result property="isUserParticipating" column="IS_PARTICIPATING"/>
+        <result property="challengeType" column="CHALLENGE_TYPE"/>
+        <result property="metricKey" column="METRIC_KEY"/>
+        <result property="targetValue" column="TARGET_VALUE"/>
+        <result property="durationDays" column="DURATION_DAYS"/>
+        <result property="points" column="POINTS"/>
+        <result property="participationStatus" column="PARTICIPATION_STATUS"/>
+
+        <collection property="tags" ofType="com.example.Ex02.dto.TagDto">
+            <id property="tagId" column="TAG_ID"/>
+            <result property="tagName" column="TAG_NAME"/>
+        </collection>
+    </resultMap>
+
+
+    <!-- MyChallengeItemDto 매핑 -->
+    <resultMap id="MyChallengeItemResultMap" type="com.example.Ex02.dto.MyChallengeItemDto">
+        <id property="userChallengeId" column="USER_CHALLENGE_ID"/>
+        <result property="challengeId" column="CHALLENGE_ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="imageUrl" column="IMAGE_URL"/>
+        <result property="durationDays" column="DURATION_DAYS"/>
+        <result property="challengeType" column="CHALLENGE_TYPE"/>
+        <result property="metricKey" column="METRIC_KEY"/>
+        <result property="targetValue" column="TARGET_VALUE"/>
+        <result property="status" column="STATUS"/>
+        <result property="progressPercent" column="PROGRESS_PERCENT"/>
+        <result property="startValue" column="START_VALUE"/>
+        <result property="currentCount" column="CURRENT_COUNT"/>
+        <result property="successCount" column="SUCCESS_COUNT"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="points" column="POINTS"/>
+    </resultMap>
+
+
+    <!-- 리더보드 -->
+    <select id="findLeaderboardTop5" resultType="com.example.Ex02.dto.LeaderboardEntryDto">
+        SELECT
+        U.NICKNAME AS userNickname,
+        U.PROFILE_IMAGE_URL AS userProfileImg,
+        U.TOTAL_POINTS AS score
+        FROM USERS U
+        WHERE U.TOTAL_POINTS > 0
+        ORDER BY score DESC
+        LIMIT 5
+    </select>
+
+    <select id="findTop50Leaderboard" resultType="com.example.Ex02.dto.LeaderboardEntryDto">
+        SELECT
+        U.NICKNAME AS userNickname,
+        U.PROFILE_IMAGE_URL AS userProfileImg,
+        U.TOTAL_POINTS AS score
+        FROM USERS U
+        WHERE U.TOTAL_POINTS > 0
+        ORDER BY score DESC
+        LIMIT 50
+    </select>
+
+
+    <!-- 태그 목록 -->
+    <select id="findAllTags" resultType="com.example.Ex02.dto.TagDto">
+        SELECT TAG_ID, TAG_NAME
+        FROM TAGS
+        ORDER BY TAG_NAME
+    </select>
+
+
+    <!-- 챌린지 전체 목록 (페이징) -->
+    <select id="findAllChallengesPaginated"
+            resultMap="ChallengeCardResultMap"
+            parameterType="map">
+
+        SELECT
+        C.CHALLENGE_ID, C.TITLE, C.DESCRIPTION, C.IMAGE_URL,
+        C.POINTS, C.CHALLENGE_TYPE, C.METRIC_KEY, C.TARGET_VALUE,
+        C.DURATION_DAYS,
+        T.TAG_ID, T.TAG_NAME,
+        COALESCE(UC.STATUS, 'NONE') AS PARTICIPATION_STATUS,
+        (UC.USER_ID IS NOT NULL) AS IS_PARTICIPATING
+        FROM CHALLENGES C
+        LEFT JOIN CHALLENGE_TAGS CT ON C.CHALLENGE_ID = CT.CHALLENGE_ID
+        LEFT JOIN TAGS T ON CT.TAG_ID = T.TAG_ID
+        LEFT JOIN USER_CHALLENGES UC
+        ON C.CHALLENGE_ID = UC.CHALLENGE_ID
+        AND UC.USER_ID = #{userId}
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (C.TITLE LIKE CONCAT('%', #{keyword}, '%')
+                OR C.DESCRIPTION LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+
+            <if test="tag != null and tag != ''">
+                AND C.CHALLENGE_ID IN (
+                SELECT CT2.CHALLENGE_ID
+                FROM CHALLENGE_TAGS CT2
+                JOIN TAGS T2 ON CT2.TAG_ID = T2.TAG_ID
+                WHERE T2.TAG_NAME = #{tag}
+                )
+            </if>
+        </where>
+        ORDER BY C.CHALLENGE_ID DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+    <!-- 챌린지 개수 -->
+    <select id="countAllChallenges" resultType="int" parameterType="map">
+        SELECT COUNT(DISTINCT C.CHALLENGE_ID)
+        FROM CHALLENGES C
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (C.TITLE LIKE CONCAT('%', #{keyword}, '%')
+                OR C.DESCRIPTION LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="tag != null and tag != ''">
+                AND C.CHALLENGE_ID IN (
+                SELECT CT2.CHALLENGE_ID
+                FROM CHALLENGE_TAGS CT2
+                JOIN TAGS T2 ON CT2.TAG_ID = T2.TAG_ID
+                WHERE T2.TAG_NAME = #{tag}
+                )
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 목표 기반 추천 -->
+    <select id="findChallengesByGoal" resultMap="ChallengeCardResultMap">
+        SELECT
+        C.CHALLENGE_ID, C.TITLE, C.DESCRIPTION, C.IMAGE_URL,
+        C.DURATION_DAYS, C.POINTS, C.CHALLENGE_TYPE, C.METRIC_KEY, C.TARGET_VALUE,
+        T.TAG_ID, T.TAG_NAME,
+        COALESCE(UC.STATUS, 'NONE') AS PARTICIPATION_STATUS,
+        (UC.USER_ID IS NOT NULL) AS IS_PARTICIPATING
+        FROM CHALLENGES C
+        LEFT JOIN CHALLENGE_TAGS CT ON C.CHALLENGE_ID = CT.CHALLENGE_ID
+        LEFT JOIN TAGS T ON CT.TAG_ID = T.TAG_ID
+        LEFT JOIN USER_CHALLENGES UC
+        ON C.CHALLENGE_ID = UC.CHALLENGE_ID
+        AND UC.USER_ID = #{userId}
+        WHERE C.TARGET_GOAL = #{goal}
+        LIMIT 3
+    </select>
+
+
+    <!-- 페르소나 기반 추천 -->
+    <select id="findChallengesByPersona" resultMap="ChallengeCardResultMap">
+        SELECT
+        C.CHALLENGE_ID, C.TITLE, C.DESCRIPTION, C.IMAGE_URL,
+        C.DURATION_DAYS, C.POINTS, C.CHALLENGE_TYPE, C.METRIC_KEY, C.TARGET_VALUE,
+        T.TAG_ID, T.TAG_NAME,
+        COALESCE(UC.STATUS, 'NONE') AS PARTICIPATION_STATUS,
+        (UC.USER_ID IS NOT NULL) AS IS_PARTICIPATING
+        FROM CHALLENGES C
+        LEFT JOIN CHALLENGE_TAGS CT ON C.CHALLENGE_ID = CT.CHALLENGE_ID
+        LEFT JOIN TAGS T ON CT.TAG_ID = T.TAG_ID
+        LEFT JOIN USER_CHALLENGES UC
+        ON C.CHALLENGE_ID = UC.CHALLENGE_ID
+        AND UC.USER_ID = #{userId}
+        WHERE C.TARGET_PERSONA = #{persona}
+        LIMIT 2
+    </select>
+
+
+    <!-- 내 챌린지 카운트 -->
+    <select id="countMyChallengesByStatus" resultType="int">
+        SELECT COUNT(USER_CHALLENGE_ID)
+        FROM USER_CHALLENGES
+        WHERE USER_ID = #{userId}
+        AND STATUS = #{status}
+    </select>
+
+    <!-- 총 포인트 -->
+    <select id="getMyTotalPoints" resultType="int">
+        SELECT TOTAL_POINTS
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <!-- 메인 목표 -->
+    <select id="findUserMainGoal" resultType="Integer">
+        SELECT MAIN_GOAL
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
+
+    <!-- 상태별 내 챌린지 목록 -->
+    <select id="findMyChallengesByStatus" resultMap="MyChallengeItemResultMap">
+        SELECT
+        C.CHALLENGE_ID, C.TITLE, C.DESCRIPTION, C.IMAGE_URL, C.DURATION_DAYS,
+        C.POINTS, C.CHALLENGE_TYPE, C.METRIC_KEY, C.TARGET_VALUE,
+        UC.USER_CHALLENGE_ID, UC.STATUS, UC.PROGRESS_PERCENT,
+        UC.START_VALUE, UC.CURRENT_COUNT, UC.SUCCESS_COUNT,
+        UC.USER_ID
+        FROM CHALLENGES C
+        JOIN USER_CHALLENGES UC ON C.CHALLENGE_ID = UC.CHALLENGE_ID
+        WHERE UC.USER_ID = #{userId}
+        AND UC.STATUS = #{status}
+        ORDER BY UC.START_DATE DESC
+    </select>
+
+
+    <!-- 체중 조회 -->
+    <select id="getUserWeight" resultType="Double">
+        SELECT CURRENT_WEIGHT
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
+
+    <!-- 챌린지 상세 조회 -->
+    <select id="findChallengeDetail" resultMap="ChallengeCardResultMap">
+        SELECT *
+        FROM CHALLENGES
+        WHERE CHALLENGE_ID = #{challengeId}
+    </select>
+
+
+    <!-- 챌린지 참가 -->
+    <insert id="joinChallenge">
+        INSERT INTO USER_CHALLENGES (
+        USER_ID, CHALLENGE_ID, START_VALUE, STATUS,
+        CURRENT_COUNT, PROGRESS_PERCENT, START_DATE
+        ) VALUES (
+        #{userId},
+        #{challengeId},
+        #{startValue, jdbcType=NUMERIC},
+        'ONGOING',
+        0,
+        0,
+        NOW()
+        )
+    </insert>
+
+
+    <!-- 전체 활성 챌린지 -->
+    <select id="findAllActiveChallenges" resultMap="MyChallengeItemResultMap">
+        SELECT
+        C.CHALLENGE_ID, C.TITLE, C.CHALLENGE_TYPE, C.METRIC_KEY, C.TARGET_VALUE,
+        C.DURATION_DAYS, C.POINTS,
+        UC.USER_CHALLENGE_ID, UC.USER_ID, UC.STATUS,
+        UC.START_VALUE, UC.CURRENT_COUNT
+        FROM USER_CHALLENGES UC
+        JOIN CHALLENGES C ON UC.CHALLENGE_ID = C.CHALLENGE_ID
+        WHERE UC.STATUS = 'ONGOING'
+    </select>
+
+
+    <!-- 진행도 업데이트 -->
+    <update id="updateProgress">
+        UPDATE USER_CHALLENGES
+        SET CURRENT_COUNT = #{currentCount},
+        PROGRESS_PERCENT = #{progressPercent},
+        LAST_CHECKED_AT = NOW()
+        WHERE USER_CHALLENGE_ID = #{userChallengeId}
+    </update>
+
+
+    <!-- 성공 처리 -->
+    <update id="completeChallenge">
+        UPDATE USER_CHALLENGES
+        SET STATUS = 'COMPLETED',
+        PROGRESS_PERCENT = 100,
+        LAST_CHECKED_AT = NOW(),
+        SUCCESS_COUNT = SUCCESS_COUNT + 1
+        WHERE USER_CHALLENGE_ID = #{userChallengeId}
+    </update>
+
+
+    <!-- 총 성공 횟수 -->
+    <select id="sumTotalSuccessCount" resultType="int">
+        SELECT COALESCE(SUM(SUCCESS_COUNT), 0)
+        FROM USER_CHALLENGES
+        WHERE USER_ID = #{userId}
+    </select>
+
+
+    <!-- 실패 처리 -->
+    <update id="failChallenge">
+        UPDATE USER_CHALLENGES
+        SET STATUS = 'FAILED',
+        LAST_CHECKED_AT = NOW()
+        WHERE USER_CHALLENGE_ID = #{userChallengeId}
+    </update>
+
+
+    <!-- 단건 조회 -->
+    <select id="findUserChallengeById" resultMap="MyChallengeItemResultMap">
+        SELECT
+        C.CHALLENGE_ID, C.CHALLENGE_TYPE, C.METRIC_KEY, C.TARGET_VALUE,
+        UC.USER_CHALLENGE_ID, UC.USER_ID, UC.STATUS,
+        UC.START_VALUE, UC.CURRENT_COUNT
+        FROM USER_CHALLENGES UC
+        JOIN CHALLENGES C ON UC.CHALLENGE_ID = C.CHALLENGE_ID
+        WHERE UC.USER_CHALLENGE_ID = #{userChallengeId}
+    </select>
+
+
+    <!-- 재시작 -->
+    <update id="resetChallenge">
+        UPDATE USER_CHALLENGES
+        SET STATUS = 'ONGOING',
+        CURRENT_COUNT = 0,
+        PROGRESS_PERCENT = 0,
+        START_DATE = NOW(),
+        START_VALUE = #{startValue, jdbcType=NUMERIC},
+        LAST_CHECKED_AT = NULL
+        WHERE USER_CHALLENGE_ID = #{userChallengeId}
+    </update>
+
+
+    <!-- 삭제 -->
+    <delete id="deleteUserChallenge">
+        DELETE FROM USER_CHALLENGES
+        WHERE USER_CHALLENGE_ID = #{userChallengeId}
+    </delete>
+
+
+    <!-- 포인트 추가 -->
+    <update id="addUserPoint">
+        UPDATE USERS
+        SET TOTAL_POINTS = TOTAL_POINTS + #{points}
+        WHERE USER_ID = #{userId}
+    </update>
+
+
+    <!-- 뱃지 추가 -->
+    <insert id="insertUserBadge">
+        INSERT INTO USER_BADGES (USER_ID, CHALLENGE_ID)
+        SELECT #{userId}, #{challengeId}
+        FROM DUAL
+        WHERE NOT EXISTS (
+        SELECT 1
+        FROM USER_BADGES
+        WHERE USER_ID = #{userId}
+        AND CHALLENGE_ID = #{challengeId}
+        )
+        LIMIT 1
+    </insert>
+
+</mapper>

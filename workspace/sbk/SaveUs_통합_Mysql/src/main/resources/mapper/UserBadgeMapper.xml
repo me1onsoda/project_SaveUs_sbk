@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.UserBadgeMapper">
+
+    <select id="findBadgesByUser" resultType="com.example.Ex02.dto.UserBadgeDto">
+        SELECT
+        UB.BADGE_ID,
+        UB.USER_ID,
+        UB.CHALLENGE_ID,
+        UB.ACQUIRED_AT,
+        C.TITLE AS title,
+        C.DESCRIPTION AS description,
+        C.IMAGE_URL AS imageUrl
+        FROM USER_BADGES UB
+        JOIN CHALLENGES C ON UB.CHALLENGE_ID = C.CHALLENGE_ID
+        WHERE UB.USER_ID = #{userId}
+        ORDER BY UB.ACQUIRED_AT DESC
+    </select>
+
+</mapper>

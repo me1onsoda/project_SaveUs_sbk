@@ -1,0 +1,87 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+.find-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.find-card {
+    width: 420px;
+    background: #ffffff;
+    padding: 50px 40px;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    text-align: center;
+}
+
+.find-card h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111111;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #777777;
+    margin-bottom: 24px;
+}
+
+
+.btn-select {
+    display: block;
+    width: 100%;
+    background: #1ABC9C;
+    color: white;
+    padding: 14px 0;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 16px;
+}
+
+.btn-select:hover {
+    opacity: 0.9;
+}
+
+
+.footer-links {
+    margin-top: 18px;
+    font-size: 14px;
+    color: #666;
+}
+
+.footer-links a {
+    color: #1ABC9C;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 2px 4px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.footer-links span {
+    color: #ccc;
+    user-select: none;
+}

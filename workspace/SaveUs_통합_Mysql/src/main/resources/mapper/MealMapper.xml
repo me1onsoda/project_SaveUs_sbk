@@ -128,4 +128,67 @@
         WHERE ENTRY_ID = #{entryId}
     </delete>
 
+    <select id="findYesterdayTotalNutrition" resultMap="MealResultMap">
+        SELECT
+        IFNULL(SUM(CALORIES_KCAL), 0) AS calories,
+        IFNULL(SUM(PROTEIN_G), 0)     AS protein,
+        IFNULL(SUM(CARBS_G), 0)       AS carbs,
+        IFNULL(SUM(FATS_G), 0)        AS fat,
+        IFNULL(SUM(SUGAR_G), 0)       AS sugar,
+        IFNULL(SUM(FIBER_G), 0)       AS fiber,
+        IFNULL(SUM(CALCIUM_MG), 0)    AS calcium,
+        IFNULL(SUM(SODIUM_MG), 0)     AS sodium
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND DATE(EAT_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))
+    </select>
+
+    <select id="getDailyNutritionStats" resultMap="MealResultMap">
+        SELECT
+        IFNULL(SUM(CALORIES_KCAL), 0) AS calories,
+        IFNULL(SUM(PROTEIN_G), 0)     AS protein,
+        IFNULL(SUM(CARBS_G), 0)       AS carbs,
+        IFNULL(SUM(FATS_G), 0)        AS fat,
+        IFNULL(SUM(SUGAR_G), 0)       AS sugar,
+        IFNULL(SUM(FIBER_G), 0)       AS fiber,
+        IFNULL(SUM(CALCIUM_MG), 0)    AS calcium,
+        IFNULL(SUM(SODIUM_MG), 0)     AS sodium
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND DATE(EAT_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))
+    </select>
+
+    <select id="selectYesterdayNutritionForAllUsers" resultType="com.example.Ex02.dto.DiabetesScoreDto">
+        SELECT
+        U.USER_ID AS userId,
+        U.AGE AS age,                 -- DB에 이미 있는 나이 사용
+        -- 성별이 'MALE'/'FEMALE' 문자열이면 -> 숫자로 변환 (모델은 1,2를 원함)
+        CASE WHEN U.GENDER = 'MALE' THEN 1 ELSE 2 END AS sex,
+        U.HEIGHT AS height,
+        U.CURRENT_WEIGHT AS weight,   -- USERS 테이블 컬럼명
+
+        IFNULL(SUM(M.CALORIES_KCAL), 0) AS totalKcal,  -- Oracle NVL -> MySQL IFNULL
+        IFNULL(SUM(M.CARBS_G), 0)       AS totalCarbs,
+        IFNULL(SUM(M.FATS_G), 0)        AS totalFat,
+        IFNULL(SUM(M.PROTEIN_G), 0)     AS totalProtein,
+        IFNULL(SUM(M.SODIUM_MG), 0)     AS totalSodium,
+        IFNULL(SUM(M.SUGAR_G), 0)       AS totalSugar
+        FROM USERS U
+        JOIN MEAL_ENTRY M ON U.USER_ID = M.USER_ID
+        -- MySQL 날짜 비교 (어제 데이터)
+        WHERE DATE(M.EAT_TIME) = SUBDATE(CURDATE(), 1)
+        GROUP BY U.USER_ID, U.AGE, U.GENDER, U.HEIGHT, U.CURRENT_WEIGHT
+    </select>
+
+    <insert id="insertDiabetesScore" parameterType="com.example.Ex02.dto.DiabetesScoreDto">
+        INSERT INTO DIABETES_SCORE (
+        USER_ID, SCORE, SIMILARITY, RISK_LEVEL, CREATED_AT
+        ) VALUES (
+        #{userId},
+        #{score},
+        #{similarity},
+        #{riskLevel},
+        NOW()
+        )
+    </insert>
 </mapper>
