@@ -1,4 +1,6 @@
 package com.example.Ex02.dto;
+import java.time.LocalDateTime;
+
 
 public class MealDto {
 
@@ -7,11 +9,10 @@ public class MealDto {
 
     private String mealName;
 
-    // "HH:mm"
+    // 화면 표시용 HH:mm
     private String mealTime;
 
     private Integer calories;
-
     private Integer protein;
     private Integer carbs;
     private Integer fat;
@@ -21,9 +22,9 @@ public class MealDto {
     private Integer calcium;    // CALCIUM_MG
     private Integer sodium;     // SODIUM_MG
 
+    // 실제 DB 저장 시간(LocalDateTime)
+    private LocalDateTime eatTime;
 
-    private String eatTime; // LocalDateTime → 문자열 형태
-    
 
     public Long getEntryId() { return entryId; }
     public void setEntryId(Long entryId) { this.entryId = entryId; }
@@ -61,6 +62,6 @@ public class MealDto {
     public Integer getSodium() { return sodium; }
     public void setSodium(Integer sodium) { this.sodium = sodium; }
 
-    public String getEatTime() { return eatTime; }
-    public void setEatTime(String eatTime) { this.eatTime = eatTime; }
+    public LocalDateTime getEatTime() { return eatTime; }
+    public void setEatTime(LocalDateTime eatTime) { this.eatTime = eatTime; }
 }

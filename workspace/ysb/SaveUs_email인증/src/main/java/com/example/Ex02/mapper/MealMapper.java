@@ -1,5 +1,6 @@
 package com.example.Ex02.mapper;
 
+import com.example.Ex02.dto.DiabetesScoreDto;
 import com.example.Ex02.dto.MealDto;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,4 +22,8 @@ public interface MealMapper {
 
     // 전날 영양소 합계 조회
     MealDto findYesterdayTotalNutrition(Long userId);
+    Map<String, Object> getDailyNutritionStats(Long userId);
+
+    List<DiabetesScoreDto> selectYesterdayNutritionForAllUsers();
+    void insertDiabetesScore(DiabetesScoreDto dto);
 }

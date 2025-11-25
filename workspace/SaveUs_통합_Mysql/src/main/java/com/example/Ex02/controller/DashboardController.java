@@ -7,6 +7,7 @@ import com.example.Ex02.mapper.MealMapper;
 import com.example.Ex02.mapper.UserGoalMapper;
 import com.example.Ex02.mapper.UserMainMapper;
 import com.example.Ex02.mapper.UserMapper;
+import com.example.Ex02.service.ObesityRateService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,18 +31,31 @@ public class DashboardController {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private ObesityRateService obesityRateService;
+
+    /**
+     * 대시보드 화면
+     * 유저 기본정보, 식사정보, 목표치, 섭취량 등을 모두 계산하여 전달
+     */
     @GetMapping({"/", "/dashboard"})
     public String dashboard(HttpSession session, Model model) {
 
+        // 세션에서 유저 ID 조회
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
+        // 유저 정보 조회
         UserMainDto user = userMainMapper.findMainInfo(userId);
         if (user == null) return "redirect:/login";
 
+        // 목표 숫자 -> 목표 이름 변환 (감량, 증량, 건강식)
         String goalName = convertGoalName(user.getMainGoal());
+
+        // 오늘 등록된 모든 식사 목록 조회
         List<MealDto> todayMeals = mealMapper.findTodayMeals(userId);
 
+        // 영양 성분 총합 계산
         int totalProtein = 0, totalCarbs = 0, totalFat = 0;
         int totalSugar = 0, totalFiber = 0, totalCalcium = 0, totalSodium = 0;
 
@@ -55,15 +69,16 @@ public class DashboardController {
             totalSodium += m.getSodium() != null ? m.getSodium() : 0;
         }
 
+        // 칼로리 총합 계산
         int totalCalories = todayMeals.stream()
                 .mapToInt(m -> m.getCalories() != null ? m.getCalories() : 0)
                 .sum();
 
-        // 항상 목표치 재계산
+        // 항상 최신 목표치 재계산 (체중 변경 시 즉시 반영)
         UserGoalDto goal = calculateUserGoal(user);
         goal.setUserId(userId);
 
-        // DB 반영
+        // 사용자 목표치 DB 저장 또는 갱신
         UserGoalDto existingGoal = userGoalMapper.findUserGoal(userId);
         if (existingGoal == null) {
             userGoalMapper.insertUserGoal(goal);
@@ -71,9 +86,10 @@ public class DashboardController {
             userGoalMapper.updateUserGoal(goal);
         }
 
-        // DB에서 최신 목표치 다시 조회
+        // 저장된 최신 목표치 재조회
         UserGoalDto refreshedGoal = userGoalMapper.findUserGoal(userId);
 
+        // 섭취율(%) 계산
         int percentCalories = goal.getCaloriesKcal() > 0
                 ? (int) (totalCalories / (double) goal.getCaloriesKcal() * 100) : 0;
 
@@ -85,6 +101,8 @@ public class DashboardController {
 
         int percentFat = goal.getFatsG() > 0
                 ? (int) (totalFat / (double) goal.getFatsG() * 100) : 0;
+
+        int obesityPercent = obesityRateService.getObesityPercent(userId.intValue());
 
         model.addAttribute("user", user);
         model.addAttribute("goalName", goalName);
@@ -107,14 +125,20 @@ public class DashboardController {
         model.addAttribute("percentCarbs", percentCarbs);
         model.addAttribute("percentFat", percentFat);
 
+        model.addAttribute("obesityPercent", obesityPercent);
+
         return "dashboard";
     }
 
+    /**
+     * 직접 입력 페이지 이동
+     */
     @GetMapping("/direct-input")
     public String directInput() {
         return "direct-input";
     }
 
+    // 목표값(숫자) -> 목표 이름
     private String convertGoalName(Integer mainGoal) {
         if (mainGoal == null) return "기타";
         return switch (mainGoal) {
@@ -125,6 +149,10 @@ public class DashboardController {
         };
     }
 
+    /**
+     * 사용자 정보 기반 목표치 계산
+     * BMR → TDEE 계산 후, 감량/증량에 따른 보정 적용
+     */
     private UserGoalDto calculateUserGoal(UserMainDto user) {
 
         Double weight = user.getCurrentWeight();
@@ -133,6 +161,7 @@ public class DashboardController {
         String gender = user.getGender();
         Integer mainGoal = user.getMainGoal();
 
+        // 필수 값 없을 경우 기본 값 제공
         if (weight == null || height == null || age == null || gender == null) {
             UserGoalDto g = new UserGoalDto();
             g.setCaloriesKcal(2400);
@@ -142,17 +171,21 @@ public class DashboardController {
             return g;
         }
 
+        // BMR 계산 (미플린-세인트 조르 공식)
         double bmr = ("M".equalsIgnoreCase(gender))
                 ? 10 * weight + 6.25 * height - 5 * age + 5
                 : 10 * weight + 6.25 * height - 5 * age - 161;
 
+        // 활동계수: 보통 활동 (1.55)
         double tdee = bmr * 1.55;
 
+        // 목표(감량, 증량)에 따라 TDEE 조정
         if (mainGoal != null) {
             if (mainGoal == 0) tdee -= 300;
             if (mainGoal == 1) tdee += 300;
         }
 
+        // 3대 영양소 비율 적용
         int protein = (int) ((tdee * 0.18) / 4);
         int carbs = (int) ((tdee * 0.55) / 4);
         int fats = (int) ((tdee * 0.27) / 9);

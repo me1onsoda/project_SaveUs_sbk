@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // 초기 로딩 시 상태 표시
     updateStatus();
 
     if (!saveBtn || !input) return;
@@ -34,28 +33,27 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        /* 체중 즉시 반영 */
         currentWeightText.textContent = weight.toFixed(1) + " kg";
 
-        /* BMI 즉시 계산 */
         const height = parseFloat(currentWeightText.dataset.height);
         const meter = height / 100.0;
         const raw = weight / (meter * meter);
         const bmi = Math.round(raw * 10) / 10;
 
-        /* BMI 화면 반영 */
         bmiText.textContent = bmi.toFixed(1);
-
-        /* BMI 상태 반영 */
         bmiStatus.textContent = getBmiStatus(bmi);
 
-        /* 서버 반영 */
         fetch("/user/update-weight", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ weight: weight })
         })
         .then(r => r.text())
-        .then(msg => console.log("결과:", msg));
+        .then(msg => {
+            console.log("결과:", msg);
+
+            /* 여기서 페이지 전체 새로고침 */
+            location.reload();
+        });
     });
 });

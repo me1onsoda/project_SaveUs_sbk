@@ -223,6 +223,11 @@ public class UserController {
         }
 
         userMapper.updateUser(userDto);
+
+        // 세션 로그인 정보 최신화
+        UserJoinDto updatedUser = userMapper.findById(userId);
+        session.setAttribute("loginUser", updatedUser);
+
         return "redirect:/my-page";
     }
 

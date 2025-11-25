@@ -1,12 +1,10 @@
 package com.example.Ex02.service;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import com.example.Ex02.dto.EmailVerificationStatusDto;
 import com.example.Ex02.dto.EmailVerificationTokenDto;
 import com.example.Ex02.dto.UserJoinDto;
 import com.example.Ex02.mapper.EmailVerificationTokenMapper;
 import com.example.Ex02.mapper.UserMapper;
-import groovyjarjarantlr4.v4.codegen.model.decl.TokenDecl;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Random;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -33,39 +28,6 @@ public class UserService {
 
     private final int TOKEN_EXPIRE_MINUTES = 30;
 
-    public void sendJoinVerificationMail(String email, HttpSession session) {
-        String token = makeToken();
-
-        session.setAttribute("joinToken", token);
-        session.setAttribute("joinEmail", email);
-        session.setAttribute("joinExpireTime", System.currentTimeMillis() + (TOKEN_EXPIRE_MINUTES * 60 * 1000));
-
-        mailService.sendVerificationCode(email, token);
-    }
-
-    // 회원가입용 인증번호 검증
-    public boolean verifyJoinCode(String email, String inputCode, HttpSession session) {
-        String sessionCode = (String) session.getAttribute("joinToken");
-        String sessionEmail = (String) session.getAttribute("joinEmail");
-        Long expireTime = (Long) session.getAttribute("joinExpireTime");
-
-        if (sessionCode == null || sessionEmail == null || expireTime == null) {
-            return false;
-        }
-
-        long currentTime = System.currentTimeMillis();
-        if (currentTime > expireTime) {
-            return false;
-        }
-
-        if (sessionEmail.equals(email) && sessionCode.equals(inputCode)) {
-            session.setAttribute("verifiedEmail", email);
-            return true;
-        }
-
-        return false;
-    }
-
 
     @Transactional
     public void deleteUserAll(Long userId) {
@@ -80,79 +42,52 @@ public class UserService {
         userMapper.deleteUser(userId);
     }
 
-    @Transactional
-    public void SendVerification(Long userId) {
+    // 계정 인증 메일 전송
+    public void sendJoinVerificationMail(String email, HttpSession session) {
+        String token = makeToken();
 
-        UserJoinDto user = userMapper.findById(userId);
-        if (user == null) {
-            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-        }
+        session.setAttribute("joinToken", token);
+        session.setAttribute("joinEmail", email);
+        session.setAttribute("joinExpireTime", System.currentTimeMillis() + (TOKEN_EXPIRE_MINUTES * 60 * 1000));
 
-        if ("Y".equalsIgnoreCase(user.getEmailVerified())) {
-            return;
-        }
-
-
-        EmailVerificationTokenDto tokenDto = insertToken(userId);
-        mailService.sendVerificationEmail(user.getEmail(), tokenDto.getToken());
+        mailService.sendVerificationCode(email, token);
     }
 
-    @Transactional
-    public boolean verifyEmailByToken(String token) {
+    // 계정 인증 토큰 검증(세션 기반)
+    public boolean verifyJoinToken(String email, String inputToken, HttpSession session) {
+        String sessionToken = (String) session.getAttribute("joinToken");
+        String sessionEmail = (String) session.getAttribute("joinEmail");
+        Long expireTime = (Long) session.getAttribute("joinExpireTime");
 
-        EmailVerificationTokenDto validToken = tokenMapper.findValidToken(token);
-        if (validToken == null) {
+        if (sessionToken == null || sessionEmail == null || expireTime == null) {
             return false;
         }
 
-        tokenMapper.deleteTokensByUserId(validToken.getUserId());
-        userMapper.updateEmailVerified(validToken.getUserId());
-
-        return true;
-    }
-
-    @Transactional
-    public EmailVerificationStatusDto getVerificationStatusAndResendIfExpired(Long userId) {
-
-        EmailVerificationStatusDto status = new EmailVerificationStatusDto();
-
-        EmailVerificationTokenDto latestToken = tokenMapper.findLatestByUserId(userId);
-        LocalDateTime now = LocalDateTime.now();
-
-        if (latestToken == null) {
-            SendVerification(userId);
-            status.setResent(true);
-            status.setRemainSeconds(TOKEN_EXPIRE_MINUTES * 60L);
-            return status;
+        long currentTime = System.currentTimeMillis();
+        if (currentTime > expireTime) {
+            return false;
         }
 
-        LocalDateTime expiresAt = latestToken.getExpiresAt();
-
-        if (expiresAt.isBefore(now)) {
-            SendVerification(userId);
-            status.setResent(true);
-            status.setRemainSeconds(TOKEN_EXPIRE_MINUTES * 60L);
-            return status;
+        if (sessionEmail.equals(email) && sessionToken.equals(inputToken)) {
+            session.setAttribute("verifiedEmail", email);
+            return true;
         }
 
-        long remainSeconds = Duration.between(now, expiresAt).getSeconds();
-        if (remainSeconds < 0) remainSeconds = 0;
-
-        status.setResent(false);
-        status.setRemainSeconds(remainSeconds);
-        return status;
+        return false;
     }
 
+    // 비밀번호 변경 링크
     @Transactional
-    public void sendPasswordResetToken(UserJoinDto user) {
+    public void sendPasswordResetMail(UserJoinDto user) {
         Long userId = user.getUserId();
         EmailVerificationTokenDto tokenDto = insertToken(userId);
 
         mailService.sendPasswordResetEmail(user.getEmail(), tokenDto.getToken());
     }
 
+    // 비밀번호 변경 링크 검증
     @Transactional
-    public Long consumePasswordResetToken(String token) {
+    public Long consumePasswordResetMail(String token) {
 
         EmailVerificationTokenDto validToken = tokenMapper.findValidToken(token);
         if (validToken == null) {
@@ -163,6 +98,7 @@ public class UserService {
         return validToken.getUserId();
     }
 
+    // 토큰 저장
     private EmailVerificationTokenDto insertToken(Long userId) {
         tokenMapper.deleteTokensByUserId(userId);
 
@@ -180,6 +116,7 @@ public class UserService {
         return tokenDto;
     }
 
+    // 토큰 생성
     private String makeToken() {
         SecureRandom random = new SecureRandom();
         char[] str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();

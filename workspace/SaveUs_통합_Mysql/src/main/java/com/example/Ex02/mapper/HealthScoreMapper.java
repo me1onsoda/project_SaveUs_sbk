@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface HealthScoreMapper {
 
-    // 점수 저장/업데이트 (MERGE)
+    // 점수 저장/업데이트
     void upsertDailyScore(
             @Param("userId") Long userId,
             @Param("scoreDate") Date scoreDate,

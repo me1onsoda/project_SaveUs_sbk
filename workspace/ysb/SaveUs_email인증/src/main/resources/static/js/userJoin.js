@@ -7,9 +7,17 @@ let t = 1800
 function updateEmail() {
     const id = document.getElementById("emailId").value;
     const domain = document.getElementById("emailDomain").value;
+
     const full = id && domain ? id + "@" + domain : "";
     document.getElementById("emailInput").value = full;
 }
+
+function resetEmailCheck() {
+    const result = document.getElementById("emailCheckResult");
+    result.innerText = "";
+    result.style.color = "";
+}
+
 
 /* 인증번호 전송 */
 function sendVerificationEmail() {
@@ -135,6 +143,7 @@ function autoPad(input) {
 
 /* 나이 자동 계산 */
 function calculateAge() {
+
     const year = document.getElementById("year").value;
     const month = document.getElementById("month").value;
     const day = document.getElementById("day").value;
@@ -158,6 +167,82 @@ function calculateAge() {
     document.getElementById("birthdate").value = birthStr;
 }
 
+/* 닉네임 중복 + 유효성 */
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* 이메일 복원 */
+    const full = document.getElementById('emailInput')?.value;
+
+    if (full) {
+        const parts = full.split('@');
+        document.getElementById('emailId').value = parts[0];
+        document.getElementById('emailDomain').value = parts[1];
+    }
+
+    /* 생년월일 텍스트박스 이벤트 */
+    ["year", "month", "day"].forEach(id => {
+        const input = document.getElementById(id);
+
+        input.addEventListener("input", () => {
+            onlyNumber(input);
+
+            if (id === "month" || id === "day") {
+                if (input.value.length >= 2) autoPad(input);
+            }
+        });
+
+        input.addEventListener("blur", () => {
+            if (id === "month" || id === "day") {
+                if (input.value.length === 1) autoPad(input);
+            }
+            calculateAge();
+        });
+    });
+
+    /* 닉네임 검사 */
+    const nicknameInput = document.getElementById("nicknameInput");
+    const result = document.getElementById("nicknameCheckResult");
+
+    nicknameInput.addEventListener("input", () => {
+        const nickname = nicknameInput.value.trim();
+
+        if (nickname.length === 0) {
+            result.textContent = "";
+            return;
+        }
+
+        if (nickname.length < 2 || nickname.length > 12) {
+            result.textContent = "닉네임은 2~12자 사이여야 합니다.";
+            result.style.color = "#E74C3C";
+            return;
+        }
+
+        const regex = /^[a-zA-Z0-9가-힣_]+$/;
+        if (!regex.test(nickname)) {
+            result.textContent = "닉네임은 한글,영문,숫자, _ 만 사용할 수 있습니다.";
+            result.style.color = "#E74C3C";
+            return;
+        }
+
+        fetch(`/user/checkNickname?nickname=${nickname}`)
+            .then(res => res.text())
+            .then(data => {
+                if (data === "duplicate") {
+                    result.textContent = "이미 사용 중인 닉네임입니다.";
+                    result.style.color = "#E74C3C";
+                } else {
+                    result.textContent = "사용 가능한 닉네임입니다.";
+                    result.style.color = "green";
+                }
+            })
+            .catch(() => {
+                result.textContent = "검사 중 오류가 발생했습니다.";
+                result.style.color = "#E74C3C";
+            });
+    });
+
+});
+
 /* 제출 전 검사 */
 function validateForm() {
     const nicknameMsg = document.getElementById("nicknameCheckResult").innerText;
@@ -179,13 +264,24 @@ function validateForm() {
         return false;
     }
 
-    // disabled된 select 값은 전송되지 않으므로, hidden input이 값을 잘 가지고 있는지 확인
-    // (updateEmail 함수가 input/change 때마다 돌므로 hidden input은 최신값 유지됨)
-
     return true;
 }
 
-/* 초기화 및 이벤트 리스너 */
+function calculateBMI() {
+    const h = parseFloat(document.getElementById("heightInput").value);
+    const w = parseFloat(document.getElementById("weightInput").value);
+
+    if (!h || !w) return;
+
+    const meter = h / 100.0;
+    const bmi = w / (meter * meter);
+
+    // 소수 첫째 자리까지 반올림
+    const bmiRounded = Math.round(bmi * 10) / 10;
+
+    document.getElementById("bmiInput").value = bmiRounded;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // 복원 로직 (실패 시)
@@ -239,12 +335,3 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("heightInput").addEventListener("input", calculateBMI);
     document.getElementById("weightInput").addEventListener("input", calculateBMI);
 });
-
-function calculateBMI() {
-    const h = parseFloat(document.getElementById("heightInput").value);
-    const w = parseFloat(document.getElementById("weightInput").value);
-    if (!h || !w) return;
-    const meter = h / 100.0;
-    const bmi = w / (meter * meter);
-    document.getElementById("bmiInput").value = Math.round(bmi * 10) / 10;
-}

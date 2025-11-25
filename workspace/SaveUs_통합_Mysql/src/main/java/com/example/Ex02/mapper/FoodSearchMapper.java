@@ -7,6 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface FoodSearchMapper {
+
     List<FoodNutritionDto> searchFood(String keyword);
 
     List<String> searchFoodNames(String keyword);

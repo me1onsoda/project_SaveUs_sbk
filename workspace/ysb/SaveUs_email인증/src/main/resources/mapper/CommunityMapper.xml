@@ -228,4 +228,13 @@
         ORDER BY DIET_TYPE
     </select>
 
+    <select id="getHealthScore" resultType="int">
+        SELECT IFNULL(
+        (SELECT SCORE
+        FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{currentUserId}
+        AND SCORE_DATE = CURDATE()),  0
+        )
+    </select>
+
 </mapper>

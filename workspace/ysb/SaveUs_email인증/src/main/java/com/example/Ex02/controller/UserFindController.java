@@ -82,28 +82,34 @@ public class UserFindController {
             return "user/findPw";
         }
 
-        userService.sendPasswordResetToken(user);
+        userService.sendPasswordResetMail(user);
 
         session.setAttribute("resetUserId", user.getUserId());
         model.addAttribute("findSuccess",
-                "입력하신 이메일로 비밀번호 재설정 링크를 발송했습니다. 메일을 확인해 주세요.");
+                "입력하신 이메일로 비밀번호 재설정 링크를 발송했습니다.\n메일을 확인해 주세요.");
 
         return "user/findPw";
     }
 
     // 비밀번호 재설정 페이지
-    @GetMapping("/user/verify/reset-pw")
+    // 비밀번호 변경 페이지로 이동하지 않고 로그인 페이지로 자꾸 이동한다면 application.properties에
+    // mybatis.configuration.map-underscore-to-camel-case=true
+    // 추가해주시면 감사하겠습니다.
+    @GetMapping("/user/reset-pw")
     public String resetPwPage(
             @RequestParam(value = "token", required = false) String token,
             HttpSession session,
             Model model) {
+
+        System.out.println(token);
+
 
         if (token == null || token.isBlank()) {
             model.addAttribute("resetError", "잘못된 접근입니다.");
             return "redirect:/login";
         }
 
-        Long userId = userService.consumePasswordResetToken(token);
+        Long userId = userService.consumePasswordResetMail(token);
 
         if (userId == null) {
             model.addAttribute("resetError",
@@ -116,7 +122,7 @@ public class UserFindController {
     }
 
     // 비밀번호 재설정 처리
-    @PostMapping("/user/verify/reset-pw")
+    @PostMapping("/user/reset-pw")
     public String resetPw(
             @RequestParam("newPassword") String newPassword,
             @RequestParam("confirmPassword") String confirmPassword,
@@ -138,6 +144,7 @@ public class UserFindController {
         // 비밀번호 변경
         userMapper.updatePassword(userId, newPassword);
 
+        // 세션에서 삭제 (보안)
         session.removeAttribute("resetUserId");
 
         // 성공 후 로그인 페이지로 이동

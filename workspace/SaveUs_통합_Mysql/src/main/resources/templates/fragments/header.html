@@ -6,23 +6,14 @@
         <th:block th:if="${session.userId != null}">
             <button class="user-profile-button" onclick="location.href='/my-page'">
 
-                <img th:src="${session.loginUser?.profileImageUrl != null ? session.loginUser.profileImageUrl : '/images/avatars/default.png'}"
+                <img th:src="${session.loginUser?.profileImageUrl != null
+                ? session.loginUser.profileImageUrl + '?v=' + #dates.format(#dates.createNow(), 'yyyyMMddHHmmss')
+                : '/images/avatars/default.png'}"
                      alt="User Profile">
+
                 <span th:text="${session.loginUser?.nickname}"></span>
             </button>
         </th:block>
-
-       <!-- <th:block th:if="${session.userId == null}">
-            <a href="/login" class="btn-login"
-               style="text-decoration: none; color: #333; font-weight: bold; padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px;">
-                로그인
-            </a>
-            <a href="/join" class="btn-join"
-               style="text-decoration: none; color: white; background-color: #1abc9c; font-weight: bold; padding: 8px 16px; border-radius: 20px; margin-left: 5px;">
-                회원가입
-            </a>
-        </th:block>
--->
     </div>
 </header>
 </html>

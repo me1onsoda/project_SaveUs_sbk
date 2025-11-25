@@ -52,4 +52,6 @@ public interface CommunityMapper {
 
     List<CommunityPostDto> selectPopularPostList(@Param("currentUserId") Long currentUserId,@Param("persona") String persona);
     List<String> selectDistinctPersonas();
+
+    int getHealthScore(Long currentUserId);
 }

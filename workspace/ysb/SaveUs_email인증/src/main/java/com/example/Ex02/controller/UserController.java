@@ -4,6 +4,7 @@ import com.example.Ex02.dto.*;
 import com.example.Ex02.mapper.SurveyMapper;
 import com.example.Ex02.mapper.UserBadgeMapper;
 import com.example.Ex02.mapper.UserChallengeMapper;
+import com.example.Ex02.mapper.UserMainMapper;
 import com.example.Ex02.mapper.UserMapper;
 import com.example.Ex02.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -25,6 +27,9 @@ public class UserController {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private UserMainMapper userMainMapper;
 
     @Autowired
     private SurveyMapper surveyMapper;
@@ -38,39 +43,47 @@ public class UserController {
     @Autowired
     private UserChallengeMapper userChallengeMapper;
 
-    // 회원가입 페이지 이동
+
+    /* -------------------------------
+       체중 저장 + BMI 자동 계산 API
+       ------------------------------- */
+    @PostMapping("/user/update-weight")
+    @ResponseBody
+    public String updateWeight(@RequestBody Map<String, Object> data,
+                               HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return "로그인 필요";
+
+        double weight = Double.parseDouble(data.get("weight").toString());
+
+        // 키 조회
+        UserMainDto user = userMainMapper.findMainInfo(userId);
+        double height = user.getHeight();
+
+        // BMI 자동 계산
+        double meter = height / 100.0;
+        double bmi = Math.round(weight / (meter * meter));
+
+        // DB 업데이트
+        userMapper.updateWeightAndBmi(userId, weight, bmi);
+
+        // 세션 업데이트
+        UserMainDto refreshed = userMainMapper.findMainInfo(userId);
+        session.setAttribute("user", refreshed);
+
+        return "OK";
+    }
+
+
+    /* -------------------------------
+       회원가입
+       ------------------------------- */
     @GetMapping("/join")
     public String joinPage(@ModelAttribute("userDto") UserJoinDto userJoinDto) {
         return "user/userInsert";
     }
 
-    @GetMapping("/user/send-verification")
-    @ResponseBody
-    public String sendJoinVerification(@RequestParam("email") String email, HttpSession session) {
-        if (userMapper.countByEmail(email) > 0) {
-            return "duplicate";
-        }
-        userService.sendJoinVerificationMail(email, session);
-        return "sent";
-    }
-
-    // 회원가입용 인증번호 검증
-    @GetMapping("/user/verify-code")
-    @ResponseBody
-    public String verifyJoinCode(
-            @RequestParam("email") String email,
-            @RequestParam("code") String code,
-            HttpSession session) {
-
-        boolean isVerified = userService.verifyJoinCode(email, code, session);
-        if (isVerified) {
-            return "ok";
-        } else {
-            return "fail";
-        }
-    }
-
-    // 회원가입 처리
     @PostMapping("/user/insert")
     public String insertUser(
             @Valid @ModelAttribute("userDto") UserJoinDto userJoinDto,
@@ -100,7 +113,43 @@ public class UserController {
         return "redirect:/survey";
     }
 
-    // 닉네임 중복확인
+    /* -------------------------------
+       메일 인증
+       ------------------------------- */
+    @GetMapping("/user/send-verification")
+    @ResponseBody
+    public String sendJoinVerification(@RequestParam("email") String email, HttpSession session) {
+        if (userMapper.countByEmail(email) > 0) {
+            return "duplicate";
+        }
+        userService.sendJoinVerificationMail(email, session);
+        return "sent";
+    }
+
+    @GetMapping("/user/verify-code")
+    @ResponseBody
+    public String verifyJoinToken(
+            @RequestParam("email") String email,
+            @RequestParam("code") String code,
+            HttpSession session) {
+
+        boolean isVerified = userService.verifyJoinToken(email, code, session);
+        if (isVerified) {
+            return "ok";
+        } else {
+            return "fail";
+        }
+    }
+
+    /* -------------------------------
+       이메일/닉네임 중복 확인
+       ------------------------------- */
+    @GetMapping("/user/checkEmail")
+    @ResponseBody
+    public String checkEmail(@RequestParam("email") String email) {
+        return userMapper.countByEmail(email) > 0 ? "duplicate" : "ok";
+    }
+
     @GetMapping("/user/checkNickname")
     @ResponseBody
     public String checkNickname(@RequestParam("nickname") String nickname) {
@@ -108,9 +157,13 @@ public class UserController {
     }
 
 
-    // 로그인 페이지
+    /* -------------------------------
+       로그인
+       ------------------------------- */
     @GetMapping("/login")
-    public String loginForm(Model model, @RequestParam(value = "resetSuccess", required = false) String resetSuccess) {
+    public String loginForm(Model model,
+                            @RequestParam(value = "resetSuccess", required = false) String resetSuccess) {
+
         model.addAttribute("userLoginDto", new UserLoginDto());
 
         if (resetSuccess != null) {
@@ -120,12 +173,10 @@ public class UserController {
         return "user/userLogin";
     }
 
-    // 로그인 처리
     @PostMapping("/login/proc")
-    public String doLogin(
-            @ModelAttribute("userLoginDto") UserLoginDto userLoginDto,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+    public String doLogin(@ModelAttribute("userLoginDto") UserLoginDto userLoginDto,
+                          HttpSession session,
+                          RedirectAttributes redirectAttributes) {
 
         UserJoinDto user = userMapper.findByEmail(userLoginDto.getEmail());
 
@@ -140,48 +191,10 @@ public class UserController {
         return "redirect:/dashboard";
     }
 
-    // 이메일 인증 대기 페이지
-    @GetMapping("/user/verify")
-    public String verifyPending(HttpSession session, Model model) {
 
-        Long pendingUserId = (Long) session.getAttribute("pendingUserId");
-        if (pendingUserId == null) {
-            return "redirect:/login";
-        }
-
-        EmailVerificationStatusDto status =
-                userService.getVerificationStatusAndResendIfExpired(pendingUserId);
-
-        model.addAttribute("resent", status.isResent());
-        model.addAttribute("remainSeconds", status.getRemainSeconds());
-
-        return "user/verifyPending";
-    }
-
-    // 이메일 인증 링크 처리
-    @GetMapping("/user/verify/proc")
-    public String verifyEmail(@RequestParam("token") String token,
-                              HttpSession session,
-                              RedirectAttributes redirectAttributes) {
-
-        boolean ok = userService.verifyEmailByToken(token);
-
-        if (!ok) {
-            redirectAttributes.addFlashAttribute("loginError",
-                    "유효하지 않거나 만료된 인증 링크입니다. 다시 시도해 주세요.");
-            return "redirect:/login";
-        }
-
-        // 대기 세션 삭제
-        session.removeAttribute("pendingUserId");
-
-        redirectAttributes.addFlashAttribute("verifySuccess",
-                "이메일 인증이 완료되었습니다.");
-
-        return "redirect:/dashboard";
-    }
-
-    // 마이페이지
+    /* -------------------------------
+       마이페이지
+       ------------------------------- */
     @GetMapping("/my-page")
     public String myPage(HttpSession session, Model model, @ModelAttribute("surveyDto") SurveyDto surveyDto) {
 
@@ -203,7 +216,10 @@ public class UserController {
         return "user/myPage";
     }
 
-    // 프로필 수정 페이지
+
+    /* -------------------------------
+       프로필 수정
+       ------------------------------- */
     @GetMapping("/profile/edit")
     public String editPage(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
@@ -215,12 +231,10 @@ public class UserController {
         return "user/profileEdit";
     }
 
-    // 프로필 수정 처리
     @PostMapping("/profile/edit")
-    public String updateProfile(
-            @ModelAttribute("user") UserJoinDto userDto,
-            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
-            HttpSession session) {
+    public String updateProfile(@ModelAttribute("user") UserJoinDto userDto,
+                                @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+                                HttpSession session) {
 
         Long userId = (Long) session.getAttribute("userId");
         userDto.setUserId(userId);
@@ -239,12 +253,10 @@ public class UserController {
                 File uploadPath = new File(uploadDir + fileName);
                 profileImage.transferTo(uploadPath);
 
-                // 새 이미지 URL 저장
                 userDto.setProfileImageUrl("/uploads/profile/" + fileName);
 
             } else {
 
-                // 업로드 없으면 기존 이미지 그대로 유지
                 userDto.setProfileImageUrl(originUser.getProfileImageUrl());
             }
 
@@ -256,14 +268,16 @@ public class UserController {
         return "redirect:/my-page";
     }
 
-    // 로그아웃
+
+    /* -------------------------------
+       로그아웃, 탈퇴, 비밀번호 변경
+       ------------------------------- */
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
     }
 
-    // 회원 탈퇴
     @PostMapping("/user/delete")
     public String deleteUser(HttpSession session) {
 
@@ -276,14 +290,12 @@ public class UserController {
         return "redirect:/login";
     }
 
-    // 비밀번호 변경
     @PostMapping("/profile/password")
-    public String changePassword(
-            @RequestParam("currentPassword") String currentPassword,
-            @RequestParam("newPassword") String newPassword,
-            @RequestParam("confirmPassword") String confirmPassword,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+    public String changePassword(@RequestParam("currentPassword") String currentPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
 
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
@@ -300,17 +312,19 @@ public class UserController {
         }
 
         userMapper.updatePassword(userId, newPassword);
-
         redirectAttributes.addFlashAttribute("pwSuccess", "비밀번호가 성공적으로 변경되었습니다.");
+
         return "redirect:/profile/edit";
     }
 
-    // 다른 사람의 프로필 조회
+
+    /* -------------------------------
+       타 사용자 프로필 조회
+       ------------------------------- */
     @GetMapping("/user/profile/{targetUserId}")
-    public String viewOtherProfile(
-            @PathVariable("targetUserId") Long targetUserId,
-            HttpSession session,
-            Model model) {
+    public String viewOtherProfile(@PathVariable("targetUserId") Long targetUserId,
+                                   HttpSession session,
+                                   Model model) {
 
         Long loginUserId = (Long) session.getAttribute("userId");
         if (loginUserId == null) return "redirect:/login";
