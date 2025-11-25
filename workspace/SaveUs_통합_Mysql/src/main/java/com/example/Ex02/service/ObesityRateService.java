@@ -14,17 +14,17 @@ public class ObesityRateService {
 
     public int getObesityPercent(int userId) {
 
-        String url = "http://3.37.90.119:8001/predict-obesity/" + userId;
+        String url = "http://3.37.90.119:8001/predict-risk/" + userId;
 
         Map<String, Object> result =
                 restTemplate.getForEntity(url, Map.class).getBody();
 
-        double probability = 0.0;
-        if (result != null && result.get("probability") != null) {
-            probability = Double.parseDouble(result.get("probability").toString());
+        double risk = 0.0;
+        if (result != null && result.get("risk_score") != null) {
+            risk = Double.parseDouble(result.get("risk_score").toString());
         }
 
-        return (int) Math.round(probability);
+        return (int) Math.round(risk); // 0~100
     }
 
 }
