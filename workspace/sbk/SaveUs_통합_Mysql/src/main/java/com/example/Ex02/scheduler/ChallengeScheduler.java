@@ -15,7 +15,7 @@ public class ChallengeScheduler {
 
     // 매일 자정(00:00:00) 실행
     // 초 분 시 일 월 요일
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 15 * * *")
     public void runDailyChallengeVerification() {
         log.info("=== [Nightly Batch] 챌린지 자동 검증 시작 ===");
 

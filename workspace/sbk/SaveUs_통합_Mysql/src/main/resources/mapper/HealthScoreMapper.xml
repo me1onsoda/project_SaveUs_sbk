@@ -24,4 +24,28 @@
         ORDER BY SCORE_DATE
     </select>
 
+    <insert id="upsertDailyWeight">
+        INSERT INTO HEALTH_SCORE_DAILY (USER_ID, SCORE_DATE, WEIGHT)
+        VALUES (#{userId}, CURDATE(), #{weight})
+        ON DUPLICATE KEY UPDATE
+        WEIGHT = VALUES(WEIGHT)
+    </insert>
+
+    <select id="selectRecentScores" resultType="com.example.Ex02.dto.CalendarScoreDto">
+        SELECT SCORE_DATE AS scoreDate, SCORE AS score
+        FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND SCORE_DATE >= DATE_SUB(CURDATE(), INTERVAL 12 DAY)
+        ORDER BY SCORE_DATE ASC
+    </select>
+
+    <select id="findWeightByDate" resultType="Double">
+        SELECT WEIGHT FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND SCORE_DATE &lt;= #{date}
+        AND WEIGHT IS NOT NULL
+        ORDER BY SCORE_DATE DESC
+        LIMIT 1
+    </select>
+
 </mapper>

@@ -70,7 +70,7 @@ public class AiFoodService {
     public List<DiabetesScoreDto> calculateDietScores(List<DiabetesScoreDto> requestList) {
         if (requestList.isEmpty()) return new ArrayList<>();
 
-        String pythonUrl = "http://3.37.90.119:8000/api/calculate-score";
+        String pythonUrl = "http://3.37.90.119:8002/api/calculate-score";
 
         try {
             HttpHeaders headers = new HttpHeaders();

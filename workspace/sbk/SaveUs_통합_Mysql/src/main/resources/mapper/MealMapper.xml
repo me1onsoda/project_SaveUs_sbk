@@ -191,4 +191,44 @@
         NOW()
         )
     </insert>
+
+    <select id="selectTop5Meals" resultType="com.example.Ex02.dto.MealDto">
+        SELECT
+        ME.MEAL_NAME AS mealName,
+        FN.CATEGORY  AS mealTime,
+        COUNT(*)     AS calories
+        FROM MEAL_ENTRY ME
+        LEFT JOIN FOOD_NUTRITION FN ON ME.MEAL_NAME = FN.FOOD_NAME
+        WHERE ME.USER_ID = #{userId}
+        GROUP BY ME.MEAL_NAME, FN.CATEGORY
+        ORDER BY COUNT(*) DESC
+        LIMIT 5
+    </select>
+
+
+    <select id="findNutritionByDate" resultMap="MealResultMap">
+        SELECT
+        IFNULL(SUM(CALORIES_KCAL), 0) AS CALORIES_KCAL,
+        IFNULL(SUM(PROTEIN_G), 0)     AS PROTEIN_G,
+        IFNULL(SUM(CARBS_G), 0)       AS CARBS_G,
+        IFNULL(SUM(FATS_G), 0)        AS FATS_G,
+        IFNULL(SUM(SUGAR_G), 0)       AS SUGAR_G,
+        IFNULL(SUM(FIBER_G), 0)       AS FIBER_G,
+        IFNULL(SUM(SODIUM_MG), 0)     AS SODIUM_MG
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND DATE(EAT_TIME) = #{date}
+    </select>
+
+    <select id="selectDiabetesScoreByDate" resultType="com.example.Ex02.dto.DiabetesScoreDto">
+        SELECT
+        SCORE_ID,
+        USER_ID,
+        SCORE,
+        SIMILARITY,
+        RISK_LEVEL AS riskLevel,  CREATED_AT AS createdAt
+        FROM DIABETES_SCORE
+        WHERE USER_ID = #{userId} AND DATE(CREATED_AT) = #{date}
+        ORDER BY CREATED_AT DESC LIMIT 1
+    </select>
 </mapper>

@@ -73,11 +73,13 @@
                          th:data-post-author-id="${post.userId}">
 
                     <div class="post-header">
-                        <a th:href="@{/user/profile/{userId}(userId=${post.userId})}" class="author-link">
+                        <a th:href="${currentUserId == post.userId} ? @{/my-page} : @{/user/profile/{userId}(userId=${post.userId})}"
+                           class="author-link">
                             <img th:src="${post.authorProfileImageUrl}" alt="Profile Avatar" class="post-avatar">
                         </a>
                         <div class="post-author-info">
-                            <a th:href="@{/user/profile/{userId}(userId=${post.userId})}" class="author-link">
+                            <a th:href="${currentUserId == post.userId} ? @{/my-page} : @{/user/profile/{userId}(userId=${post.userId})}"
+                               class="author-link">
                                 <span class="author-name" th:text="${post.authorNickname}">Sophia Martin</span>
                             </a>
                             <span class="author-details">
@@ -92,7 +94,7 @@
                         </div>
 
                         <div class="post-health-score">
-                            Health Score: <strong th:text="${post.healthScore}">92</strong>
+                            건강 점수: <strong th:text="${post.healthScore}">92</strong>
                         </div>
                     </div>
 
