@@ -1,0 +1,747 @@
+<!--
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>SaveUs - 건강 리포트</title>
+    <link rel="stylesheet" th:href="@{/css/report.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<main class="page-content" layout:fragment="content">
+
+    <div class="report-header">
+        <h2>📊 건강 리포트</h2>
+        <div class="header-controls">
+            <input type="date" id="reportDate" class="date-picker">
+        </div>
+    </div>
+
+    <div id="noDataBox" class="no-data-box" style="display: none; text-align:center; padding: 50px;">
+        <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">
+            해당 날짜에는 식단 기록이 없습니다.
+        </p>
+        <button onclick="location.href='/dashboard'" class="btn-go-record"
+                style="padding: 10px 20px; background-color: #1DAB87; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            식단 기록하러 가기
+        </button>
+    </div>
+
+    <div class="dashboard-grid" id="dailySection" style="margin-bottom: 40px;">
+
+        <div class="card">
+            <div class="card-header" style="justify-content: space-between; align-items: center;">
+                <div class="card-title">선택일 식단 분석</div>
+                <input type="date" id="dietDate" class="date-picker-small">
+            </div>
+
+            <div id="dietNoData" style="display:none; text-align:center; padding:20px; color:#888;">
+                기록이 없습니다.
+            </div>
+
+            <div id="dietChartArea" class="chart-container">
+                <canvas id="diabetesRadarChart"></canvas>
+            </div>
+            <div class="risk-score" id="diabetesText">분석 중...</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" style="justify-content: space-between; align-items: center;">
+                <div class="card-title">🚨 비만 위험도 분석</div>
+                <input type="date" id="obesityDate" class="date-picker-small">
+            </div>
+
+            <div class="doughnut-wrapper">
+                <canvas id="obesityRiskChart"></canvas>
+                <div class="center-text">
+                    <span id="obesityPercent">0%</span>
+                    <span class="label">위험도</span>
+                </div>
+            </div>
+
+            <p class="chart-caption" style="margin-top: 10px;">* 선택일 체중 기반 AI 분석</p>
+        </div>
+
+        <div class="card full-width auto-height">
+            <div class="card-header">
+                <div class="card-title">🤖 AI 영양사 코멘트</div>
+            </div>
+            <div class="ai-comment-box" id="aiComment">
+                데이터를 불러오는 중입니다...
+            </div>
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+    <h3 style="margin-bottom: 20px; color: #333;">📅 최근 건강 트렌드 (Last 30 Days)</h3>
+
+    <div class="dashboard-grid" id="commonSection">
+
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="card-title">최근 건강 점수 추이</div>
+                <span class="badge" id="avgScoreBadge">평균 -점</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="scoreChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="card-title">🥦 3대 영양소 밸런스 변화</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="height: 150px; position: relative;">
+                    <canvas id="carbChart"></canvas>
+                </div>
+                <div style="height: 150px; position: relative;">
+                    <canvas id="proteinChart"></canvas>
+                </div>
+                <div style="height: 150px; position: relative;">
+                    <canvas id="fatChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card full-width auto-height">
+            <div class="card-header">
+                <div class="card-title">🔥 자주 먹는 음식 TOP 5</div>
+            </div>
+            <div class="top-meals-list">
+                <ul id="topMealsList"></ul>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<th:block layout:fragment="script">
+    <script>
+        const COLOR_PRIMARY = '#1DAB87';
+        const COLOR_DANGER = '#FF6B6B';
+        const COLOR_WARNING = '#FFC857';
+
+        // 차트 변수들
+        let scoreChart, radarChart, obesityChart;
+        let carbChart, proteinChart, fatChart;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            const datePicker = document.getElementById('reportDate');
+            datePicker.value = today;
+
+            // 초기 로딩
+            loadReportData(today);
+
+            // 날짜 변경 시 이벤트
+            datePicker.addEventListener('change', (e) => {
+                loadReportData(e.target.value);
+            });
+        });
+
+        function loadReportData(date) {
+            fetch(`/api/report/daily?date=${date}`)
+                .then(res => res.json())
+                .then(data => renderView(data))
+                .catch(err => console.error(err));
+        }
+
+        function renderView(data) {
+            // ===========================
+            // 1. 공통 섹션 (무조건 렌더링)
+            // ===========================
+            updateCommonCharts(data); // 트렌드 그래프 & Top5
+
+            // ===========================
+            // 2. 일일 상세 섹션 (데이터 유무에 따라)
+            // ===========================
+            const dailySection = document.getElementById('dailySection');
+            const noDataBox = document.getElementById('noDataBox');
+
+            if (!data.hasData) {
+                // 데이터 없음 -> 상세 섹션 숨기고, 메시지 표시
+                dailySection.style.display = 'none';
+                noDataBox.style.display = 'block';
+            } else {
+                // 데이터 있음 -> 상세 섹션 표시, 메시지 숨김
+                dailySection.style.display = 'grid'; // 원래 grid
+                noDataBox.style.display = 'none';
+
+                // 데이터 바인딩
+                renderDailyData(data);
+            }
+        }
+
+        function renderDailyData(data) {
+             // 텍스트 바인딩
+            document.getElementById('obesityBadge').innerText = `위험도 ${parseInt(data.obesityProbability)}%`;
+
+            // 코멘트 & 당뇨 (null check 포함)
+            if(data.diabetesComment) {
+                 const riskText = data.diabetesRiskLevel ? data.diabetesRiskLevel : '';
+                 document.getElementById('diabetesText').innerText =
+                    `당뇨 유사도: ${data.diabetesSimilarity}% (${riskText})`;
+                 document.getElementById('aiComment').innerHTML =
+                    `<strong>[분석 결과]</strong> ${data.diabetesComment}`;
+            }
+
+            // 차트 업데이트 (레이더, 도넛)
+            updateDailyCharts(data);
+        }
+
+        // -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;
+        // 차트 그리기 함수들
+        // -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;
+
+        function updateDailyCharts(data) {
+            // [레이더 차트]
+            const ctxRadar = document.getElementById('diabetesRadarChart');
+            if (radarChart) radarChart.destroy();
+            radarChart = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['탄수화물', '단백질', '지방', '당류', '나트륨'],
+                    datasets: [{
+                        label: '나의 섭취(%)',
+                        data: data.radarMyIntake || [0,0,0,0,0],
+                        borderColor: COLOR_DANGER, backgroundColor: 'rgba(255, 107, 107, 0.2)'
+                    }, {
+                        label: '권장(%)',
+                        data: data.radarGoal || [100,100,100,100,100],
+                        borderColor: COLOR_PRIMARY, backgroundColor: 'transparent', borderDash: [5,5]
+                    }]
+                },
+                options: { responsive: true, scales: { r: { suggestedMin: 0, suggestedMax: 120 } } }
+            });
+
+            // [비만 도넛 차트]
+            const ctxObesity = document.getElementById('obesityRiskChart');
+            if (obesityChart) obesityChart.destroy();
+            const prob = data.obesityProbability;
+            obesityChart = new Chart(ctxObesity, {
+                type: 'doughnut',
+                data: {
+                    labels: ['위험', '정상'],
+                    datasets: [{
+                        data: [prob, 100 - prob],
+                        backgroundColor: [COLOR_DANGER, '#EEE'], borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', plugins: { legend: { display: false } } }
+            });
+        }
+
+        function updateCommonCharts(data) {
+            // 1. 건강 점수 (Line)
+            document.getElementById('avgScoreBadge').innerText = `평균 ${data.averageScore}점`;
+            const ctxScore = document.getElementById('scoreChart');
+            if (scoreChart) scoreChart.destroy();
+            scoreChart = new Chart(ctxScore, {
+                type: 'line',
+                data: {
+                    labels: data.scoreDates || [],
+                    datasets: [{
+                        label: '점수',
+                        data: data.scoreValues || [],
+                        borderColor: COLOR_PRIMARY,
+                        backgroundColor: 'rgba(29, 171, 135, 0.1)',
+                        fill: true, tension: 0.4
+                    }]
+                },
+                options: { responsive: true, scales: { y: { min: 0, max: 100 } }, plugins: { legend: { display: false } } }
+            });
+
+            // 2. 식단 유형 (3개 분리) - 공통 옵션 생성 함수
+            const createStepChart = (ctxId, chartRef, label, dates, codes, color) => {
+                const ctx = document.getElementById(ctxId);
+                if (chartRef) chartRef.destroy();
+                return new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates || [],
+                        datasets: [{
+                            label: label,
+                            data: codes || [],
+                            borderColor: color, stepped: true, fill: false, borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                min: 0, max: 4,
+                                ticks: {
+                                    stepSize: 1,
+                                    callback: function(val) {
+                                        if(val === 1) return '저' + label;
+                                        if(val === 2) return '균형';
+                                        if(val === 3) return '고' + label;
+                                        return '';
+                                    }
+                                }
+                            },
+                            x: { display: true }
+                        },
+                        plugins: { legend: { display: false }, title: { display: true, text: label + ' 추이' } }
+                    }
+                });
+            };
+
+            carbChart = createStepChart('carbChart', carbChart, '탄수화물', data.dietDates, data.carbCodes, '#FFC857');
+            proteinChart = createStepChart('proteinChart', proteinChart, '단백질', data.dietDates, data.proteinCodes, '#1DAB87');
+            fatChart = createStepChart('fatChart', fatChart, '지방', data.dietDates, data.fatCodes, '#FF6B6B');
+
+            // 3. Top 5 리스트
+            const ul = document.getElementById('topMealsList');
+            ul.innerHTML = '';
+            if(data.topMeals && data.topMeals.length > 0) {
+                data.topMeals.forEach((m, i) => {
+                    const li = document.createElement('li');
+                    const category = m.mealTime ? `(${m.mealTime})` : '';
+                    li.innerHTML = `<strong>${i+1}. ${m.mealName}</strong> <span style="color:#888; font-size:0.9em;">${category}</span>`;
+                    ul.appendChild(li);
+                });
+            } else {
+                ul.innerHTML = '<p style="color:#999; text-align:center;">기록 없음</p>';
+            }
+        }
+    </script>
+</th:block>
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>SaveUs - 건강 리포트</title>
+    <link rel="stylesheet" th:href="@{/css/report.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* [추가] 작은 날짜 선택기 스타일 */
+        .date-picker-small {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #555;
+            cursor: pointer;
+        }
+
+        /* [추가] 도넛 차트 래퍼: 정사각형 비율 유지 및 중앙 정렬 */
+        .doughnut-wrapper {
+            position: relative;
+            width: 180px;  /* 너비 고정 */
+            height: 180px; /* 높이 고정 */
+            margin: 20px auto; /* 중앙 정렬 */
+        }
+
+        /* [추가] 중앙 텍스트 오버레이 */
+        .center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 정중앙 배치 */
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .center-text #obesityPercent {
+            display: block;
+            font-size: 26px;
+            font-weight: bold;
+            color: #FF6B6B;
+        }
+
+        .center-text .label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 기존 CSS 보완 */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="page-content" layout:fragment="content">
+
+    <div class="report-header">
+        <h2>📊 건강 리포트</h2>
+    </div>
+
+    <div class="dashboard-grid" id="dailySection" style="margin-bottom: 40px;">
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">선택일 식단 분석</div>
+                <input type="date" id="dietDate" class="date-picker-small">
+            </div>
+
+            <div id="dietNoData" style="display:none; text-align:center; padding:40px 0; color:#888;">
+                <p>해당 날짜 기록이 없습니다.</p>
+            </div>
+
+            <div id="dietChartArea" class="chart-container">
+                <canvas id="diabetesRadarChart"></canvas>
+            </div>
+
+            <div class="risk-score" id="diabetesText" style="margin-top:10px; font-size:0.95em;">분석 중...</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🚨 비만 위험도 분석</div>
+                <input type="date" id="obesityDate" class="date-picker-small">
+            </div>
+
+            <div class="doughnut-wrapper">
+                <canvas id="obesityRiskChart"></canvas>
+                <div class="center-text">
+                    <span id="obesityPercent">0%</span>
+                    <span class="label">위험도</span>
+                </div>
+            </div>
+            <p class="chart-caption" style="text-align:center; margin-top:10px;">* 선택일 체중 기반 AI 예측</p>
+        </div>
+
+        <div class="card full-width auto-height">
+            <div class="card-header">
+                <div class="card-title">🤖 SaveUs AI 영양사 코멘트</div>
+            </div>
+            <div class="ai-comment-box" id="aiComment">
+                데이터를 불러오는 중입니다...
+            </div>
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+
+    <h3 style="margin-bottom: 20px; color: #333; font-size: 1.2rem;">📅 최근 건강 트렌드 (Last 30 Days)</h3>
+
+    <div class="dashboard-grid" id="commonSection">
+
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="card-title">최근 건강 점수 추이</div>
+                <span class="badge" id="avgScoreBadge">평균 -점</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="scoreChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="card-title">🥦 3대 영양소 밸런스 변화</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 30px; padding: 10px 0;">
+                <div style="height: 120px; position: relative;">
+                    <canvas id="carbChart"></canvas>
+                </div>
+                <div style="height: 120px; position: relative;">
+                    <canvas id="proteinChart"></canvas>
+                </div>
+                <div style="height: 120px; position: relative;">
+                    <canvas id="fatChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card full-width auto-height">
+            <div class="card-header">
+                <div class="card-title">🔥 자주 먹는 음식 TOP 5</div>
+            </div>
+            <div class="top-meals-list">
+                <ul id="topMealsList"></ul>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<th:block layout:fragment="script">
+    <script>
+        const COLOR_PRIMARY = '#1DAB87';
+        const COLOR_DANGER = '#FF6B6B';
+        const COLOR_WARNING = '#FFC857';
+
+        // 차트 변수들
+        let scoreChart, radarChart, obesityChart;
+        let carbChart, proteinChart, fatChart;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+
+            // 1. 요소 가져오기
+            const dietInput = document.getElementById('dietDate');
+            const obesityInput = document.getElementById('obesityDate');
+
+            // 2. 초기값 설정
+            dietInput.value = today;
+            obesityInput.value = today;
+
+            // 3. 데이터 로드 (분리된 함수 호출)
+            loadDietSection(today);
+            loadObesitySection(today);
+            loadCommonData(today); // 트렌드는 오늘 날짜 기준 한 번만 로드
+
+            // 4. 이벤트 리스너 (각각 동작)
+            dietInput.addEventListener('change', (e) => {
+                loadDietSection(e.target.value);
+            });
+
+            obesityInput.addEventListener('change', (e) => {
+                loadObesitySection(e.target.value);
+            });
+        });
+
+        // ==========================================
+        // A. 식단 분석 로드 (레이더 + 코멘트)
+        // ==========================================
+        function loadDietSection(date) {
+            fetch(`/api/report/daily?date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    const chartArea = document.getElementById('dietChartArea');
+                    const noDataMsg = document.getElementById('dietNoData');
+                    const commentBox = document.getElementById('aiComment');
+                    const riskText = document.getElementById('diabetesText');
+
+                    if (!data.hasData) {
+                        // 데이터 없음
+                        chartArea.style.display = 'none';
+                        noDataMsg.style.display = 'block';
+                        riskText.innerText = '-';
+                        commentBox.innerText = '해당 날짜에는 기록된 식단이 없습니다.';
+                    } else {
+                        // 데이터 있음
+                        chartArea.style.display = 'block';
+                        noDataMsg.style.display = 'none';
+
+                        // 텍스트 업데이트
+                        const rLevel = data.diabetesRiskLevel ? data.diabetesRiskLevel : '';
+                        riskText.innerText = `당뇨 유사도: ${data.diabetesSimilarity}% (${rLevel})`;
+
+                        if(data.diabetesComment) {
+                            commentBox.innerHTML = `<strong>[분석 결과]</strong> ${data.diabetesComment}`;
+                        } else {
+                            commentBox.innerText = "분석 데이터가 없습니다.";
+                        }
+
+                        // 레이더 차트 그리기
+                        updateRadarChart(data);
+                    }
+                })
+                .catch(err => console.error("Diet load error:", err));
+        }
+
+        // ==========================================
+        // B. 비만 위험도 로드 (도넛)
+        // ==========================================
+        function loadObesitySection(date) {
+            fetch(`/api/report/daily?date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    // 확률 (0~100)
+                    const prob = parseInt(data.obesityProbability || 0);
+
+                    // 텍스트 업데이트
+                    document.getElementById('obesityPercent').innerText = `${prob}%`;
+
+                    // 차트 업데이트
+                    updateObesityChart(prob);
+                })
+                .catch(err => console.error("Obesity load error:", err));
+        }
+
+        // ==========================================
+        // C. 공통 트렌드 로드 (하단 영역)
+        // ==========================================
+        function loadCommonData(date) {
+            fetch(`/api/report/daily?date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    updateCommonCharts(data);
+                })
+                .catch(err => console.error("Common load error:", err));
+        }
+
+
+        // ---------------------------------------------------
+        // [차트 그리기 함수들]
+        // ---------------------------------------------------
+
+        function updateRadarChart(data) {
+            const ctxRadar = document.getElementById('diabetesRadarChart');
+            if (radarChart) radarChart.destroy();
+
+            radarChart = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['탄수화물', '단백질', '지방', '당류', '나트륨'], // 나트륨 반영
+                    datasets: [{
+                        label: '나의 섭취(%)',
+                        data: data.radarMyIntake || [0,0,0,0,0],
+                        borderColor: COLOR_DANGER,
+                        backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                        borderWidth: 2,
+                        pointRadius: 3
+                    }, {
+                        label: '권장(%)',
+                        data: data.radarGoal || [100,100,100,100,100],
+                        borderColor: COLOR_PRIMARY,
+                        backgroundColor: 'transparent',
+                        borderDash: [5,5],
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 120,
+                            pointLabels: { font: { size: 12 } },
+                            ticks: { display: false } // 지저분한 숫자 숨김
+                        }
+                    },
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        }
+
+        function updateObesityChart(probability) {
+            const ctxObesity = document.getElementById('obesityRiskChart');
+            if (obesityChart) obesityChart.destroy();
+
+            obesityChart = new Chart(ctxObesity, {
+                type: 'doughnut',
+                data: {
+                    labels: ['위험', '안전'],
+                    datasets: [{
+                        data: [probability, 100 - probability],
+                        backgroundColor: [COLOR_DANGER, '#EEEEEE'],
+                        borderWidth: 0,
+                        hoverOffset: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // 부모 div 크기에 맞춤
+                    cutout: '85%',              // 얇은 도넛
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+
+        function updateCommonCharts(data) {
+            // 1. 건강 점수 (Line)
+            document.getElementById('avgScoreBadge').innerText = `평균 ${data.averageScore}점`;
+            const ctxScore = document.getElementById('scoreChart');
+            if (scoreChart) scoreChart.destroy();
+            scoreChart = new Chart(ctxScore, {
+                type: 'line',
+                data: {
+                    labels: data.scoreDates || [],
+                    datasets: [{
+                        label: '점수',
+                        data: data.scoreValues || [],
+                        borderColor: COLOR_PRIMARY,
+                        backgroundColor: 'rgba(29, 171, 135, 0.1)',
+                        fill: true, tension: 0.4
+                    }]
+                },
+                options: { responsive: true, scales: { y: { min: 0, max: 100 } }, plugins: { legend: { display: false } } }
+            });
+
+            // 2. 식단 유형 (3개 분리 - 계단형 그래프)
+            // 공통 생성 함수
+            const createStepChart = (ctxId, chartRef, label, dates, codes, color) => {
+                const ctx = document.getElementById(ctxId);
+                if (chartRef) chartRef.destroy();
+                return new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates || [],
+                        datasets: [{
+                            label: label,
+                            data: codes || [],
+                            borderColor: color, stepped: true, fill: false, borderWidth: 2, pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                min: 0, max: 4, // 1~3 표시용
+                                ticks: {
+                                    stepSize: 1,
+                                    font: { size: 11 },
+                                    callback: function(val) {
+                                        if(val === 1) return '저';
+                                        if(val === 2) return '균형';
+                                        if(val === 3) return '고';
+                                        return '';
+                                    }
+                                },
+                                grid: { drawBorder: false }
+                            },
+                            x: {
+                                display: true,
+                                ticks: { maxTicksLimit: 6, maxRotation: 0, autoSkip: true },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: { legend: { display: false }, title: { display: true, text: label, align: 'start', padding: {bottom: 10} } }
+                    }
+                });
+            };
+
+            // 차트 3개 생성
+            carbChart = createStepChart('carbChart', carbChart, '탄수화물', data.dietDates, data.carbCodes, '#FFC857');
+            proteinChart = createStepChart('proteinChart', proteinChart, '단백질', data.dietDates, data.proteinCodes, '#1DAB87');
+            fatChart = createStepChart('fatChart', fatChart, '지방', data.dietDates, data.fatCodes, '#FF6B6B');
+
+            // 3. Top 5 리스트
+            const ul = document.getElementById('topMealsList');
+            ul.innerHTML = '';
+            if(data.topMeals && data.topMeals.length > 0) {
+                data.topMeals.forEach((m, i) => {
+                    const li = document.createElement('li');
+                    const category = m.mealTime ? `(${m.mealTime})` : '';
+                    li.innerHTML = `<strong>${i+1}. ${m.mealName}</strong> <span style="color:#888; font-size:0.9em;">${category}</span>`;
+                    ul.appendChild(li);
+                });
+            } else {
+                ul.innerHTML = '<p style="color:#999; text-align:center; padding: 10px;">기록 없음</p>';
+            }
+        }
+    </script>
+</th:block>
+</body>
+</html>

@@ -24,4 +24,8 @@ public interface HealthScoreMapper {
             @Param("year") int year,
             @Param("month") int month
     );
+
+    void upsertDailyWeight(@Param("userId") Long userId, @Param("weight") double weight);
+    List<CalendarScoreDto> selectRecentScores(@Param("userId") Long userId);
+    Double findWeightByDate(@Param("userId") Long userId, @Param("date") String date);
 }

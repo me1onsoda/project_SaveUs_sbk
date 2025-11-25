@@ -3,7 +3,10 @@
 <aside class="sidebar" th:fragment="sidebar">
     <div class="sidebar-header">
         <a href="/" class="logo-link">
-            <img th:src="@{/images/icon/logo.png}" alt="SaveUs Logo" class="web-logo">
+            <!--<img th:src="@{/images/icon/logo2.png}" alt="SaveUs Logo" class="web-logo">-->
+            <div class="web-logo"
+                 th:style="'--logo-url: url(' + @{/images/icon/logo.png} + ');'"
+                 aria-label="SaveUs Logo"></div>
             <span class="logo">SaveUs</span>
         </a>
     </div>
@@ -16,6 +19,13 @@
                         <img th:src="@{/images/icon/dashboard.png}">
                     </span>
                     <span class="nav-text">대시보드</span> </a>
+            </li>
+            <li class="nav-item">
+                <a href="/report">
+                    <span class="nav-icon">
+                        <img th:src="@{/images/icon/report.png}">
+                    </span>
+                    <span class="nav-text">리포트</span> </a>
             </li>
             <li class="nav-item">
                 <a href="/calendar">

@@ -76,19 +76,51 @@ ul {
     padding: 0 24px;      /* 사이드바 좌우 여백 */
 }
 
-.sidebar-header .web-logo {
-    width: 48px;  /* 로고 이미지의 너비 (원본 이미지 크기에 따라 조절) */
-    height: 48px; /* 로고 이미지의 높이 (원본 이미지 크기에 따라 조절) */
-    object-fit: contain; /* 이미지 비율 유지 */
+/*.sidebar-header .web-logo {
+    width: 48px;  *//* 로고 이미지의 너비 (원본 이미지 크기에 따라 조절) *//*
+    height: 48px; *//* 로고 이미지의 높이 (원본 이미지 크기에 따라 조절) *//*
+    object-fit: contain; *//* 이미지 비율 유지 *//*
     border-radius: 12px;
 
+}*/
+.sidebar-header .web-logo {
+    width: 48px;
+    height: 48px;
+
+    background: linear-gradient(to right, #1DAB87, #85D648);
+
+    -webkit-mask-image: var(--logo-url);
+    mask-image: var(--logo-url);
+
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+
+    border-radius: 0;
+    object-fit: unset;
 }
 
 .sidebar-header .logo {
     font-size: 28px;
     font-weight: 700;
-    color: var(--color-primary);
+    /*color: var(--color-primary);*/
     line-height: 1; /* 폰트가 차지하는 높이를 타이트하게 조절 */
+/*    background: linear-gradient(to right, #1DAB87 0%, #FF9900 100%);*/
+/*    background: linear-gradient(to right, #1DAB87, #FFA726);*/
+    background: linear-gradient(to right, #85D648, #FF9900);
+
+    /* 배경을 글자 모양대로 잘라냄 */
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    /* 글자색을 투명하게 해서 배경(그라데이션)이 보이게 함 */
+    color: transparent;
+
+    /* (선택사항) 크롬 등에서 가끔 잘림 방지용 */
+    display: inline-block;
 }
 
 .main-navigation .nav-item {

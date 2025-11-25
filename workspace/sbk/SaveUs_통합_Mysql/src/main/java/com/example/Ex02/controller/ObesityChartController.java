@@ -21,7 +21,7 @@ public class ObesityChartController {
             Model model) {
 
         // EC2 서버 FastAPI 호출 URL
-        String url = "http://3.37.90.119:8000/predict-obesity/" + userId;
+        String url = "http://3.37.90.119:8002/predict-obesity/" + userId;
 
         ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
         Map<String, Object> result = response.getBody();

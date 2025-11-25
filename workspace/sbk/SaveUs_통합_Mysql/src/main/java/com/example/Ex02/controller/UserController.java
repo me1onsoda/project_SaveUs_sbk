@@ -1,11 +1,7 @@
 package com.example.Ex02.controller;
 
 import com.example.Ex02.dto.*;
-import com.example.Ex02.mapper.SurveyMapper;
-import com.example.Ex02.mapper.UserBadgeMapper;
-import com.example.Ex02.mapper.UserChallengeMapper;
-import com.example.Ex02.mapper.UserMainMapper;
-import com.example.Ex02.mapper.UserMapper;
+import com.example.Ex02.mapper.*;
 import com.example.Ex02.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -43,6 +39,9 @@ public class UserController {
     @Autowired
     private UserChallengeMapper userChallengeMapper;
 
+    @Autowired
+    private HealthScoreMapper healthScoreMapper;
+
 
     /* -------------------------------
        체중 저장 + BMI 자동 계산 API
@@ -67,6 +66,9 @@ public class UserController {
 
         // DB 업데이트
         userMapper.updateWeightAndBmi(userId, weight, bmi);
+
+        // 유저의 변경된 체중을(health_score_daily 테이블에 기록)(리포트 페이지에서 사용위함)
+        healthScoreMapper.upsertDailyWeight(userId, weight);
 
         // 세션 업데이트
         UserMainDto refreshed = userMainMapper.findMainInfo(userId);

@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.ibatis.annotations.Param;
+
 
 @Mapper
 public interface MealMapper {
@@ -26,4 +28,8 @@ public interface MealMapper {
 
     List<DiabetesScoreDto> selectYesterdayNutritionForAllUsers();
     void insertDiabetesScore(DiabetesScoreDto dto);
+
+    List<MealDto> selectTop5Meals(Long userId);
+    MealDto findNutritionByDate(@Param("userId") Long userId, @Param("date") String date);
+    DiabetesScoreDto selectDiabetesScoreByDate(@Param("userId") Long userId, @Param("date") String date);
 }
