@@ -15,14 +15,12 @@
 
 <main layout:fragment="content">
 
-    <!-- 상단 전체 -->
+    <!-- 상단 전체: 3개 카드 -->
     <div class="top-container">
 
-        <!-- 왼쪽: 프로필 + 체중 -->
-        <div class="left-section">
-
-            <!-- 프로필 카드 -->
-            <div class="profile-card">
+        <!-- 프로필 카드 -->
+        <div class="top-card">
+            <div class="profile-card-inner">
                 <img class="user-photo"
                      th:src="${(user.profileImageUrl != null && user.profileImageUrl != '') ? user.profileImageUrl : '/images/user-default.png'}"
                      alt="user">
@@ -32,9 +30,11 @@
                     <span class="goal-tag" th:text="${goalName}"></span>
                 </div>
             </div>
+        </div>
 
-            <!-- 오늘의 체중 카드 -->
-            <div class="weight-card">
+        <!-- 오늘의 체중 카드 -->
+        <div class="top-card">
+            <div class="weight-card-inner">
                 <h3>오늘의 체중</h3>
 
                 <div class="weight-input-row">
@@ -43,37 +43,26 @@
                 </div>
 
                 <div class="weight-info">
-                    <span>현재의 체중:
-                        <strong id="currentWeightText"
-                                th:data-height="${user.height}"
-                                th:text="${user.currentWeight} + ' kg'"></strong>
-                    </span>
+                <span>현재의 체중:
+                    <strong id="currentWeightText"
+                            th:data-height="${user.height}"
+                            th:text="${user.currentWeight} + ' kg'"></strong>
+                </span>
+
                     <span>BMI:
-                        <strong id="bmiValue" th:text="${user.bmi}"></strong>
-                    </span>
+                    <strong id="bmiValue" th:text="${user.bmi}"></strong>
+                </span>
+
                     <span>상태:
-                        <strong id="bmiStatus"></strong>
-                    </span>
+                    <strong id="bmiStatus"></strong>
+                </span>
                 </div>
             </div>
+        </div>
 
-        </div> <!-- left-section 끝 -->
-
-
-
-        <!-- 오른쪽: 오늘의 팁 + 비만 위험도 -->
-        <div class="right-section">
-
-            <!-- 오늘의 팁 카드 -->
-            <div class="tip-card">
-                <h3>오늘의 팁</h3>
-                <p class="tip-text">
-                    건강한 식습관을 유지하려면 천천히 먹고 충분한 수분을 섭취하세요.
-                </p>
-            </div>
-
-            <!-- 비만 위험도 카드 -->
-            <div class="obesity-card">
+        <!-- 비만 위험도 카드 -->
+        <div class="top-card">
+            <div class="obesity-card-inner">
                 <h3>오늘의 비만 위험도</h3>
 
                 <div class="obesity-bar-wrapper">
@@ -87,11 +76,11 @@
                 <p class="obesity-percent"
                    th:text="${obesityPercent} + '%'"></p>
             </div>
+        </div>
 
-        </div><!-- right-section 끝 -->
+    </div>
 
 
-    </div> <!-- top-container 끝 -->
 
 
 
