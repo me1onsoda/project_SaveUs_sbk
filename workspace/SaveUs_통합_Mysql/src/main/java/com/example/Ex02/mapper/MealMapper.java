@@ -4,6 +4,7 @@ import com.example.Ex02.dto.DiabetesScoreDto;
 import com.example.Ex02.dto.MealDto;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,5 @@ public interface MealMapper {
 
     List<DiabetesScoreDto> selectYesterdayNutritionForAllUsers();
     void insertDiabetesScore(DiabetesScoreDto dto);
+    void deleteDailyScore(Long userId, LocalDate date);
 }

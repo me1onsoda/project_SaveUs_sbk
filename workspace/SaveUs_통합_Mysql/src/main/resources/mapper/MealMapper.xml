@@ -191,4 +191,12 @@
         NOW()
         )
     </insert>
+
+    <!-- 특정 날짜 건강점수 삭제 -->
+    <delete id="deleteDailyScore">
+        DELETE FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND SCORE_DATE = #{date}
+    </delete>
+
 </mapper>
