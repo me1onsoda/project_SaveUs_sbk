@@ -17,7 +17,6 @@ public class Ex01Application {
 		SpringApplication.run(Ex01Application.class, args);
 	}
 
-
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();

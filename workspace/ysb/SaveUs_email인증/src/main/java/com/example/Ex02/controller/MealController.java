@@ -26,11 +26,9 @@ public class MealController {
     @Autowired
     private AiFoodService aiFoodService;
 
-    /* [추가 ] AI 사진 분석 요청 처리*/
     @PostMapping("/meal/ai-upload")
     @ResponseBody
     public java.util.List<MealSaveDto> analyzeFoodImage(@RequestParam("file") MultipartFile file) {
-        // 서비스가 List를 리턴하므로 그대로 전달
         return aiFoodService.analyzeImage(file);
     }
 
@@ -39,78 +37,59 @@ public class MealController {
     public String saveMeal(MealSaveDto dto, HttpSession session) {
 
         Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
         LocalDate today = LocalDate.now();
         LocalTime time = LocalTime.parse(dto.getMealTime());
         LocalDateTime eatDateTime = LocalDateTime.of(today, time);
 
-        String eatTimeFormatted = eatDateTime.format(
-                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-        );
-
         Map<String, Object> map = new HashMap<>();
         map.put("userId", userId);
         map.put("mealName", dto.getMealName());
-        map.put("eatTime", eatTimeFormatted);
+        map.put("eatTime", eatDateTime); // LocalDateTime 그대로 전달
+
         map.put("calories", dto.getCalories());
         map.put("protein", dto.getProtein());
         map.put("carbs", dto.getCarbs());
         map.put("fat", dto.getFat());
+        map.put("sugar", dto.getSugar());
+        map.put("fiber", dto.getFiber());
+        map.put("calcium", dto.getCalcium());
+        map.put("sodium", dto.getSodium());
 
         mealMapper.saveMeal(map);
         return "redirect:/dashboard";
     }
 
-
-    // 식사 기록 수정 페이지 이동
+    // 수정 페이지 이동
     @GetMapping("/meal/edit/{entryId}")
     public String editMeal(@PathVariable Long entryId, Model model, HttpSession session) {
-
-        // 로그인 여부 확인
         Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
-        // 수정할 식사 데이터 조회
         MealDto meal = mealMapper.findMealById(entryId);
-        if (meal == null) {
-            return "redirect:/dashboard";
-        }
-
-        // 본인 식사 데이터인지 확인
-        if (!meal.getUserId().equals(userId)) {
-            return "redirect:/dashboard";
-        }
+        if (meal == null) return "redirect:/dashboard";
+        if (!meal.getUserId().equals(userId)) return "redirect:/dashboard";
 
         model.addAttribute("meal", meal);
         return "meal-edit";
     }
 
-    // 식사 기록 업데이트 처리
+    // 식사 업데이트
     @PostMapping("/meal/update")
     public String updateMeal(MealDto dto, HttpSession session) {
 
-        // 로그인 여부 확인
         Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
-        // 본인 식사 데이터로 설정
         dto.setUserId(userId);
 
-        // 사용자가 입력한 시간(HH:mm)에 오늘 날짜 결합
         LocalDate today = LocalDate.now();
         LocalTime time = LocalTime.parse(dto.getMealTime());
         LocalDateTime eatDateTime = LocalDateTime.of(today, time);
 
-        dto.setEatTime(eatDateTime.toString());
+        dto.setEatTime(eatDateTime); // 문자열 제거
 
-        // DB 업데이트
         mealMapper.updateMeal(dto);
 
         return "redirect:/dashboard";
@@ -122,7 +101,7 @@ public class MealController {
         return "redirect:/dashboard";
     }
 
-    // 검색해서 추가
+    // 음식검색으로 추가
     @PostMapping("/meal/add-from-food")
     @ResponseBody
     public String addMealFromFood(@RequestBody MealSaveDto dto, HttpSession session) {
@@ -130,25 +109,17 @@ public class MealController {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "NOT_LOGIN";
 
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
-        LocalDateTime eatDateTime = LocalDateTime.of(today, now);
-
-        String eatTimeFormatted = eatDateTime.format(
-                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-        );
+        LocalDateTime eatDateTime = LocalDateTime.now();
 
         Map<String, Object> map = new HashMap<>();
         map.put("userId", userId);
         map.put("mealName", dto.getMealName());
-        map.put("eatTime", eatTimeFormatted);
+        map.put("eatTime", eatDateTime);
 
         map.put("calories", dto.getCalories());
         map.put("carbs", dto.getCarbs());
         map.put("protein", dto.getProtein());
         map.put("fat", dto.getFat());
-
-        // 추가된 4개 영양소
         map.put("sugar", dto.getSugar());
         map.put("fiber", dto.getFiber());
         map.put("calcium", dto.getCalcium());
@@ -158,9 +129,5 @@ public class MealController {
 
         return "OK";
     }
-
-
-
-
 
 }

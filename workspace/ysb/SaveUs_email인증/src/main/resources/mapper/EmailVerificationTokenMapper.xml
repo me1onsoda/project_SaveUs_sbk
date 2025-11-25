@@ -23,7 +23,7 @@
         SELECT TOKEN_ID, USER_ID, TOKEN, EXPIRES_AT, CREATED_AT
         FROM EMAIL_VERIFICATION_TOKEN
         WHERE TOKEN = #{token}
-        AND EXPIRES_AT > NOW()
+        AND EXPIRES_AT >= NOW()
     </select>
 
     <select id="findLatestByUserId" resultType="com.example.Ex02.dto.EmailVerificationTokenDto">

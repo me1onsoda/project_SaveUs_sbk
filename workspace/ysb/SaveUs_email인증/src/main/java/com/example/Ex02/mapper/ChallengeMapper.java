@@ -67,4 +67,5 @@ public interface ChallengeMapper {
 
     // 성공시 뱃지 지급
     void insertUserBadge(@Param("userId") Long userId, @Param("challengeId") Long challengeId);
+
 }

@@ -50,7 +50,6 @@ public class UserJoinDto {
 
     private String emailVerified;
 
-
     public float getBmi() {
         if (height == null || currentWeight == null || height == 0) {
             return 0f;

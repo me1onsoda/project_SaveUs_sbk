@@ -12,33 +12,35 @@ public class MailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${app.base-url}")
+    @Value("${app.base-url}:${server.port}")
     private String baseUrl;
 
     public MailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
+    // 이메일 인증용 코드
     public void sendVerificationCode(String to, String token) {
-        String subject = "[saveus] 회원가입 인증번호 안내";
+        String subject = "[saveus] 회원가입 인증 코드 안내";
 
         String html = "<div style='font-family:Arial,sans-serif; text-align:center; border:1px solid #e0e0e0; padding:20px; max-width:400px; margin:0 auto; border-radius:8px;'>"
                 + "<h2 style='color:#333; margin-bottom:10px;'>이메일 인증</h2>"
-                + "<p style='color:#666; font-size:14px; margin-bottom:30px;'>아래 인증번호 12자리를 회원가입 화면에 입력해주세요.</p>"
+                + "<p style='color:#666; font-size:14px; margin-bottom:30px;'>아래 인증 코드 12자리를 회원가입 화면에 입력해주세요.</p>"
                 + "<div style='margin: 20px 0;'>"
                 + "<span style='display:inline-block; padding:15px 25px; background:#f2f4f8; color:#333; "
                 + "font-size:32px; font-weight:bold; letter-spacing:8px; border:2px dashed #2f6fed; border-radius:8px; user-select:all;'>"
                 + token
                 + "</span>"
                 + "</div>"
-                + "<p style='color:#999; font-size:12px; margin-top:30px;'>인증번호는 3분간 유효합니다.</p>"
+                + "<p style='color:#999; font-size:12px; margin-top:30px;'>인증 코드는 3분간 유효합니다.</p>"
                 + "</div>";
 
         sendHtml(to, subject, html);
     }
 
+    // 비밀번호 변경용 링크
     public void sendPasswordResetEmail(String to, String token) {
-        String link = baseUrl + "/user/verify/reset-pw?token=" + token;
+        String link = baseUrl + "/user/reset-pw?token=" + token;
 
         String subject = "[saveus] 비밀번호 재설정 안내";
         String html = "<div style='font-family:Arial,sans-serif; text-align:center; border:1px solid #e0e0e0; padding:20px; max-width:400px; margin:0 auto; border-radius:8px;'>"
@@ -48,22 +50,6 @@ public class MailService {
                 + "style='display:inline-block; padding:12px 24px; background:#2f6fed; color:#fff; "
                 + "text-decoration:none; font-weight:bold; border-radius:6px; font-size:16px;'>비밀번호 변경하기</a>"
                 + "<p style='color:#999; font-size:12px; margin-top:30px;'>링크는 일정 시간이 지나면 만료됩니다.</p>"
-                + "</div>";
-
-        sendHtml(to, subject, html);
-    }
-
-    public void sendVerificationEmail(String to, String token) {
-        String subject = "[saveus] 이메일 인증 토큰";
-        String html = "<div style='font-family:Arial,sans-serif; text-align:center; border:1px solid #e0e0e0; padding:20px; max-width:400px; margin:0 auto; border-radius:8px;'>"
-                + "<h2 style='color:#333;'>인증 토큰 안내</h2>"
-                + "<p style='color:#666;'>요청하신 인증 토큰입니다.</p>"
-                + "<div style='margin: 30px 0; word-break: break-all;'>"
-                + "<span style='display:inline-block; padding:15px; background:#f2f4f8; color:#333; "
-                + "font-size:18px; font-weight:bold; border:1px solid #ddd; border-radius:4px;'>"
-                + token
-                + "</span>"
-                + "</div>"
                 + "</div>";
 
         sendHtml(to, subject, html);

@@ -21,11 +21,13 @@
         <form method="post" th:action="@{/meal/update}">
             <input type="hidden" name="entryId" th:value="${meal.entryId}">
 
+            <!-- 음식 이름 -->
             <div class="form-row">
                 <label>음식 이름</label>
                 <input type="text" name="mealName" th:value="${meal.mealName}" required>
             </div>
 
+            <!-- 시간 + 칼로리 -->
             <div class="form-row form-half">
                 <div>
                     <label>섭취 시간</label>
@@ -38,7 +40,8 @@
                 </div>
             </div>
 
-            <h3 class="section-title">영양 성분 수정</h3>
+            <!-- 필수 영양소 -->
+            <h3 class="section-title">필수 영양 성분</h3>
 
             <div class="form-row form-three">
                 <div>
@@ -57,7 +60,32 @@
                 </div>
             </div>
 
-            <!-- 수정 버튼 -->
+            <!-- 추가 영양소 -->
+            <h3 class="section-title">추가 영양 성분</h3>
+
+            <div class="form-row form-four">
+                <div>
+                    <label>당 (g)</label>
+                    <input type="number" name="sugar" th:value="${meal.sugar}">
+                </div>
+
+                <div>
+                    <label>식이섬유 (g)</label>
+                    <input type="number" name="fiber" th:value="${meal.fiber}">
+                </div>
+
+                <div>
+                    <label>칼슘 (mg)</label>
+                    <input type="number" name="calcium" th:value="${meal.calcium}">
+                </div>
+
+                <div>
+                    <label>나트륨 (mg)</label>
+                    <input type="number" name="sodium" th:value="${meal.sodium}">
+                </div>
+            </div>
+
+            <!-- 버튼 -->
             <div class="form-actions">
                 <a th:href="@{/meal/delete-confirm/{id}(id=${meal.entryId})}"
                    class="delete-btn">

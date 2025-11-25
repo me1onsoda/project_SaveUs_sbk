@@ -198,7 +198,15 @@ document.addEventListener("DOMContentLoaded", function () {
             const formData = new FormData();
             formData.append('file', file);
 
-            alert("AI가 사진을 분석 중입니다... 잠시만 기다려주세요.");
+            //alert("AI가 사진을 분석 중입니다... 잠시만 기다려주세요.");
+            Swal.fire({
+                            title: 'AI 분석 중...',
+                            text: '잠시만 기다려주세요.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading(); // 로딩 아이콘 회전
+                            }
+                        });
 
             try {
                 const response = await fetch('/meal/ai-upload', {
@@ -206,33 +214,65 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: formData
                 });
 
+                Swal.close();
+
                 if (!response.ok) throw new Error("서버 오류");
 
                 const dataList = await response.json();
 
                 if (dataList && dataList.length > 0) {
                     const names = dataList.map(d => d.mealName).join(", ");
-                    const msg = `[분석 결과]\n감지된 음식: ${names}\n\n총 ${dataList.length}개의 음식을 모두 저장하시겠습니까?`;
+                    //const msg = `[분석 결과]\n감지된 음식: ${names}\n\n총 ${dataList.length}개의 음식을 모두 저장하시겠습니까?`;
 
-                    if (confirm(msg)) {
-                        // ★ 순차 저장 시작 (하나씩 await로 기다리면서 저장) ★
+                    const result = await Swal.fire({
+                                            title: '분석 결과',
+                                            html: `<p>감지된 음식: <strong>${names}</strong></p>
+                                                   <p>총 ${dataList.length}개의 음식을 저장하시겠습니까?</p>`,
+                                            icon: 'question',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#1abc9c',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: '저장',
+                                            cancelButtonText: '취소'
+                                        });
+
+                    if (result.isConfirmed) {
+
+                        // 순차 저장 시작
+                        let successCount = 0;
                         for (const item of dataList) {
-                            await saveMealRequest(item); // 저장 요청
-                            await delay(300);            // 0.3초 쉬기 (시간 충돌 방지)
+                            const isSaved = await saveMealRequest(item);
+                            if(isSaved) successCount++;
+                            await delay(300); // 0.3초 대기
                         }
-
-                        alert("모두 저장되었습니다.");
-                        location.reload();
+                        // [변경 3] 최종 저장 완료 알림
+                        if (successCount > 0) {
+                            Swal.fire({
+                                title: '저장 완료!',
+                                text: `총 ${successCount}개의 음식이 저장되었습니다.`,
+                                icon: 'success'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('저장 실패', '저장 중 문제가 발생했습니다.', 'error');
+                        }
                     }
                 } else {
-                    alert("음식을 인식하지 못했습니다.");
+                    Swal.fire({
+                        title: '인식 실패',
+                        text: '음식을 인식하지 못했습니다.',
+                        icon: 'warning',
+                        confirmButtonColor: '#1abc9c',
+                        confirmButtonText: '확인'
+                    });
                 }
-
             } catch (err) {
                 console.error(err);
-                alert("분석 중 오류가 발생했습니다.");
+                Swal.close(); // 에러 발생 시 로딩창 닫기
+                Swal.fire('오류 발생', '분석 중 오류가 발생했습니다.', 'error');
             } finally {
-                aiInput.value = "";
+                aiInput.value = ""; // 파일 입력 초기화
             }
         });
     }

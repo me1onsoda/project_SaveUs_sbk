@@ -26,7 +26,7 @@ import java.util.UUID;
 public class CommunityServiceImpl implements CommunityService {
 
     private final CommunityMapper communityMapper;
-    private final String UPLOAD_DIR = "C:/uploads/posts/";
+    private final String UPLOAD_DIR = "/home/ubuntu/uploads/posts/";
 
 
     @Override
@@ -61,7 +61,8 @@ public class CommunityServiceImpl implements CommunityService {
         CommunityPostDto post = new CommunityPostDto();
         post.setUserId(currentUserId);
         post.setContent(postRequestDto.getContent());
-        post.setHealthScore(80); // (임시 점수)
+        int healthScore = communityMapper.getHealthScore(currentUserId);
+        post.setHealthScore(healthScore);
         communityMapper.insertPost(post);
 
         long postId = post.getPostId(); // DB에서 생성된 ID 받아오기
@@ -162,7 +163,7 @@ public class CommunityServiceImpl implements CommunityService {
 //            throw new AccessDeniedException("You are not the owner of this post");
 //        }
 
-        // 2. 텍스트 내용(content) 업데이트
+        // 2. 텍스트 내용(content)
         communityMapper.updatePostContent(postId, content);
 
         // 3. '삭제 요청된' 이미지 처리 (imagesToDelete)

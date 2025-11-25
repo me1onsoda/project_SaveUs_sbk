@@ -20,8 +20,11 @@ public class CalendarController {
     private CalendarService calendarService;
 
     @Autowired
-    private HealthScoreService healthScoreService;  // 자동 계산 추가
+    private HealthScoreService healthScoreService;  // 건강점수 자동 계산 서비스
 
+    /**
+     * 건강점수 캘린더 페이지
+     */
     @GetMapping("/calendar")
     public String calendarPage(
             @RequestParam(required = false) Integer year,
@@ -30,6 +33,7 @@ public class CalendarController {
             Model model
     ) {
 
+        // 세션에서 유저 ID 조회
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";
@@ -37,6 +41,7 @@ public class CalendarController {
 
         LocalDate today = LocalDate.now();
 
+        // 연/월 기본값 설정 (요청값이 없으면 현재 날짜 기준)
         int y = (year == null) ? today.getYear() : year;
         int m = (month == null) ? today.getMonthValue() : month;
 
@@ -49,10 +54,10 @@ public class CalendarController {
             y += 1;
         }
 
-        // ===== 여기 추가: 해당 월의 건강점수 자동 계산 =====
+        // 선택된 월의 건강점수 자동 계산 수행
         healthScoreService.calculateMonthlyScore(userId, y, m);
 
-        // 월 달력 데이터 조회
+        // 선택된 월의 달력(하루 단위 데이터) 조회
         List<CalendarDayDto> days = calendarService.getMonthlyCalendar(userId, y, m);
 
         model.addAttribute("days", days);

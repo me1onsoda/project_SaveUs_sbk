@@ -16,6 +16,7 @@ import java.util.Map;
 public class ChallengeServiceImpl implements ChallengeService {
 
     private final ChallengeMapper challengeMapper;
+    private final AiFoodService aiFoodService;
     private final MealMapper mealMapper;
 
     @Override
@@ -197,6 +198,24 @@ public class ChallengeServiceImpl implements ChallengeService {
                 System.out.println("에러 발생 (ID: " + uc.getUserChallengeId() + ") - " + e.getMessage());
             }
         }
+
+        System.out.println(">>> 당뇨 점수계산 시작: 데이터 조회 시도");
+        //당뇨 점수 계산
+        List<DiabetesScoreDto> dtoList = mealMapper.selectYesterdayNutritionForAllUsers();
+        System.out.println(">>> [2] 조회된 유저 수: " + dtoList.size() + "명");
+        if (dtoList.isEmpty()) {
+            System.out.println(">>> [종료] 조회된 데이터가 0건이라 종료합니다. (날짜나 DB 데이터 확인 필요)");
+            return;
+        }
+        // 2. 파이썬 서버에 계산 요청
+        System.out.println(">>> [3] 파이썬 서버로 요청 전송 중...");
+        List<DiabetesScoreDto> results = aiFoodService.calculateDietScores(dtoList);
+        System.out.println(">>> [4] 파이썬 응답 도착. 결과 수: " + results.size());
+        // 3. DB 저장
+        for (DiabetesScoreDto res : results) {
+            if (res.getError() != null) continue;
+            mealMapper.insertDiabetesScore(res); // 이름 바뀐 메서드 호출
+        }
     }
 
     // 한 건만 처리
@@ -211,6 +230,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (dailyLog == null) {
             dailyLog = new MealDto();
         }
+        System.out.println(dailyLog.toString());
 
         // 챌린지 타입별로 채점
         switch (uc.getChallengeType()) {
@@ -266,6 +286,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             // 실패 처리 (
             challengeMapper.failChallenge(uc.getUserChallengeId());
         }
+
     }
 
     // MealDto의 Integer 값을 double로 안전하게 변환하여 리턴
@@ -291,9 +312,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (code == null) return "HEALTH"; // null이면 기본값
 
         return switch (code) {
-            case 1 -> "HEALTH";       // 1번: 건강 관리
-            case 2 -> "WEIGHT_LOSS";  // 2번: 다이어트
-            case 3 -> "WEIGHT_GAIN";  // 3번: 체중 증량
+            case 0 -> "WEIGHT_LOSS";       // 1번: 감량
+            case 1 -> "WEIGHT_GAIN";  // 2번: 중량
+            case 2 -> "HEALTH";  // 3번: 건강식
             // case 4: return "MUSCLE_GAIN"; // 필요시 추가
             default -> "HEALTH";      // 그 외는 기본값
         };

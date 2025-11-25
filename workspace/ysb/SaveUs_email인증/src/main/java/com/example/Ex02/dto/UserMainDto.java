@@ -12,6 +12,7 @@ public class UserMainDto {
     private String gender;            // USERS.GENDER
     private Double height;            // USERS.HEIGHT
     private Double currentWeight;     // USERS.CURRENT_WEIGHT
+    private Double bmi;
 
     private String emailVerified;
 
@@ -41,6 +42,13 @@ public class UserMainDto {
 
     public Double getCurrentWeight() { return currentWeight; }
     public void setCurrentWeight(Double currentWeight) { this.currentWeight = currentWeight; }
+
+    public Double getBmi() {
+        return bmi;
+    }
+    public void setBmi(Double bmi) {
+        this.bmi = bmi;
+    }
 
     public String getEmailVerified() { return emailVerified; }
     public void setEmailVerified(String emailVerified) { this.emailVerified = emailVerified; }

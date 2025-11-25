@@ -4,6 +4,7 @@ import com.example.Ex02.dto.DiabetesScoreDto;
 import com.example.Ex02.dto.MealDto;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Param;
@@ -32,4 +33,6 @@ public interface MealMapper {
     List<MealDto> selectTop5Meals(Long userId);
     MealDto findNutritionByDate(@Param("userId") Long userId, @Param("date") String date);
     DiabetesScoreDto selectDiabetesScoreByDate(@Param("userId") Long userId, @Param("date") String date);
+    void deleteDailyScore(Long userId, LocalDate date);
+
 }

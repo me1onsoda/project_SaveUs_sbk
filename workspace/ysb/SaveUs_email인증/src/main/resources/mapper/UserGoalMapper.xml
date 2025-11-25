@@ -36,4 +36,16 @@
         )
     </insert>
 
+    <update id="updateUserGoal" parameterType="com.example.Ex02.dto.UserGoalDto">
+        UPDATE USER_GOAL
+        SET
+        CALORIES_KCAL = #{caloriesKcal},
+        PROTEIN_G = #{proteinG},
+        CARBS_G = #{carbsG},
+        FATS_G = #{fatsG}
+        WHERE USER_ID = #{userId}
+    </update>
+
+
+
 </mapper>

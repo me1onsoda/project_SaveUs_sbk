@@ -34,5 +34,7 @@ public interface UserMapper {
 
     UserJoinDto findByNicknameAndBirthdate(String nickname, String birthdate);
 
+    void updateWeightAndBmi(Long userId, double weight, double bmi);
+
     void updateEmailVerified(Long userId);
 }

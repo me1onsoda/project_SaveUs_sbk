@@ -2,11 +2,10 @@ package com.example.Ex02.service;
 
 import com.example.Ex02.dto.AiDto;
 import com.example.Ex02.dto.AiResponseWrapper;
+import com.example.Ex02.dto.DiabetesScoreDto;
 import com.example.Ex02.dto.MealSaveDto;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -65,5 +64,27 @@ public class AiFoodService {
             e.printStackTrace();
         }
         return resultList; // 리스트 반환 (비어있을 수도 있음)
+    }
+
+    // 파이썬 통신 메서드 추가
+    public List<DiabetesScoreDto> calculateDietScores(List<DiabetesScoreDto> requestList) {
+        if (requestList.isEmpty()) return new ArrayList<>();
+
+        String pythonUrl = "http://3.37.90.119:8000/api/calculate-score";
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<List<DiabetesScoreDto>> requestEntity = new HttpEntity<>(requestList, headers);
+
+            ResponseEntity<List<DiabetesScoreDto>> response = restTemplate.exchange(
+                    pythonUrl, HttpMethod.POST, requestEntity,
+                    new ParameterizedTypeReference<List<DiabetesScoreDto>>() {}
+            );
+            return response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }
