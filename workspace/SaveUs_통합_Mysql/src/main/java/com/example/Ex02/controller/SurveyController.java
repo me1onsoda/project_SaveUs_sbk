@@ -73,11 +73,14 @@ public class SurveyController {
 
             UserJoinDto savedUser = userMapper.findByEmail(tempUser.getEmail());
 
+            // 핵심 추가 코드
             session.setAttribute("userId", savedUser.getUserId());
+            session.setAttribute("loginUser", savedUser);   // 헤더에서 프로필 출력되는 값
             session.removeAttribute("tempUser");
 
             userId = savedUser.getUserId();
         }
+
 
         UserJoinDto user = userMapper.findById(userId);
 
