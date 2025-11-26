@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>Page Not Found</title>
+
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/direct-input.css}">
+    </th:block>
+    <link rel="stylesheet" th:href="@{/css/policyCommon.css}">
+
+</head>
+
+<main layout:fragment="content">
+
+
+    <main class="page-main">
+        <div class="content-card error-wrapper">
+            <div class="error-code">404</div>
+            <p class="error-message-main">페이지를 찾을 수 없습니다.</p>
+            <p class="error-message-sub">
+                요청하신 주소가 변경되었거나 존재하지 않습니다.<br>
+                주소를 다시 확인하거나 메인 화면으로 이동해 주세요.
+            </p>
+
+            <div>
+                <a th:href="@{/}" class="btn-primary">메인으로 이동</a>
+            </div>
+        </div>
+    </main>
+
+</main>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<header class="main-header" th:fragment="header">
+    <div class="header-right">
+
+        <th:block th:if="${session.userId != null}">
+            <button class="user-profile-button" onclick="location.href='/my-page'">
+
+                <img th:src="${session.loginUser?.profileImageUrl != null
+                ? session.loginUser.profileImageUrl + '?v=' + #dates.format(#dates.createNow(), 'yyyyMMddHHmmss')
+                : '/images/avatars/default.png'}"
+                     alt="User Profile">
+
+                <span th:text="${session.loginUser?.nickname}"></span>
+            </button>
+        </th:block>
+    </div>
+</header>
+</html>
+

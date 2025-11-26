@@ -1,0 +1,126 @@
+:root {
+    --su-green: #2ecc71;
+    --su-green-dark: #27ae60;
+    --su-orange: #f39c12;
+    --su-bg: #f5f6fa;
+    --su-border: #e0e0e0;
+    --su-text-main: #333333;
+    --su-text-sub: #666666;
+}
+
+/* 레이아웃 공통 */
+.page-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-main {
+    flex: 1;
+    max-width: 960px;
+    margin: 40px auto 32px;
+    padding: 0 16px 40px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: var(--su-text-sub);
+    margin-bottom: 24px;
+}
+
+.meta-info {
+    font-size: 13px;
+    color: #999999;
+    margin-bottom: 16px;
+}
+
+/* 카드 공통 */
+.content-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 24px 28px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.content-card section + section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #f0f2f5;
+}
+
+.content-card section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.content-card section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+.content-card section p,
+.content-card section li {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #444444;
+}
+
+.content-card ul {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    padding-left: 18px;
+}
+
+/* 404 페이지 전용 */
+.error-wrapper {
+    text-align: center;
+}
+
+.error-code {
+    font-size: 72px;
+    font-weight: 800;
+    color: var(--su-green-dark);
+    margin-bottom: 4px;
+}
+
+.error-message-main {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.error-message-sub {
+    font-size: 14px;
+    color: var(--su-text-sub);
+    margin-bottom: 24px;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 0 16px;
+    }
+
+    .page-main {
+        margin: 24px auto 24px;
+        padding: 0 12px 24px;
+    }
+
+    .content-card {
+        padding: 20px 18px;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+}

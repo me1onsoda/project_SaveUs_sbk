@@ -1,0 +1,485 @@
+/* ===============================
+    기본 색상
+================================ */
+:root {
+    --green: #2fb675;
+    --green-dark: #27a567;
+
+    --blue: #4A90E2;
+    --blue-dark: #357ABD;
+
+    --yellow: #FFC857;
+
+    --black: #333;
+    --text-dark: #333;
+    --text-light: #666;
+
+    --bg-light: #f8f9fa;
+    --white: #fff;
+
+    --border: #e6e6e6;
+    --border-dark: #ccc;
+}
+
+/* ===============================
+    전체 레이아웃
+================================ */
+main {
+    padding: 20px 30px 100px 30px;
+    font-family: 'Arial', sans-serif;
+    color: var(--text-dark);
+}
+
+/* ===============================
+    상단 2열 구조
+================================ */
+.top-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;   /* ★ 양쪽 카드의 높이를 동일하게 맞춤 */
+    gap: 40px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* 왼쪽 전체 */
+.left-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 오른쪽 전체 (위: tip-card / 아래: obesity-card) */
+.right-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ===============================
+    공통 카드 스타일
+================================ */
+.card-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+/* ===============================
+    프로필 카드
+================================ */
+.profile-card {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.user-photo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+}
+
+.goal-tag {
+    background: #1ABC9C;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+/* ===============================
+    오늘의 체중 카드
+================================ */
+.weight-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.weight-card h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.weight-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+#todayWeightInput {
+    flex: 1;
+    height: 30px;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+#saveWeightBtn {
+    width: 70px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.weight-info {
+    display: flex;
+    gap: 18px;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.weight-info strong {
+    color: var(--green);
+}
+
+/* ===============================
+    오른쪽 - 오늘의 팁 카드
+================================ */
+.tip-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.tip-card h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.tip-text {
+    color: var(--text-light);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* ===============================
+    오른쪽 - 비만 위험도 카드
+================================ */
+.obesity-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.obesity-card h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 14px;
+}
+
+.obesity-bar-wrapper {
+    width: 100%;
+    height: 16px;
+    background: #e6e6e6;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.obesity-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.4s ease;
+}
+
+.obesity-percent {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+}
+
+/* ===============================
+    식사 기록
+================================ */
+.log-meal {
+    margin-bottom: 50px;
+}
+
+.log-meal h3 {
+    font-size: 22px;
+}
+
+.log-meal .sub {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+}
+
+.log-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.log-actions button {
+    height: 48px;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: 0.16s;
+}
+
+.photo-upload-btn {
+    background: var(--green);
+    color: #fff;
+}
+.photo-upload-btn:hover {
+    background: var(--green-dark);
+}
+
+.add-meal-btn {
+    background: var(--blue);
+    color: #fff;
+}
+.add-meal-btn:hover {
+    background: var(--blue-dark);
+}
+
+/* 검색 */
+.search-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+}
+
+#mealSearchInput {
+    width: 220px;
+    height: 48px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+}
+
+#mealAddBtn {
+    height: 48px;
+    padding: 0 24px;
+    background: #F5A623;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+}
+#mealAddBtn:hover {
+    background: #E5951E;
+}
+
+.autocomplete-box {
+    display: none;
+    position: absolute;
+    top: 48px;
+    left: 0;
+    width: 220px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0 0 10px 10px;
+    max-height: 180px;
+    overflow-y: auto;
+    z-index: 999;
+}
+
+/* ===============================
+    오늘의 식사 + 요약
+================================ */
+.stats-section {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.meals-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    width: 35%;
+}
+
+.meal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.meal-item {
+    margin-bottom: 12px;
+}
+
+.meal-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 12px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.kcal {
+    color: var(--green);
+    font-weight: bold;
+}
+
+.right-summary {
+    width: 65%;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===============================
+    영양 요약 카드
+================================ */
+.summary-card {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.summary-card:last-child {
+    border-bottom: none;
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-card .title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.summary-card .value {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--green);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #f1f1f1;
+    border-radius: 10px;
+    margin: 10px 0 5px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.calorie-bar { background: #FFA94D; }
+.carbs-bar   { background: #5AA0F2; }
+.protein-bar { background: #38C6A7; }
+.fat-bar     { background: #D4A373; }
+
+.percent-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--green);
+}
+
+.over {
+    color: #FF3B30 !important;
+}
+
+/* 기타 영양 */
+.extra-nutrients {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.extra-card {
+    flex: 1;
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+}
+
+.extra-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.extra-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--green);
+}
+
+/* ===============================
+   상단 3개 카드 동일 크기
+================================ */
+.top-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3개 카드 */
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.top-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 내부 레이아웃 공통 */
+.profile-card-inner,
+.weight-card-inner,
+.obesity-card-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* 프로필 카드 내부 레이아웃 */
+.profile-card-inner {
+    flex-direction: row;
+    align-items: center;
+    gap: 18px;
+}
+
+/* 카드 제목과 내용 사이 여백 축소 */
+.top-card h3 {
+    margin-bottom: 6px;
+}

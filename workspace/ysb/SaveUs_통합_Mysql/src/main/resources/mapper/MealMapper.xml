@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.MealMapper">
+
+    <resultMap id="MealResultMap" type="com.example.Ex02.dto.MealDto">
+        <id property="entryId" column="ENTRY_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="mealName" column="MEAL_NAME"/>
+
+        <!-- 화면에서 HH:mm 표시용 -->
+        <result property="mealTime" column="mealTime"/>
+
+        <!-- ISO-Local datetime -->
+        <result property="eatTime" column="EAT_TIME"/>
+
+        <result property="calories" column="CALORIES_KCAL"/>
+        <result property="protein" column="PROTEIN_G"/>
+        <result property="carbs" column="CARBS_G"/>
+        <result property="fat" column="FATS_G"/>
+        <result property="sugar" column="SUGAR_G"/>
+        <result property="fiber" column="FIBER_G"/>
+        <result property="calcium" column="CALCIUM_MG"/>
+        <result property="sodium" column="SODIUM_MG"/>
+    </resultMap>
+
+
+    <!-- 오늘의 식사 -->
+    <select id="findTodayMeals" parameterType="long" resultMap="MealResultMap">
+        SELECT
+        ENTRY_ID,
+        USER_ID,
+        MEAL_NAME,
+        DATE_FORMAT(EAT_TIME, '%H:%i') AS mealTime,
+        EAT_TIME,
+        CALORIES_KCAL,
+        PROTEIN_G,
+        CARBS_G,
+        FATS_G,
+        SUGAR_G,
+        FIBER_G,
+        CALCIUM_MG,
+        SODIUM_MG
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND DATE(EAT_TIME) = DATE(NOW())
+        ORDER BY EAT_TIME
+    </select>
+
+
+    <!-- 식사 저장(LocalDateTime 직접 저장) -->
+    <insert id="saveMeal" parameterType="map">
+        INSERT INTO MEAL_ENTRY (
+        USER_ID,
+        MEAL_NAME,
+        EAT_TIME,
+        CALORIES_KCAL,
+        PROTEIN_G,
+        CARBS_G,
+        FATS_G,
+        SUGAR_G,
+        FIBER_G,
+        CALCIUM_MG,
+        SODIUM_MG,
+        CREATED_AT
+        )
+        VALUES (
+        #{userId},
+        #{mealName},
+        #{eatTime, jdbcType=TIMESTAMP},
+        IFNULL(#{calories}, 0),
+        IFNULL(#{protein}, 0),
+        IFNULL(#{carbs}, 0),
+        IFNULL(#{fat}, 0),
+        IFNULL(#{sugar}, 0),
+        IFNULL(#{fiber}, 0),
+        IFNULL(#{calcium}, 0),
+        IFNULL(#{sodium}, 0),
+        NOW()
+        )
+    </insert>
+
+
+    <!-- 식사 상세 조회 -->
+    <select id="findMealById" parameterType="long" resultMap="MealResultMap">
+        SELECT
+        ENTRY_ID,
+        USER_ID,
+        MEAL_NAME,
+        DATE_FORMAT(EAT_TIME, '%H:%i') AS mealTime,
+        EAT_TIME,
+        CALORIES_KCAL,
+        PROTEIN_G,
+        CARBS_G,
+        FATS_G,
+        SUGAR_G,
+        FIBER_G,
+        CALCIUM_MG,
+        SODIUM_MG
+        FROM MEAL_ENTRY
+        WHERE ENTRY_ID = #{entryId}
+    </select>
+
+
+    <!-- 식사 수정(LocalDateTime 직접 저장) -->
+    <update id="updateMeal" parameterType="com.example.Ex02.dto.MealDto">
+        UPDATE MEAL_ENTRY
+        SET
+        MEAL_NAME = #{mealName},
+        EAT_TIME = #{eatTime, jdbcType=TIMESTAMP},
+        CALORIES_KCAL = #{calories},
+        PROTEIN_G = #{protein},
+        CARBS_G = #{carbs},
+        FATS_G = #{fat},
+        SUGAR_G = IFNULL(#{sugar}, 0),
+        FIBER_G = IFNULL(#{fiber}, 0),
+        CALCIUM_MG = IFNULL(#{calcium}, 0),
+        SODIUM_MG = IFNULL(#{sodium}, 0)
+        WHERE ENTRY_ID = #{entryId}
+    </update>
+
+
+    <!-- 삭제 -->
+    <delete id="deleteMeal">
+        DELETE FROM MEAL_ENTRY
+        WHERE ENTRY_ID = #{entryId}
+    </delete>
+
+    <select id="findYesterdayTotalNutrition" resultMap="MealResultMap">
+        SELECT
+        IFNULL(SUM(CALORIES_KCAL), 0) AS calories,
+        IFNULL(SUM(PROTEIN_G), 0)     AS protein,
+        IFNULL(SUM(CARBS_G), 0)       AS carbs,
+        IFNULL(SUM(FATS_G), 0)        AS fat,
+        IFNULL(SUM(SUGAR_G), 0)       AS sugar,
+        IFNULL(SUM(FIBER_G), 0)       AS fiber,
+        IFNULL(SUM(CALCIUM_MG), 0)    AS calcium,
+        IFNULL(SUM(SODIUM_MG), 0)     AS sodium
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND DATE(EAT_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))
+    </select>
+
+    <select id="getDailyNutritionStats" resultMap="MealResultMap">
+        SELECT
+        IFNULL(SUM(CALORIES_KCAL), 0) AS calories,
+        IFNULL(SUM(PROTEIN_G), 0)     AS protein,
+        IFNULL(SUM(CARBS_G), 0)       AS carbs,
+        IFNULL(SUM(FATS_G), 0)        AS fat,
+        IFNULL(SUM(SUGAR_G), 0)       AS sugar,
+        IFNULL(SUM(FIBER_G), 0)       AS fiber,
+        IFNULL(SUM(CALCIUM_MG), 0)    AS calcium,
+        IFNULL(SUM(SODIUM_MG), 0)     AS sodium
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND DATE(EAT_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))
+    </select>
+
+    <select id="selectYesterdayNutritionForAllUsers" resultType="com.example.Ex02.dto.DiabetesScoreDto">
+        SELECT
+        U.USER_ID AS userId,
+        U.AGE AS age,                 -- DB에 이미 있는 나이 사용
+        -- 성별이 'MALE'/'FEMALE' 문자열이면 -> 숫자로 변환 (모델은 1,2를 원함)
+        CASE WHEN U.GENDER = 'MALE' THEN 1 ELSE 2 END AS sex,
+        U.HEIGHT AS height,
+        U.CURRENT_WEIGHT AS weight,   -- USERS 테이블 컬럼명
+
+        IFNULL(SUM(M.CALORIES_KCAL), 0) AS totalKcal,  -- Oracle NVL -> MySQL IFNULL
+        IFNULL(SUM(M.CARBS_G), 0)       AS totalCarbs,
+        IFNULL(SUM(M.FATS_G), 0)        AS totalFat,
+        IFNULL(SUM(M.PROTEIN_G), 0)     AS totalProtein,
+        IFNULL(SUM(M.SODIUM_MG), 0)     AS totalSodium,
+        IFNULL(SUM(M.SUGAR_G), 0)       AS totalSugar
+        FROM USERS U
+        JOIN MEAL_ENTRY M ON U.USER_ID = M.USER_ID
+        -- MySQL 날짜 비교 (어제 데이터)
+        WHERE DATE(M.EAT_TIME) = SUBDATE(CURDATE(), 1)
+        GROUP BY U.USER_ID, U.AGE, U.GENDER, U.HEIGHT, U.CURRENT_WEIGHT
+    </select>
+
+    <insert id="insertDiabetesScore" parameterType="com.example.Ex02.dto.DiabetesScoreDto">
+        INSERT INTO DIABETES_SCORE (
+        USER_ID, SCORE, SIMILARITY, RISK_LEVEL, CREATED_AT
+        ) VALUES (
+        #{userId},
+        #{score},
+        #{similarity},
+        #{riskLevel},
+        NOW()
+        )
+    </insert>
+
+    <select id="selectTop5Meals" resultType="com.example.Ex02.dto.MealDto">
+        SELECT
+        ME.MEAL_NAME AS mealName,
+        FN.CATEGORY  AS mealTime,
+        COUNT(*)     AS calories
+        FROM MEAL_ENTRY ME
+        LEFT JOIN FOOD_NUTRITION FN ON ME.MEAL_NAME = FN.FOOD_NAME
+        WHERE ME.USER_ID = #{userId}
+        GROUP BY ME.MEAL_NAME, FN.CATEGORY
+        ORDER BY COUNT(*) DESC
+        LIMIT 5
+    </select>
+
+
+    <select id="findNutritionByDate" resultMap="MealResultMap">
+        SELECT
+        IFNULL(SUM(CALORIES_KCAL), 0) AS CALORIES_KCAL,
+        IFNULL(SUM(PROTEIN_G), 0)     AS PROTEIN_G,
+        IFNULL(SUM(CARBS_G), 0)       AS CARBS_G,
+        IFNULL(SUM(FATS_G), 0)        AS FATS_G,
+        IFNULL(SUM(SUGAR_G), 0)       AS SUGAR_G,
+        IFNULL(SUM(FIBER_G), 0)       AS FIBER_G,
+        IFNULL(SUM(SODIUM_MG), 0)     AS SODIUM_MG
+        FROM MEAL_ENTRY
+        WHERE USER_ID = #{userId}
+        AND DATE(EAT_TIME) = #{date}
+    </select>
+
+    <select id="selectDiabetesScoreByDate" resultType="com.example.Ex02.dto.DiabetesScoreDto">
+        SELECT
+        SCORE_ID,
+        USER_ID,
+        SCORE,
+        SIMILARITY,
+        RISK_LEVEL AS riskLevel,  CREATED_AT AS createdAt
+        FROM DIABETES_SCORE
+        WHERE USER_ID = #{userId} AND DATE(CREATED_AT) = #{date}
+        ORDER BY CREATED_AT DESC LIMIT 1
+    </select>
+
+    <!-- 특정 날짜 건강점수 삭제 -->
+    <delete id="deleteDailyScore">
+        DELETE FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND SCORE_DATE = #{date}
+    </delete>
+</mapper>

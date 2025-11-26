@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.Ex02.mapper.HealthScoreMapper">
+
+    <insert id="upsertDailyScore">
+        INSERT INTO HEALTH_SCORE_DAILY (USER_ID, SCORE_DATE, SCORE, STATUS_MESSAGE)
+        VALUES (#{userId}, #{scoreDate, jdbcType=DATE}, #{score}, #{statusMessage})
+        ON DUPLICATE KEY UPDATE
+        SCORE = VALUES(SCORE),
+        STATUS_MESSAGE = VALUES(STATUS_MESSAGE)
+    </insert>
+
+    <select id="findScoresOfMonth" resultType="com.example.Ex02.dto.CalendarScoreDto">
+        SELECT
+        SCORE_DATE AS scoreDate,
+        SCORE AS score
+        FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND YEAR(SCORE_DATE) = #{year}
+        AND MONTH(SCORE_DATE) = #{month}
+        ORDER BY SCORE_DATE
+    </select>
+
+    <insert id="upsertDailyWeight">
+        INSERT INTO HEALTH_SCORE_DAILY (USER_ID, SCORE_DATE, WEIGHT)
+        VALUES (#{userId}, CURDATE(), #{weight})
+        ON DUPLICATE KEY UPDATE
+        WEIGHT = VALUES(WEIGHT)
+    </insert>
+
+    <select id="selectRecentScores" resultType="com.example.Ex02.dto.CalendarScoreDto">
+        SELECT SCORE_DATE AS scoreDate, SCORE AS score
+        FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND SCORE_DATE >= DATE_SUB(CURDATE(), INTERVAL 12 DAY)
+        ORDER BY SCORE_DATE ASC
+    </select>
+
+    <select id="findWeightByDate" resultType="Double">
+        SELECT WEIGHT FROM HEALTH_SCORE_DAILY
+        WHERE USER_ID = #{userId}
+        AND SCORE_DATE &lt;= #{date}
+        AND WEIGHT IS NOT NULL
+        ORDER BY SCORE_DATE DESC
+        LIMIT 1
+    </select>
+
+</mapper>
