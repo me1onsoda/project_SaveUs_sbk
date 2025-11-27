@@ -14,7 +14,7 @@
         <h1>비밀번호 재설정</h1>
         <p class="subtitle">새로운 비밀번호를 입력하세요</p>
 
-        <form th:action="@{/user/reset-pw}" method="post">
+        <form th:action="@{/user/reset-pw/proc}" method="post">
 
             <label>새 비밀번호</label>
             <input type="password" name="newPassword" placeholder="새 비밀번호 입력" required>
