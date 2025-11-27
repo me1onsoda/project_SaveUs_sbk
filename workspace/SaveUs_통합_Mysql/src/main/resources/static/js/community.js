@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     ${actionMenuHtml}
                     <div class="post-health-score">
-                        Health Score: <strong>${post.healthScore}</strong>
+                        건강 점수: <strong>${post.healthScore}</strong>
                     </div>
                 </div>
 
@@ -605,7 +605,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderModalContent(post, comments, currentUserId) {
         const modalBody = modal.querySelector('.modal-body-container');
         if (!modalBody) return;
+
         const postContentHtml = (post.content || '').replace(/\n/g, '<br>');
+        const hasImages = post.imageUrls && post.imageUrls.length > 0; // 이미지 존재 여부
+
         modalBody.innerHTML = `
             <div class="modal-body-container">
                 <div class="modal-post-media">
@@ -620,7 +623,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p>${postContentHtml}</p>
                     </div>
                     <div class="modal-comments-list">
-                        ${comments.length > 0 ? comments.map(c => renderCommentHtml(c, currentUserId)).join('') : '<p class="no-comments">아직 댓글이 없습니다.</p>'}
+                        ${comments.length > 0
+                            ? comments.map(c => renderCommentHtml(c, currentUserId)).join('')
+                            : '<p class="no-comments">아직 댓글이 없습니다.</p>'}
                     </div>
                     <div class="modal-comment-input">
                         <input type="text" placeholder="댓글 달기..." data-post-id="${post.postId}" id="modal-comment-input-field">
@@ -629,7 +634,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
+
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent?.classList.toggle('no-image', !hasImages);
     }
+
 
     function renderCarouselHtml(imageUrls) {
         if (!imageUrls || imageUrls.length === 0) {
@@ -666,9 +675,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="comment-item" data-comment-id="${comment.commentId}">
                 <img src="${comment.authorProfileImageUrl || 'https://placehold.co/32x32/eeeeee/cccccc?text=U'}" alt="" class="comment-avatar">
                 <div class="comment-text-content">
+                    <a href="/user/profile/${comment.userId}" class="author-link">
                     <span class="comment-author">
                         <strong>${comment.authorNickname}</strong>
                     </span>
+                    </a>
                     <span class="comment-text">${comment.content}</span>
                     <span class="comment-time">${comment.timeAgo}</span>
                 </div>
@@ -796,6 +807,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 await openCommentModal(commentButton);
                 return;
             }
+            postListContainer.addEventListener('keydown', async (e) => {
+                if (e.key !== 'Enter') return;
+
+                const input = e.target.closest('.comment-input-field');
+                if (!input) return;
+
+                e.preventDefault();
+
+                const postId = input.dataset.postId;
+                const submitButton = postListContainer.querySelector(
+                    `.comment-submit-btn[data-post-id="${postId}"]`
+                );
+
+                if (submitButton) {
+                    submitButton.click();
+                }
+            });
             const submitButton = e.target.closest('.comment-submit-btn');
             if (submitButton) {
                 e.preventDefault();
@@ -895,6 +923,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalText = commentItem.querySelector('.comment-text').textContent;
                 const commentId = editBtn.dataset.commentId;
                 const otherEditInput = modal.querySelector('.comment-edit-input');
+                const commentAction = editBtn.closest(".comment-actions");
+                commentAction.classList.toggle('hidden');
+
                 if(otherEditInput) {
                     const originalItem = otherEditInput.closest('.comment-item');
                     if (originalItem && originalItem.dataset.originalHtml) {
@@ -903,9 +934,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 commentItem.dataset.originalHtml = commentItem.innerHTML;
                 textContent.innerHTML = `
+                    <div class="comment-edit-actions">
                     <input type="text" class="comment-edit-input" value="${originalText}">
                     <button class="comment-save-btn" data-comment-id="${commentId}">저장</button>
                     <button class="comment-cancel-btn">취소</button>
+                    <div>
                 `;
                 return;
             }
@@ -914,9 +947,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cancelBtn) {
                 e.preventDefault();
                 const commentItem = cancelBtn.closest('.comment-item');
+
                 if (commentItem.dataset.originalHtml) {
                     commentItem.innerHTML = commentItem.dataset.originalHtml;
                 }
+
+                const commentAction = commentItem.querySelector(".comment-actions");
+                commentAction.classList.remove('hidden');
                 return;
             }
 
@@ -926,6 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const commentId = saveBtn.dataset.commentId;
                 const commentItem = saveBtn.closest('.comment-item');
                 const newContent = commentItem.querySelector('.comment-edit-input').value;
+                const commentAction = commentItem.querySelector(".comment-actions");
                 if (!newContent.trim()) { alert("내용을 입력하세요."); return; }
                 try {
                     const response = await fetch(`/api/comments/${commentId}`, {
@@ -939,6 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         commentItem.outerHTML = newCommentHtml;
                     } else { alert('댓글 수정에 실패했습니다.'); }
                 } catch (error) { console.error('Error updating comment:', error); }
+                commentAction.classList.toggle('hidden');
                 return;
             }
 
@@ -973,6 +1012,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 return;
             }
+
+            modal.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+
+                const input = e.target.closest('#modal-comment-input-field');
+                if (!input) return;
+
+                e.preventDefault();
+
+                const submitBtn = modal.querySelector('#modal-comment-submit-btn');
+                if (submitBtn && !submitBtn.disabled) {
+                    submitBtn.click();
+                }
+                });
         });
     } // if (modal) 끝
 

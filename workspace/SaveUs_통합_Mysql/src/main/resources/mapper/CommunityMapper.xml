@@ -137,9 +137,11 @@
         P.HEALTH_SCORE AS healthScore,
         P.CREATED_AT AS createdAt,
         U.NICKNAME AS authorNickname,
-        U.PROFILE_IMAGE_URL AS authorProfileImageUrl
+        U.PROFILE_IMAGE_URL AS authorProfileImageUrl,
+        D.DIET_TYPE AS authorPersona
         FROM POSTS P
         LEFT JOIN USERS U ON P.USER_ID = U.USER_ID
+        LEFT JOIN USER_DIET_TYPE D ON U.USER_ID = D.USER_ID
         WHERE P.POST_ID = #{postId}
     </select>
 
@@ -222,10 +224,11 @@
     </select>
 
     <select id="selectDistinctPersonas" resultType="String">
-        SELECT DISTINCT DIET_TYPE
-        FROM USER_DIET_TYPE
-        WHERE DIET_TYPE IS NOT NULL
-        ORDER BY DIET_TYPE
+        SELECT DISTINCT D.DIET_TYPE
+        FROM POSTS P
+        JOIN USER_DIET_TYPE D ON P.USER_ID = D.USER_ID
+        WHERE D.DIET_TYPE IS NOT NULL
+        ORDER BY D.DIET_TYPE
     </select>
 
     <select id="getHealthScore" resultType="int">
