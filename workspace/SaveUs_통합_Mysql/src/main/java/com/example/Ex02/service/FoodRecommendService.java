@@ -16,7 +16,7 @@ public class FoodRecommendService {
 
     public FoodRecommendResponse getFoodRecommend(FoodRecommendRequest request) {
 
-        String url = "http://3.37.90.119:8004/food/recommend";
+        String url = "http://3.37.90.119:8004/food/recommend/" + userId;
 
         return restTemplate.postForObject(
                 url,
