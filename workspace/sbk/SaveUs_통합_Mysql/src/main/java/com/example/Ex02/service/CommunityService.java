@@ -34,4 +34,8 @@ public interface CommunityService {
     List<CommunityPostDto> getPopularPostList(Long currentUserId, String persona);
 
     List<String> getDistinctPersonas();
+
+    int getCommentCount(long postId);
+
+    boolean isExistPost(long postId);
 }

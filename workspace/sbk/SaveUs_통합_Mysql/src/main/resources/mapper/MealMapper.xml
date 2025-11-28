@@ -128,7 +128,7 @@
         WHERE ENTRY_ID = #{entryId}
     </delete>
 
-    <select id="findYesterdayTotalNutrition" resultMap="MealResultMap">
+    <select id="findYesterdayTotalNutrition">
         SELECT
         IFNULL(SUM(CALORIES_KCAL), 0) AS calories,
         IFNULL(SUM(PROTEIN_G), 0)     AS protein,

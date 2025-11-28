@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. 상태 변수를 기반으로 API URL 조합
         let baseUrl = (currentSort === 'popular') ? '/api/posts/popular' : '/api/posts';
         let params = new URLSearchParams();
-        
+
         if (currentPersona) {
             params.append('persona', currentPersona);
         }
@@ -313,8 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
         personaFilters.addEventListener('click', (e) => {
             if (!e.target.classList.contains('persona-tag')) return;
 
-            const persona = e.target.dataset.persona; 
-            if (persona === currentPersona) return; 
+            const persona = e.target.dataset.persona;
+            if (persona === currentPersona) return;
 
             currentPersona = persona;
             loadPosts();
@@ -351,10 +351,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const innerHtml = post.imageUrls.map(url => `<img src="${url}" alt="Meal Photo" class="carousel-image">`).join('');
             const prevBtn = post.imageUrls.length > 1 ? '<button class="carousel-control prev">&lt;</button>' : '';
             const nextBtn = post.imageUrls.length > 1 ? '<button class="carousel-control next">&gt;</button>' : '';
-            const indicatorDots = post.imageUrls.length > 1 
-                ? post.imageUrls.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}"></span>`).join('') 
+            const indicatorDots = post.imageUrls.length > 1
+                ? post.imageUrls.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}"></span>`).join('')
                 : '';
-            
+
             carouselHtml = `
                 <div class="post-media-carousel">
                     <div class="carousel-inner">${innerHtml}</div>
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     ${actionMenuHtml}
                     <div class="post-health-score">
-                        Health Score: <strong>${post.healthScore}</strong>
+                        건강 점수: <strong>${post.healthScore}</strong>
                     </div>
                 </div>
 
@@ -439,8 +439,14 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleLikeToggle(button) {
         const postId = button.dataset.postId;
         const postCard = button.closest('.post-card');
-        const likeCountSpan = postCard.querySelector('.like-count-text');
+        if (!postCard) return;
 
+        const exists = await validatePostExists(postId, postCard);
+        if (!exists) {
+            return;
+        }
+
+        const likeCountSpan = postCard.querySelector('.like-count-text');
         const likeIcon = button.querySelector('i');
         const isActive = button.classList.toggle('active');
 
@@ -453,6 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentCount = parseInt(likeCountSpan.textContent);
         currentCount = isActive ? currentCount + 1 : currentCount - 1;
         likeCountSpan.textContent = currentCount;
+
         try {
             const response = await fetch(`/api/posts/${postId}/like`, {
                 method: 'POST',
@@ -483,12 +490,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 likeIcon.classList.replace('bi-heart', 'bi-heart-fill');
             }
             likeCountSpan.textContent = currentCount - (isActive ? 1 : -1);
+        } finally {
+            await refreshCommentCount(postId);
         }
     }
 
+
     async function handleSubmitComment(button) {
         const postId = button.dataset.postId;
-        const inputField = button.previousElementSibling; 
+        const postCard = button.closest('.post-card');
+        if (!postCard) return;
+
+        const exists = await validatePostExists(postId, postCard);
+        if (!exists) {
+            return;
+        }
+
+        const inputField = button.previousElementSibling;
         const content = inputField.value;
         if (!content.trim()) {
             alert("댓글 내용을 입력하세요.");
@@ -497,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await postComment(postId, content);
             if (response.success) {
-                location.reload(); 
+                location.reload();
             } else if (response.message === "Login required") {
                 alert('로그인이 필요합니다.');
             } else {
@@ -507,6 +525,26 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("댓글 전송 중 오류가 발생했습니다.");
         }
     }
+
+    function removeTrendingPostById(postId) {
+        const trendingLink = document.querySelector(`.trending-post[data-post-id="${postId}"]`);
+        if (!trendingLink) return;
+
+        const li = trendingLink.closest('li');
+        if (li) li.remove();
+
+        const trendingList = document.querySelector('.trending-list');
+        if (trendingList && trendingList.querySelectorAll('li').length === 0) {
+            const parent = trendingList.parentElement; // <div class="sidebar-widget card">
+            if (parent && !parent.querySelector('.no-trending-text')) {
+                const p = document.createElement('p');
+                p.classList.add('no-trending-text');
+                p.textContent = 'No trending posts yet.';
+                parent.appendChild(p);
+            }
+        }
+    }
+
 
     async function handleDeletePost(button) {
         const postId = button.dataset.postId;
@@ -519,7 +557,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'DELETE'
             });
             if (response.ok) {
-                postCard.remove(); 
+                postCard.remove();
+                removeTrendingPostById(postId)
+
             } else if (response.status === 401 || response.status === 403) {
                 alert('삭제할 권한이 없습니다.');
             } else {
@@ -530,13 +570,13 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('삭제 중 오류가 발생했습니다.');
         }
     }
-    
+
     function handleShowEditForm(button) {
         const postCard = button.closest('.post-card');
         const postData = extractPostDataFromDOM(postCard);
         showPostEditForm(postCard, postData);
     }
-    
+
     function extractPostDataFromDOM(postCardElement) {
         if (!postCardElement) {
             console.error("Post card element not found!");
@@ -565,7 +605,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderModalContent(post, comments, currentUserId) {
         const modalBody = modal.querySelector('.modal-body-container');
         if (!modalBody) return;
+
         const postContentHtml = (post.content || '').replace(/\n/g, '<br>');
+        const hasImages = post.imageUrls && post.imageUrls.length > 0; // 이미지 존재 여부
+
         modalBody.innerHTML = `
             <div class="modal-body-container">
                 <div class="modal-post-media">
@@ -580,7 +623,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p>${postContentHtml}</p>
                     </div>
                     <div class="modal-comments-list">
-                        ${comments.length > 0 ? comments.map(c => renderCommentHtml(c, currentUserId)).join('') : '<p class="no-comments">아직 댓글이 없습니다.</p>'}
+                        ${comments.length > 0
+                            ? comments.map(c => renderCommentHtml(c, currentUserId)).join('')
+                            : '<p class="no-comments">아직 댓글이 없습니다.</p>'}
                     </div>
                     <div class="modal-comment-input">
                         <input type="text" placeholder="댓글 달기..." data-post-id="${post.postId}" id="modal-comment-input-field">
@@ -589,8 +634,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
+
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent?.classList.toggle('no-image', !hasImages);
     }
-    
+
+
     function renderCarouselHtml(imageUrls) {
         if (!imageUrls || imageUrls.length === 0) {
             return '<img src="https://placehold.co/600x600/eeeeee/cccccc?text=No+Image" alt="No Image" class="carousel-image" style="aspect-ratio: 1 / 1; object-fit: cover;">';
@@ -626,15 +675,74 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="comment-item" data-comment-id="${comment.commentId}">
                 <img src="${comment.authorProfileImageUrl || 'https://placehold.co/32x32/eeeeee/cccccc?text=U'}" alt="" class="comment-avatar">
                 <div class="comment-text-content">
+                    <a href="/user/profile/${comment.userId}" class="author-link">
                     <span class="comment-author">
                         <strong>${comment.authorNickname}</strong>
                     </span>
+                    </a>
                     <span class="comment-text">${comment.content}</span>
                     <span class="comment-time">${comment.timeAgo}</span>
                 </div>
                 ${actionsMenu}
             </div>
         `;
+    }
+
+    async function validatePostExists(postId, postCard) {
+        try {
+            const response = await fetch(`/api/posts/${postId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!response.ok) {
+                if (postCard) postCard.remove();
+                removeTrendingPostById(postId);
+                return false;
+            }
+
+            const data = await response.json();
+
+            if (!data.success || !data.isExist) {
+                if (postCard) postCard.remove();
+                removeTrendingPostById(postId);
+                return false;
+            }
+
+            return true;
+        } catch (e) {
+            console.error('Error validating post existence:', e);
+            if (postCard) postCard.remove();
+            removeTrendingPostById(postId);
+            return false;
+        }
+    }
+
+    async function refreshCommentCount(postId) {
+        try {
+            const postCard = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+            if (!postCard) return;
+
+            const countSpan = postCard.querySelector('.comment-count-text');
+            if (!countSpan) return;
+
+            const response = await fetch(`/api/posts/${postId}/comment-count`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!response.ok) {
+                console.error('Failed to fetch comment count');
+                return;
+            }
+
+            const data = await response.json();
+            if (data.success && typeof data.newCommentCount === 'number') {
+                countSpan.textContent = data.newCommentCount;
+            }
+        } catch (e) {
+            console.error('Error refreshing comment count:', e);
+        }
     }
 
     async function postComment(postId, content) {
@@ -657,7 +765,14 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Could not find parent .post-card or modalBody');
             return;
         }
-        modalBody.innerHTML = '<h2>Loading...</h2>'; 
+
+        const exists = await validatePostExists(postId, clickedPostCard);
+        if (!exists) {
+            return;
+        }
+
+        modal.dataset.postId = postId;
+        modalBody.innerHTML = '<h2>Loading...</h2>';
         modal.style.display = 'block';
         try {
             const commentsResponse = await fetch(`/api/posts/${postId}/comments`);
@@ -666,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const comments = await commentsResponse.json();
             const postData = extractPostDataFromDOM(clickedPostCard);
-            renderModalContent(postData, comments, CURRENT_USER_ID); 
+            renderModalContent(postData, comments, CURRENT_USER_ID);
             const modalCarouselElement = modal.querySelector('.modal-post-media');
             if (modalCarouselElement) {
                 initializeCarousel(modalCarouselElement);
@@ -692,6 +807,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 await openCommentModal(commentButton);
                 return;
             }
+            postListContainer.addEventListener('keydown', async (e) => {
+                if (e.key !== 'Enter') return;
+
+                const input = e.target.closest('.comment-input-field');
+                if (!input) return;
+
+                e.preventDefault();
+
+                const postId = input.dataset.postId;
+                const submitButton = postListContainer.querySelector(
+                    `.comment-submit-btn[data-post-id="${postId}"]`
+                );
+
+                if (submitButton) {
+                    submitButton.click();
+                }
+            });
             const submitButton = e.target.closest('.comment-submit-btn');
             if (submitButton) {
                 e.preventDefault();
@@ -724,13 +856,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const modal = document.getElementById('post-modal');
-    if (modal) {
-        const closeButton = modal.querySelector('.close-button');
-        if(closeButton) closeButton.addEventListener('click', () => modal.style.display = 'none');
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) modal.style.display = 'none';
+    const trendingListElement = document.querySelector('.trending-list');
+    if (trendingListElement) {
+        trendingListElement.addEventListener('click', (e) => {
+            const link = e.target.closest('.trending-post');
+            if (!link) return;
+
+            e.preventDefault();
+            const postId = link.dataset.postId;
+
+            const commentButton = document.querySelector(
+                `.post-card[data-post-id="${postId}"] .comment-button`
+            );
+            if (commentButton) {
+                commentButton.click();
+            }
         });
+    }
+
+    const modal = document.getElementById('post-modal');
+     if (modal) {
+         const closeButton = modal.querySelector('.close-button');
+         if (closeButton) {
+             closeButton.addEventListener('click', async () => {
+                 modal.style.display = 'none';
+
+                 const postId = modal.dataset.postId;
+                 if (postId) {
+                     await refreshCommentCount(postId);
+                 }
+             });
+         }
+
+         window.addEventListener('click', async (event) => {
+             if (event.target === modal) {
+                 modal.style.display = 'none';
+
+                 const postId = modal.dataset.postId;
+                 if (postId) {
+                     await refreshCommentCount(postId);
+                 }
+             }
+         });
 
         modal.addEventListener('click', async (e) => {
             const deleteBtn = e.target.closest('.comment-delete-btn');
@@ -756,6 +923,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalText = commentItem.querySelector('.comment-text').textContent;
                 const commentId = editBtn.dataset.commentId;
                 const otherEditInput = modal.querySelector('.comment-edit-input');
+                const commentAction = editBtn.closest(".comment-actions");
+                commentAction.classList.toggle('hidden');
+
                 if(otherEditInput) {
                     const originalItem = otherEditInput.closest('.comment-item');
                     if (originalItem && originalItem.dataset.originalHtml) {
@@ -764,9 +934,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 commentItem.dataset.originalHtml = commentItem.innerHTML;
                 textContent.innerHTML = `
+                    <div class="comment-edit-actions">
                     <input type="text" class="comment-edit-input" value="${originalText}">
                     <button class="comment-save-btn" data-comment-id="${commentId}">저장</button>
                     <button class="comment-cancel-btn">취소</button>
+                    <div>
                 `;
                 return;
             }
@@ -775,9 +947,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cancelBtn) {
                 e.preventDefault();
                 const commentItem = cancelBtn.closest('.comment-item');
+
                 if (commentItem.dataset.originalHtml) {
                     commentItem.innerHTML = commentItem.dataset.originalHtml;
                 }
+
+                const commentAction = commentItem.querySelector(".comment-actions");
+                commentAction.classList.remove('hidden');
                 return;
             }
 
@@ -787,6 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const commentId = saveBtn.dataset.commentId;
                 const commentItem = saveBtn.closest('.comment-item');
                 const newContent = commentItem.querySelector('.comment-edit-input').value;
+                const commentAction = commentItem.querySelector(".comment-actions");
                 if (!newContent.trim()) { alert("내용을 입력하세요."); return; }
                 try {
                     const response = await fetch(`/api/comments/${commentId}`, {
@@ -800,6 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         commentItem.outerHTML = newCommentHtml;
                     } else { alert('댓글 수정에 실패했습니다.'); }
                 } catch (error) { console.error('Error updating comment:', error); }
+                commentAction.classList.toggle('hidden');
                 return;
             }
 
@@ -817,7 +995,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (response.success) {
                         modalInput.value = '';
                         // [핵심 오타 수정] .modal-css-list -> .modal-comments-list
-                        const commentList = modal.querySelector('.modal-comments-list'); 
+                        const commentList = modal.querySelector('.modal-comments-list');
                         if (commentList) {
                             const newCommentHtml = renderCommentHtml(response.newComment, CURRENT_USER_ID);
                             const noComments = commentList.querySelector('.no-comments');
@@ -827,13 +1005,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else if (response.message === "Login required") {
                         alert('로그인이 필요합니다.');
                     } else { alert("댓글 게시에 실패했습니다: " + (response.message || '')); }
-                } catch (error) { alert("댓글 전송 중 오류가 발생했습니다."); } 
+                } catch (error) { alert("댓글 전송 중 오류가 발생했습니다."); }
                 finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = "게시";
                 }
                 return;
             }
+
+            modal.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+
+                const input = e.target.closest('#modal-comment-input-field');
+                if (!input) return;
+
+                e.preventDefault();
+
+                const submitBtn = modal.querySelector('#modal-comment-submit-btn');
+                if (submitBtn && !submitBtn.disabled) {
+                    submitBtn.click();
+                }
+                });
         });
     } // if (modal) 끝
 
@@ -847,7 +1039,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalContent = postData.content;
 
         const imagesToDelete = new Set();
-        let newFilesForEdit = []; 
+        let newFilesForEdit = [];
         let currentEditPreviewIndex = 0;
         let existingImageUrls = [...postData.imageUrls];
 
@@ -886,7 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const files = event.target.files;
             if (files.length === 0) return;
             newFilesForEdit.push(...Array.from(files));
-            event.target.value = null; 
+            event.target.value = null;
             renderCombinedEditCarousel();
         });
 
@@ -926,10 +1118,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteBtn.addEventListener('click', (evt) => {
                     evt.stopPropagation();
                     if (item.type === 'existing') {
-                        imagesToDelete.add(item.data); 
+                        imagesToDelete.add(item.data);
                         existingImageUrls.splice(item.originalIndex, 1);
                     } else {
-                        newFilesForEdit.splice(item.originalIndex, 1); 
+                        newFilesForEdit.splice(item.originalIndex, 1);
                     }
                     renderCombinedEditCarousel();
                 });
@@ -951,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editNextBtn.style.display = 'none';
                 editIndicator.style.display = 'none';
             }
-            updateEditCarouselUI(0, totalImages); 
+            updateEditCarouselUI(0, totalImages);
         }
 
         function updateEditCarouselUI(newIndex, totalImages) {
@@ -983,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
                     reader.onerror = (e) => reject(e);
-                    reader.readAsDataURL(item.data); 
+                    reader.readAsDataURL(item.data);
                 }
             });
         }
@@ -991,14 +1183,14 @@ document.addEventListener('DOMContentLoaded', () => {
         editMode.querySelector('.edit-save-btn').addEventListener('click', async () => {
             await handlePostUpdate(postCard, viewMode, editMode, imagesToDelete, newFilesForEdit);
         });
-        
+
         renderCombinedEditCarousel();
     }
 
     async function handlePostUpdate(postCard, viewMode, editMode, imagesToDelete, newFilesForEdit) {
         const postId = postCard.dataset.postId;
         const newContent = editMode.querySelector('.post-edit-textarea').value;
-        const newImages = newFilesForEdit; 
+        const newImages = newFilesForEdit;
 
         const formData = new FormData();
         formData.append('content', newContent);
@@ -1021,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const result = await response.json();
                 const updatedPostCardHtml = renderPostCardHtml(result.updatedPost);
-                postCard.outerHTML = updatedPostCardHtml; 
+                postCard.outerHTML = updatedPostCardHtml;
 
                 const newCardElement = postListContainer.querySelector(`[data-post-id="${postId}"]`);
                 if (newCardElement) {

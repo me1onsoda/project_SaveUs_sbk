@@ -194,7 +194,7 @@
         BMI
         FROM USERS
         WHERE NICKNAME = #{nickname}
-        AND DATE(BIRTHDATE) = #{birthdate}
+        AND DATE_FORMAT(BIRTHDATE, '%Y-%m-%d') = #{birthdate}
     </select>
 
     <update id="updateWeightAndBmi">

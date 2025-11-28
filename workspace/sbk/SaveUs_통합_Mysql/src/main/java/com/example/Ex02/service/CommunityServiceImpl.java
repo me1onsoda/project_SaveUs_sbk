@@ -278,4 +278,16 @@ public class CommunityServiceImpl implements CommunityService {
         if (days < 30) return days + " days ago";
         return past.toLocalDate().toString().replace('-', '.');
     }
+
+    @Override
+    @Transactional
+    public int getCommentCount(long postId){
+        return communityMapper.selectCommentCountByPostId(postId);
+    }
+
+    @Override
+    @Transactional
+    public boolean isExistPost(long postId){
+        return communityMapper.isExistPost(postId);
+    }
 }

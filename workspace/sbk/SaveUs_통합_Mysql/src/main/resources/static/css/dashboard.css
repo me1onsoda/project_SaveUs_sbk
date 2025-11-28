@@ -927,3 +927,39 @@ main {
 }
 .extra-title { font-size: 13px; color: var(--text-sub); margin-bottom: 8px; }
 .extra-value { font-size: 16px; color: var(--primary); font-weight: 700; }
+
+/* 비만도 예측 도움말 */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    font-size: 14px;
+    background: #ddd;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 6px;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 260px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    padding: 10px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 10;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}

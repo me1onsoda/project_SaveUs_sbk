@@ -211,6 +211,29 @@ public class CommunityApiController {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
     }
+
+    @PostMapping("/posts/{postId}/comment-count")
+    public ResponseEntity<Map<String, Object>> getCommentCount(
+            @PathVariable("postId") long postId) {
+        try {
+            int newCommentCount = communityService.getCommentCount(postId);
+            return ResponseEntity.ok(Map.of("success", true, "newCommentCount", newCommentCount));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<Map<String, Object>> isExist(
+            @PathVariable("postId") long postId) {
+        try {
+            Boolean isExist = communityService.isExistPost(postId);
+            return ResponseEntity.ok(Map.of("success", true, "isExist", isExist));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
     @PostMapping("/posts/{postId}/comment")
     public ResponseEntity<Map<String, Object>> createComment(
             @PathVariable("postId") long postId,

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -33,7 +34,7 @@ public class UserFindController {
     }
 
     // 아이디 찾기 처리
-    @PostMapping("/user/find-id")
+    @PostMapping("/user/find-id/proc")
     public String findId(
             @RequestParam("nickname") String nickname,
             @RequestParam("year") String year,
@@ -41,15 +42,56 @@ public class UserFindController {
             @RequestParam("day") String day,
             Model model) {
 
+        // 숫자만 남기기
         year = year.replaceAll("[^0-9]", "");
         month = month.replaceAll("[^0-9]", "");
         day = day.replaceAll("[^0-9]", "");
 
-        if (month.length() == 1) month = "0" + month;
-        if (day.length() == 1) day = "0" + day;
+        // 1) 값 존재 체크
+        if (year.isEmpty() || month.isEmpty() || day.isEmpty()) {
+            model.addAttribute("findError", "생년월일을 모두 입력해주세요.");
+            return "user/findId";
+        }
 
-        String birthdate = String.format("%s-%s-%s", year, month, day);
+        // 2) 숫자로 변환
+        int y, m, d;
+        try {
+            y = Integer.parseInt(year);
+            m = Integer.parseInt(month);
+            d = Integer.parseInt(day);
+        } catch (Exception e) {
+            model.addAttribute("findError", "생년월일은 숫자만 입력 가능합니다.");
+            return "user/findId";
+        }
 
+        // 3) 범위 검증
+        int currentYear = java.time.LocalDate.now().getYear();
+
+        if (y < 1900 || y > currentYear) {
+            model.addAttribute("findError", "올바른 연도를 입력해주세요.");
+            return "user/findId";
+        }
+        if (m < 1 || m > 12) {
+            model.addAttribute("findError", "월은 1~12 사이여야 합니다.");
+            return "user/findId";
+        }
+        if (d < 1 || d > 31) {
+            model.addAttribute("findError", "일은 1~31 사이여야 합니다.");
+            return "user/findId";
+        }
+
+        // 4) 실제 존재하는 날짜인지 검증
+        try {
+            java.time.LocalDate.of(y, m, d);
+        } catch (Exception e) {
+            model.addAttribute("findError", "존재하지 않는 날짜입니다.");
+            return "user/findId";
+        }
+
+        // 포매팅
+        String birthdate = String.format("%04d-%02d-%02d", y, m, d);
+
+        // DB 조회
         UserJoinDto user = userMapper.findByNicknameAndBirthdate(nickname, birthdate);
 
         if (user == null) {
@@ -60,6 +102,7 @@ public class UserFindController {
 
         return "user/findId";
     }
+
 
     // 비밀번호 찾기 페이지
     @GetMapping("/user/find-pw")
@@ -92,7 +135,7 @@ public class UserFindController {
     }
 
     // 비밀번호 재설정 페이지
-    @GetMapping("/user/reset-pw")
+    @GetMapping("/user/reset-pw/proc")
     public String resetPwPage(
             @RequestParam(value = "token", required = false) String token,
             HttpSession session,

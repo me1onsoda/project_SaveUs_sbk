@@ -58,13 +58,23 @@
                 </span>
                 </div>
             </div>
+            <p>
+
+            </p>
         </div>
 
         <!-- 비만 위험도 카드 -->
         <div class="top-card">
             <div class="obesity-card-inner">
-                <h3>오늘의 비만 위험도</h3>
-
+                <h3 class="title-with-tooltip">
+                    오늘의 비만 위험도
+                    <span class="tooltip">?
+                        <span class="tooltip-text">
+                            이 점수는 비만 여부(지속적 상태)가 아니라,<br>
+                            오늘 식단이 얼마나 즉각적으로 위험도를 높일 가능성이 있는가를 나타내는 지표입니다.
+                        </span>
+                    </span>
+                </h3>
                 <div class="obesity-bar-wrapper">
                     <div class="obesity-bar-fill"
                          th:style="${'width:' + obesityPercent + '%; background:' +
@@ -72,9 +82,9 @@
                      (obesityPercent >= 40 ? '#ffb84d' : '#4da6ff'))}">
                     </div>
                 </div>
-
                 <p class="obesity-percent"
                    th:text="${obesityPercent} + '%'"></p>
+                <span class="obesityPercentText"></span>
             </div>
         </div>
 
@@ -116,8 +126,6 @@
 
         </div>
     </section>
-
-
 
     <!-- 오늘의 식사 + 영양 요약 -->
     <div class="stats-section">
@@ -272,7 +280,10 @@
 
 <th:block layout:fragment="script">
     <script src="/js/foodWeight.js"></script>
+    <script src="/js/obesityDashboard.js"></script>
     <script src="/js/foodAdd.js?v=new_ai_ver1"></script>
 </th:block>
+
+
 
 </html>

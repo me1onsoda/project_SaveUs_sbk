@@ -23,9 +23,7 @@ public class ObesityRateService {
         if (result != null && result.get("risk_score") != null) {
             risk = Double.parseDouble(result.get("risk_score").toString());
         }
-
         return (int) Math.round(risk); // 0~100
     }
-
 }
 

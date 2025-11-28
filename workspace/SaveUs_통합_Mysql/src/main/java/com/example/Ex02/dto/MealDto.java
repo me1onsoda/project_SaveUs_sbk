@@ -64,4 +64,23 @@ public class MealDto {
 
     public LocalDateTime getEatTime() { return eatTime; }
     public void setEatTime(LocalDateTime eatTime) { this.eatTime = eatTime; }
+
+    @Override
+    public String toString() {
+        return "MealDto{" +
+                "entryId=" + entryId +
+                ", userId=" + userId +
+                ", mealName='" + mealName + '\'' +
+                ", mealTime='" + mealTime + '\'' +
+                ", calories=" + calories +
+                ", protein=" + protein +
+                ", carbs=" + carbs +
+                ", fat=" + fat +
+                ", sugar=" + sugar +
+                ", fiber=" + fiber +
+                ", calcium=" + calcium +
+                ", sodium=" + sodium +
+                ", eatTime=" + eatTime +
+                '}';
+    }
 }

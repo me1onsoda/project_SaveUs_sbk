@@ -73,7 +73,6 @@
     height: 40px; /* 세로 높이 */
     border-radius: 8px; /* 모서리 둥글기 유지 */
 
-    /*Flexbox를 쓰고 padding을 없애야 완벽히 가운데로 옵니다 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -530,6 +529,7 @@
 .carousel-inner {
     display: flex;
     transition: transform 0.3s ease-in-out;
+    background: #242424;
 }
 
 .carousel-image {
@@ -698,6 +698,11 @@
 .comment-text-content {
     flex-grow: 1;
 }
+
+.comment-time {
+    color: #ccc;
+}
+
 .comment-actions {
     position: absolute;
     right: 8px;
@@ -705,14 +710,32 @@
     display: flex;
     gap: 5px;
 }
-.comment-edit-btn, .comment-delete-btn {
+
+.comment-edit-actions {
+    width: calc(100% - 45px);
+    position: absolute;
+    justify-content: space-between;
+    right: 8px;
+    top: 2px;
+    display: flex;
+    gap: 8px;
+}
+
+.comment-edit-btn,
+.comment-delete-btn,
+ .comment-save-btn,
+ .comment-cancel-btn {
     background: none;
     border: none;
     cursor: pointer;
     color: #aaa;
     font-size: 12px;
+    width: 3em;
 }
-.comment-edit-btn:hover, .comment-delete-btn:hover {
+.comment-edit-btn:hover,
+.comment-delete-btn:hover,
+ .comment-save-btn:hover,
+ .comment-cancel-btn:hover {
     color: #000;
 }
 /* 댓글 수정용 input */
@@ -813,3 +836,6 @@
     font-size: 14px;
     color: #555;
 }
+
+.hidden { display: none; }
+

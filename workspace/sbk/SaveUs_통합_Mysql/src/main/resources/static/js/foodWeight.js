@@ -100,8 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const height = parseFloat(currentWeightText.dataset.height);
         const meter = height / 100.0;
-        const raw = weight / (meter * meter);
-        const bmi = Math.round(raw * 10) / 10;
+        const bmi = weight / (meter * meter);
 
         bmiText.textContent = bmi.toFixed(1);
         bmiStatus.textContent = getBmiStatus(bmi);
@@ -114,14 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(r => r.text())
         .then(msg => {
             console.log("결과:", msg);
-
-
-
-
-/* 여기서 페이지 전체 새로고침 *//*
-*/
-
-
             location.reload();
         });
     });

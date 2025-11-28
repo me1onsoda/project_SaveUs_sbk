@@ -32,7 +32,7 @@ public class MailService {
                 + token
                 + "</span>"
                 + "</div>"
-                + "<p style='color:#999; font-size:12px; margin-top:30px;'>인증 코드는 3분간 유효합니다.</p>"
+                + "<p style='color:#999; font-size:12px; margin-top:30px;'>인증 코드는 30분간 유효합니다.</p>"
                 + "</div>";
 
         sendHtml(to, subject, html);

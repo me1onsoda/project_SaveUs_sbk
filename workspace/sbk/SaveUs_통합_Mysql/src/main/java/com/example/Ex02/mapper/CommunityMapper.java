@@ -54,4 +54,6 @@ public interface CommunityMapper {
     List<String> selectDistinctPersonas();
 
     int getHealthScore(Long currentUserId);
+
+    boolean isExistPost(long postId);
 }

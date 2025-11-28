@@ -125,7 +125,6 @@
                             <button class="more-button hidden">...더보기</button>
                         </div>
                     </div>
-
                     <div class="post-edit-mode" style="display: none;">
                     </div>
 
@@ -142,9 +141,10 @@
         <aside class="feed-sidebar">
             <div class="sidebar-widget card">
                 <h3>화제의 게시물</h3>
-                <ul class.trending-list th:if="${trendingList != null and !trendingList.isEmpty()}">
+                <ul class="trending-list" th:if="${trendingList != null and !trendingList.isEmpty()}">
                     <li th:each="trendingPost : ${trendingList}">
-                        <a href="#">
+                        <a class="trending-post" href="javascript: void(0)"
+                           th:attr="data-post-id=${trendingPost.postId}">
                             <strong th:text="${trendingPost.authorNickname}">Sophia Martin</strong>
                             <span th:text="${trendingPost.summary}">...</span>
                         </a>
