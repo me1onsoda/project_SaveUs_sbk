@@ -22,6 +22,6 @@ public class ExerciseRecommendController {
 
         model.addAttribute("data", result);
 
-        return "exercise/recommendResult";
+        return "report";
     }
 }

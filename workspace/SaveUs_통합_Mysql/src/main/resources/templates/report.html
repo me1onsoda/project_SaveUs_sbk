@@ -105,6 +105,10 @@
                 </span>
             </span>
             </h3>
+
+            <p class="exercise-category" style="margin-top:6px; font-size:14px; color:#555;">
+                운동 카테고리: <span th:text="${data.predicted_category}">-</span>
+            </p>
         </div>
 
         <div class="card-flex-content" id="exerciseContent">
@@ -112,17 +116,21 @@
 
                 <div class="exercise-block">
                     <h4 class="exercise-title">준비운동</h4>
-                    <p id="exercisePrep">-</p>
+                    <p id="exercisePrep" th:text="${data.routine.준비운동}">-</p>
                 </div>
 
                 <div class="exercise-block">
                     <h4 class="exercise-title">본운동</h4>
-                    <ul id="exerciseMain"></ul>
+                    <ul id="exerciseMain">
+                        <li th:each="item : ${data.routine.본운동}"
+                            th:text="${item}">
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="exercise-block">
                     <h4 class="exercise-title">정리운동</h4>
-                    <p id="exerciseCool">-</p>
+                    <p id="exerciseCool" th:text="${data.routine.정리운동}">-</p>
                 </div>
 
             </div>

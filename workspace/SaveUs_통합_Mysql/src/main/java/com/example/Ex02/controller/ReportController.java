@@ -1,10 +1,12 @@
 package com.example.Ex02.controller;
 import com.example.Ex02.dto.DailyIntakeDto;
+import com.example.Ex02.dto.ExerciseRecommendResponseDto;
 import com.example.Ex02.dto.UserGoalDto;
 import com.example.Ex02.mapper.ChallengeMapper;
 import com.example.Ex02.mapper.DailyIntakeMapper;
 import com.example.Ex02.mapper.HealthScoreMapper;
 import com.example.Ex02.mapper.UserGoalMapper;
+import com.example.Ex02.service.ExerciseRecommendService;
 import com.example.Ex02.service.HealthScoreService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class ReportController {
     private HealthScoreService healthScoreService;
 
     @Autowired
+    private ExerciseRecommendService exerciseRecommendService;
+
+    @Autowired
     private DailyIntakeMapper dailyIntakeMapper;
 
     @Autowired
@@ -31,6 +36,8 @@ public class ReportController {
 
     @Autowired
     private ChallengeMapper challengeMapper;
+
+
 
     @GetMapping
     public String showReportPage(HttpSession session, Model model) {
@@ -50,6 +57,13 @@ public class ReportController {
         //체중 업데이트 bmi그래프
         Double currentWeight = challengeMapper.getUserWeight(userId);
         healthScoreMapper.updateWeightByUserId(userId, new java.sql.Date(System.currentTimeMillis()),currentWeight);
+
+        // 운동 추천
+        ExerciseRecommendResponseDto exerciseData =
+                exerciseRecommendService.getExerciseRecommend(Math.toIntExact(userId));
+
+        model.addAttribute("data", exerciseData);   // ← report.html에서 ${data.xxx} 로 사용됨
+
 
         return "report";
     }
