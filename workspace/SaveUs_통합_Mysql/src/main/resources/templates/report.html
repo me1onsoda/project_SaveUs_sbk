@@ -21,7 +21,7 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">권장 섭취량 대비 분석</div>
+                <div class="card-title">선택일 식단 분석</div>
                 <input type="date" id="dietDate" class="date-picker-small">
             </div>
             <div id="dietNoData" class="no-data-message" style="display:none;">
@@ -34,7 +34,7 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">식단 당뇨 위험도 분석</div>
+                <div class="card-title">당뇨 위험도 분석</div>
                 <input type="date" id="diabetesDate" class="date-picker-small">
             </div>
 
@@ -63,7 +63,7 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">영향 균형 점수</div>
+                <div class="card-title">영양 위험도</div>
                 <!--<input type="date" id="obesityDate" class="date-picker-small">-->
             </div>
 
@@ -83,7 +83,7 @@
                 </div>
 
                 <p class="chart-caption">
-                    * 오늘 식단이 비만 위험도에 미치는 즉각적인 영향을 보여주는 지표입니다.
+                    * 오늘 식단이 영양 위험도에 미치는 즉각적인 영향을 보여주는 지표입니다.
                 </p>
             </div>
         </div>
@@ -91,57 +91,52 @@
     </div>
 
     <hr class="section-divider">
-
-    <div class="dashboard-grid">
-
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    오늘의 맞춤 운동 추천
-                    <div class="tooltip">?
-                        <span class="tooltip-text">
-                            이 추천은 사용자의 기본 정보(BMI, 연령, 성별 등)와<br>
-                            AI 분석 기반 운동군 분류에 따라 생성된 루틴입니다.<br><br>
-                            * 준비운동 → 본운동 → 정리운동 순서로 구성됩니다.<br>
-                            * 매일 새롭게 추천되며, 신체 부하를 고려해 구성됩니다.
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-flex-content" id="exerciseContent">
-                <div class="content-center">
-                    <div class="exercise-block">
-                        <h4 class="exercise-title">준비운동</h4>
-                        <p id="exercisePrep">-</p>
-                    </div>
-                    <div class="exercise-block">
-                        <h4 class="exercise-title">본운동</h4>
-                        <ul id="exerciseMain"></ul>
-                    </div>
-                    <div class="exercise-block">
-                        <h4 class="exercise-title">정리운동</h4>
-                        <p id="exerciseCool">-</p>
-                    </div>
-                </div>
-                <p class="chart-caption">* AI 분석 기반 맞춤형 운동 루틴입니다.</p>
-            </div>
+    <!-- 운동 추천 카드 -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="title-with-tooltip">
+                오늘의 맞춤 운동 추천
+                <span class="tooltip">?
+                <span class="tooltip-text">
+                    이 추천은 사용자의 기본 정보(BMI, 연령, 성별 등)와<br>
+                    AI 분석 기반 운동군 분류에 따라 생성된 루틴입니다.<br><br>
+                    * 준비운동 → 본운동 → 정리운동 순서로 구성됩니다.<br>
+                    * 매일 새롭게 추천되며, 신체 부하를 고려해 구성됩니다.
+                </span>
+            </span>
+            </h3>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">자주 먹는 음식 TOP 5</div>
-            </div>
-            <div class="top-meals-wrapper" style="height: 100%; max-height: 360px;">
-                <ul id="topMealsList" class="top-meals-list"></ul>
-            </div>
-        </div>
+        <div class="card-flex-content" id="exerciseContent">
+            <div class="content-center">
 
+                <div class="exercise-block">
+                    <h4 class="exercise-title">준비운동</h4>
+                    <p id="exercisePrep">-</p>
+                </div>
+
+                <div class="exercise-block">
+                    <h4 class="exercise-title">본운동</h4>
+                    <ul id="exerciseMain"></ul>
+                </div>
+
+                <div class="exercise-block">
+                    <h4 class="exercise-title">정리운동</h4>
+                    <p id="exerciseCool">-</p>
+                </div>
+
+            </div>
+
+            <p class="chart-caption">
+                * AI 분석 기반 맞춤형 운동 루틴입니다.
+            </p>
+        </div>
     </div>
 
     <h3 class="section-title">최근 건강 트렌드 (최근 30일)</h3>
 
     <div class="dashboard-grid" id="commonSection">
+
         <div class="card">
             <div class="card-header">
                 <div class="card-title">최근 건강 점수 추이</div>
@@ -160,20 +155,30 @@
                 <canvas id="bmiChart"></canvas>
             </div>
         </div>
-    </div>
 
-    <div class="card" style="margin-top: 24px;"> <div class="card-header">
-        <div class="card-title">3대 영양소 밸런스 변화</div>
-    </div>
-        <div class="nutrient-row">
-            <div class="nutrient-item">
-                <canvas id="carbChart"></canvas>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">3대 영양소 밸런스 변화</div>
             </div>
-            <div class="nutrient-item">
-                <canvas id="proteinChart"></canvas>
+            <div style="display: flex; flex-direction: column; justify-content: space-between; height: 360px; padding: 10px 0;">
+                <div style="flex: 1; position: relative; min-height: 0;">
+                    <canvas id="carbChart"></canvas>
+                </div>
+                <div style="flex: 1; position: relative; min-height: 0; margin-top: 15px;">
+                    <canvas id="proteinChart"></canvas>
+                </div>
+                <div style="flex: 1; position: relative; min-height: 0; margin-top: 15px;">
+                    <canvas id="fatChart"></canvas>
+                </div>
             </div>
-            <div class="nutrient-item">
-                <canvas id="fatChart"></canvas>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">자주 먹는 음식 TOP 5</div>
+            </div>
+            <div class="top-meals-wrapper" style="height: 360px;">
+                <ul id="topMealsList" class="top-meals-list"></ul>
             </div>
         </div>
     </div>
