@@ -1,7 +1,5 @@
 package com.example.Ex02.controller;
-import com.example.Ex02.dto.DailyIntakeDto;
-import com.example.Ex02.dto.ExerciseRecommendResponseDto;
-import com.example.Ex02.dto.UserGoalDto;
+import com.example.Ex02.dto.*;
 import com.example.Ex02.mapper.ChallengeMapper;
 import com.example.Ex02.mapper.DailyIntakeMapper;
 import com.example.Ex02.mapper.HealthScoreMapper;
@@ -63,7 +61,6 @@ public class ReportController {
                 exerciseRecommendService.getExerciseRecommend(Math.toIntExact(userId));
 
         model.addAttribute("data", exerciseData);   // ← report.html에서 ${data.xxx} 로 사용됨
-
 
         return "report";
     }
