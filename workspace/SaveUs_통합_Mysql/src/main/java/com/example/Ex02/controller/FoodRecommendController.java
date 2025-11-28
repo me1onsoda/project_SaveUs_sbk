@@ -3,23 +3,24 @@ package com.example.Ex02.controller;
 import com.example.Ex02.dto.FoodRecommendRequest;
 import com.example.Ex02.dto.FoodRecommendResponse;
 import com.example.Ex02.service.FoodRecommendService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/foodRecommend")
+@RequestMapping("/api/food")
 public class FoodRecommendController {
 
-    private final FoodRecommendService recommendService;
+    private final FoodRecommendService foodRecommendService;
 
-    public FoodRecommendController(FoodRecommendService recommendService) {
-        this.recommendService = recommendService;
+    public FoodRecommendController(FoodRecommendService foodRecommendService) {
+        this.foodRecommendService = foodRecommendService;
     }
 
-    @PostMapping
-    public FoodRecommendResponse recommend(@RequestBody FoodRecommendRequest req) {
-        return recommendService.getFoodRecommend(req);
+    @GetMapping("/recommend/{userId}")
+    public FoodRecommendResponse recommend(@PathVariable int userId) {
+
+        FoodRecommendRequest req = new FoodRecommendRequest();
+        req.setUser_id(userId);
+
+        return foodRecommendService.getFoodRecommend(req);
     }
 }
