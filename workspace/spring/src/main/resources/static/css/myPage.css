@@ -1,0 +1,406 @@
+/* =================================================================
+   myPage.css - Eco-Modern Theme (Final Polished Version)
+   ================================================================= */
+
+/* 공통 변수 (layout.css나 challenges.css에서 가져옴) */
+:root {
+    --primary: #1DAB87;
+    --primary-light: #E8F8F3;
+    --secondary: #FF9900;
+    --danger: #FF6B6B;
+    --bg-page: #F5F7FA;
+    --bg-card: #FFFFFF;
+    --border-color: #E2E8F0;
+    --text-main: #2D3748;
+    --text-sub: #718096;
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 */
+    --radius-card: 16px;         /* 둥근 모서리 */
+}
+
+/* 1. 레이아웃 & 타이포그래피 */
+.mypage-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 60px;
+}
+
+.mypage-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 16px;
+    margin-top: 40px;
+    border-left: 4px solid var(--primary); /* 섹션 제목 강조 */
+    padding-left: 12px;
+}
+
+/* =================================================================
+   2. 프로필 카드 (카드 스타일 통일)
+   ================================================================= */
+.profile-card {
+    background: var(--bg-card); /* 흰색 배경 */
+    border-radius: var(--radius-card); /* 둥근 모서리 */
+    box-shadow: var(--shadow-card); /* 그림자 */
+    overflow: hidden;
+    position: relative;
+    /* 테두리 제거 (그림자로 대체) */
+    border: none;
+}
+
+/* 배너 */
+.profile-banner {
+    height: 100px;
+    background: linear-gradient(90deg, #E8F8F3 0%, #D4EEEE 100%);
+}
+
+.profile-content {
+    padding: 0 32px 32px 32px;
+    position: relative;
+}
+
+/* 프로필 헤더 */
+.profile-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    margin-top: -40px;
+    margin-bottom: 32px;
+}
+
+/* 사진 래퍼 */
+.profile-img-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+/* 수정 버튼 아이콘 */
+.btn-edit-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #eee;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+.btn-edit-icon:hover {
+    background-color: var(--bg-page);
+    transform: rotate(30deg);
+}
+
+/* 이름 및 정보 */
+.profile-text {
+    flex: 1;
+    padding-bottom: 10px;
+}
+
+.name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.profile-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.goal-badge {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.email-text {
+    font-size: 14px;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+}
+
+.profile-meta {
+    font-size: 13px;
+    color: #999;
+    display: flex;
+    gap: 8px;
+}
+.profile-meta .divider { color: #ddd; }
+
+
+/* 스탯 박스 */
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 12px; /* 패딩 약간 증가 */
+    background-color: var(--bg-page);
+    border-radius: 12px;
+}
+
+.stat-box .label {
+    font-size: 13px;
+    color: var(--text-sub);
+    font-weight: 500;
+}
+
+.stat-box .value {
+    font-size: 15px; /* 폰트 크기 증가 */
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.stat-box .bmi-value { color: var(--primary); }
+.stat-box .type-value { color: var(--secondary); }
+
+
+/* =================================================================
+   3. 뱃지 & 챌린지 섹션 (카드 스타일 적용)
+   ================================================================= */
+.badge-grid, .my-challenge-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 기본 2열 */
+    gap: 16px;
+}
+
+/* 뱃지 카드 */
+.badge-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-card);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.badge-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-light);
+    box-shadow: 0 8px 20px rgba(29, 171, 135, 0.15);
+}
+
+.badge-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    background: var(--bg-page);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.badge-icon-wrapper img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.badge-info h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text-main);
+}
+
+.badge-info p {
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.4;
+}
+
+/* 챌린지 카드 (간소화) */
+.challenge-card-simple {
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 20px;
+    display: flex; /* 내용을 가로로 배치 */
+    flex-direction: column; /* 내용을 세로로 배치 */
+    gap: 12px;
+}
+
+.challenge-card-simple .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.challenge-card-simple h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.percent-badge {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.challenge-card-simple .desc {
+    font-size: 13px;
+    color: var(--text-sub);
+    /* margin-bottom: 12px; */ /* gap으로 대체 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 2줄 말줄임 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.progress-bar-wrapper {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-page);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.progress-bar-wrapper .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #85D648 0%, var(--primary) 100%);
+    border-radius: 8px;
+}
+
+/* ★ 빈 상태 (Empty State) - 카드 스타일 적용 ★ */
+.empty-state {
+    background: var(--bg-card); /* 흰색 배경 */
+    border-radius: var(--radius-card); /* 둥근 모서리 */
+    box-shadow: var(--shadow-card); /* 그림자 */
+    /* border: 1px dashed var(--border-color); */ /* 점선 제거 */
+    border: none;
+
+    padding: 40px; /* 패딩 증가 */
+    text-align: center;
+    color: var(--text-sub);
+    font-size: 15px; /* 폰트 크기 증가 */
+
+    /* 그리드에서 전체 너비 차지 */
+    grid-column: 1 / -1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.link-text {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: var(--primary-light);
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+.link-text:hover {
+    background-color: #D1F2E8;
+}
+
+
+/* =================================================================
+   4. 계정 관리 버튼 (가독성 강화)
+   ================================================================= */
+.account-actions {
+    display: flex;
+    gap: 16px; /* 간격 증가 */
+    margin-top: 24px;
+    /* 버튼을 오른쪽으로 정렬하고 싶다면 아래 주석 해제 */
+    /* justify-content: flex-end; */
+}
+
+/* 공통 버튼 스타일 */
+.btn-logout, .btn-delete {
+    padding: 12px 24px; /* 크기 키움 */
+    border-radius: 8px;
+    font-size: 15px; /* 폰트 키움 */
+    font-weight: 700; /* 굵게 */
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 로그아웃 버튼 (잘 보이게) */
+.btn-logout {
+    color: var(--text-main); /* 진한 회색 */
+    background-color: white;
+    border: 1px solid var(--border-color); /* 테두리 추가 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 약한 그림자 */
+}
+.btn-logout:hover {
+    background-color: var(--bg-page);
+    border-color: #CBD5E0;
+}
+
+/* 회원 탈퇴 버튼 (위험 강조) */
+.btn-delete {
+    color: var(--danger); /* 빨간색 글씨 */
+    background-color: #FFF5F5; /* 연한 빨간색 배경 */
+    border: 1px solid #FED7D7; /* 연한 빨간색 테두리 */
+    margin-left: auto; /* 오른쪽 끝으로 보냄 */
+}
+.btn-delete:hover {
+    background-color: var(--danger); /* 배경을 빨갛게 */
+    color: white; /* 글씨를 하얗게 */
+    border-color: var(--danger);
+}
+
+/*
+ 모바일
+@media (max-width: 768px) {
+    .badge-grid, .my-challenge-grid { grid-template-columns: 1fr; }
+    .profile-stats { grid-template-columns: repeat(2, 1fr); }
+    .account-actions { flex-direction: column; }
+    .btn-delete { margin-left: 0; width: 100%; }
+    .btn-logout { width: 100%; }
+}*/

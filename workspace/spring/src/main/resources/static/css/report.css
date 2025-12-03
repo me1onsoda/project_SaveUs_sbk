@@ -1,0 +1,559 @@
+@charset "UTF-8";
+
+/* 공통 레이아웃 */
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.report-header h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.section-title {
+    margin-bottom: 20px;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.section-divider {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 40px 0 30px 0;
+}
+
+/* 그리드 시스템 */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1024px) {
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+    .dashboard-grid, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* 카드 스타일 */
+.card {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    min-height: 360px; /* 높이 통일감을 위해 약간 늘림 */
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* [신규] 카드 내부 수직 정렬용 래퍼 */
+.card-flex-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* [신규] 중앙 컨텐츠 영역 (차트, 뱃지 등) */
+.content-center {
+    flex-grow: 1; /* 남은 공간 차지하여 수직 중앙 정렬 유도 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* 하단 캡션 (항상 바닥에 붙음) */
+.chart-caption {
+    margin-top: auto; /* 위쪽 여백을 자동으로 채워 바닥으로 밈 */
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-sub);
+    padding-top: 15px;
+}
+
+
+/* 날짜 선택기 */
+.date-picker-small {
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-sub);
+    background: var(--bg-page);
+    cursor: pointer;
+    outline: none;
+}
+
+/* 뱃지 */
+.badge {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* 차트 컨테이너 */
+.chart-container {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+canvas { width: 100% !important; height: 100% !important; }
+
+/* 도넛 차트 */
+.doughnut-wrapper {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 15px; /* 하단 여백 추가 */
+}
+.center-text {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-align: center; pointer-events: none;
+}
+.center-text #obesityPercent {
+    display: block; font-size: 24px; font-weight: 800; color: var(--text-main);
+}
+.center-text .label { font-size: 12px; color: var(--text-sub); margin-top: 2px; display: block; }
+
+
+/* 비만도 코멘트 스타일 */
+.obesity-comment-text {
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-line;
+    font-weight: 500;
+}
+
+/* 당뇨 컨텐츠 스타일 */
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, #20c997 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 6px 15px rgba(32, 201, 151, 0.4);
+    margin-bottom: 20px;
+    user-select: none;
+}
+
+.score-top-row {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    margin-bottom: 4px;
+}
+
+.score-num {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.score-unit {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.score-label {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.risk-level-text {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.diabetes-comment {
+    background-color: #F8F9FA;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-main);
+    line-height: 1.5;
+    width: 100%;
+    word-break: keep-all;
+}
+
+/* [개선] Top 5 리스트 스타일 */
+.top-meals-wrapper {
+    overflow-y: auto; scrollbar-width: thin;
+    padding-right: 5px; /* 스크롤바 공간 */
+}
+.top-meals-list { list-style: none; padding: 0; margin: 0; }
+
+.top-meals-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F8F9FA; /* 박스 배경색 */
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 10px; /* 둥근 모서리 */
+    font-size: 14px;
+    color: var(--text-main);
+    transition: transform 0.1s;
+}
+
+.top-meals-list li:hover {
+    background-color: #F0FAF7; /* 호버 시 살짝 민트색 */
+}
+
+.top-meals-list li:last-child { margin-bottom: 0; }
+
+/* 순위 뱃지 */
+.rank-badge {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    background-color: #ddd;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 10px;
+}
+/* 1~3위 강조 색상 */
+.rank-1 { background-color: #FFC107; box-shadow: 0 2px 5px rgba(255, 193, 7, 0.4); } /* 금 */
+.rank-2 { background-color: #A0AEC0; } /* 은 */
+.rank-3 { background-color: #D69E2E; opacity: 0.8; } /* 동 */
+
+.meal-name { font-weight: 600; }
+.meal-cat { font-size: 12px; color: var(--text-sub); }
+
+
+/* 텍스트 색상 */
+.text-excellent { color: #3B82F6; }
+.text-good { color: #1DAB87; }
+.text-normal { color: #FFC107; }
+.text-warning { color: #FF9F43; }
+.text-danger { color: #FF6B6B; }
+
+/* ... (기존 report.css 내용들) ... */
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    font-size: 14px;
+    background: #ddd; /* 회색 원 */
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 6px; /* 제목 텍스트와의 간격 */
+    color: #555; /* 물음표 색상 (배경이 밝으므로 어두운 색 추천) */
+    font-weight: bold;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 260px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    padding: 10px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 10;
+
+    /* 위치 조정 */
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%); /* 정확한 가로 중앙 정렬 */
+
+    font-size: 10px;
+    line-height: 1.4;
+    font-weight: normal; /* 텍스트는 굵지 않게 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 살짝 그림자 추가하면 더 잘 보임 */
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    font-size: 14px;
+    background: #ddd;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 6px;
+    color: #555;
+    font-weight: bold;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 260px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    padding: 10px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 10;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    line-height: 1.4;
+    font-weight: normal;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+
+.nutrient-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    height: 250px;
+    padding: 10px 0;
+}
+
+.nutrient-item {
+    flex: 1;
+    position: relative;
+    min-width: 0;
+}
+
+
+.exercise-block {
+    flex: 1;                   /* 3등분 */
+    background-color: #F8F9FA;
+    border-radius: 12px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   /* 수직 중앙 */
+    align-items: center;       /* 수평 중앙 */
+
+    padding: 0 10px;           /* 좌우 여백만 줌 */
+    gap: 8px;                  /* 제목과 내용 사이 간격 */
+    transition: transform 0.2s;
+    min-width: 0;
+}
+
+.exercise-block:hover {
+    transform: translateY(-2px);
+    background-color: #F0FAF7;
+}
+
+.exercise-title {
+    font-size: 13px;
+    color: #888;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.exercise-title::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.exercise-block:nth-child(1) .exercise-title::before { background-color: #FFC107; }
+.exercise-block:nth-child(2) .exercise-title::before { background-color: #1DAB87; }
+.exercise-block:nth-child(3) .exercise-title::before { background-color: #4A90E2; }
+
+.exercise-block p,
+.exercise-block ul {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.4;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    word-break: keep-all;
+}
+
+.exercise-block ul {
+    list-style: none;
+}
+.exercise-block ul li {
+    margin-bottom: 2px;
+}
+
+
+/*이정륜*/
+/* report.css 파일의 모든 exercise-row 정의를 아래 코드로 대체 */
+
+/* ========================================================= */
+/* 운동 추천 섹션 스타일 (수정 및 통합) */
+/* ========================================================= */
+#exerciseContent {
+    height: 100%;
+}
+
+/* 가로 3개 배치 */
+.exercise-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 20px;
+    width: 100%;
+    height: 100%;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.exercise-row > div {
+    flex: 1 0 0;
+    min-width: 0;
+    height: 100%;
+}
+
+/* 운동 카드 박스 */
+.exercise-block {
+    flex: 1;
+    background-color: #F8F9FA;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 15px 20px 15px;
+    gap: 8px;
+    transition: transform 0.2s;
+    min-width: 0;
+    height: 100%;
+}
+
+/* 썸네일 16:9 */
+.exercise-thumbnail {
+    width: 100%;
+    padding-bottom: 56.25%;
+    height: 0;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #F0F0F0;
+}
+
+/* 이미지 */
+.exercise-thumbnail img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 70%;
+    transform: translate(-50%, -50%);
+    object-fit: contain;
+    background-color: transparent;
+}
+
+/* 카드 내부 */
+.exercise-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.exercise-info {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+.exercise-name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+/* 버튼 */
+.exercise-btn.primary-btn {
+    display: inline-block;
+    background-color: var(--primary);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: 0.2s;
+    border: none;
+    box-shadow: 0 2px 5px rgba(32, 201, 151, 0.2);
+}
+
+.exercise-btn.primary-btn:hover {
+    background-color: var(--secondary);
+    transform: translateY(-1px);
+}
+
+/* 영상 없음 블럭 */
+.no-video-text {
+    font-size: 13px;
+    color: #888;
+    margin-top: 6px;
+}

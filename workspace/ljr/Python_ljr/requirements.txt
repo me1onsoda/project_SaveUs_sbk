@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-pymysql
-numpy
-scikit-learn
-joblib
-python-multipart
